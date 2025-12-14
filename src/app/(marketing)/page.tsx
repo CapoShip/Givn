@@ -1,5 +1,5 @@
-import GivnProofEngine from "@/components/givn/GivnProofEngine";
+import GivnHome from "@/components/givn/GivnHome";
 
-export default function Home() {
-  return <GivnProofEngine />;
+export default function Page() {
+  return <GivnHome />;
 }
