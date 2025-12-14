@@ -358,7 +358,8 @@ function RotatingAdRail({
 
 function ImpactTile({ item }: { item: ImpactCard }) {
   return (
-    <div className="min-w-[240px] rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition">
+    <div className="w-[240px] shrink-0 rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition">
+
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-sm font-semibold text-white/90">{item.brand}</div>
@@ -440,7 +441,8 @@ export default function GivnHome() {
         body { margin: 0; }
       `}</style>
 
-      <div className="min-h-screen w-full bg-black text-white">
+      <div className="min-h-screen w-full bg-black text-white overflow-x-hidden">
+
         {/* Top bar */}
         <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur">
           <div className="max-w-[1200px] mx-auto px-5 h-14 flex items-center justify-between">
@@ -467,7 +469,8 @@ export default function GivnHome() {
 
         {/* Hero + rails layout */}
         <main className="max-w-[1200px] mx-auto px-5 py-10">
-          <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr_260px] gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)_240px] gap-6">
+
             {/* Left rail (rotating fake ads) */}
             <aside className="hidden lg:block">
               <RotatingAdRail ads={SIDE_ADS_LEFT} intervalMs={3200} />
@@ -537,7 +540,8 @@ export default function GivnHome() {
                   </a>
                 </div>
 
-                <div className="mt-4 flex gap-4 overflow-x-auto pb-2">
+                <div className="mt-4 -mx-5 px-5 flex gap-4 overflow-x-auto pb-2 max-w-full">
+
                   {filtered.slice(0, 8).map((x) => (
                     <ImpactTile key={x.id} item={x} />
                   ))}
@@ -553,7 +557,8 @@ export default function GivnHome() {
                   </a>
                 </div>
 
-                <div className="mt-4 flex gap-4 overflow-x-auto pb-2">
+                <div className="mt-4 -mx-5 px-5 flex gap-4 overflow-x-auto pb-2 max-w-full">
+
                   {filtered
                     .slice()
                     .reverse()
