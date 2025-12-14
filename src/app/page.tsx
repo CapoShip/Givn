@@ -84,9 +84,9 @@ export default function Home() {
     return (
         <div className="min-h-screen flex flex-col">
             
-            {/* NAVBAR */}
+            {/* NAVBAR - MODIFIÉ (Full width) */}
             <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-                <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
+                <div className="w-full px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-8">
                         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => {setActiveCategory('All'); window.scrollTo({top: 0, behavior: 'smooth'})}}>
                             <div className="w-5 h-5 rounded-full border border-white flex items-center justify-center group-hover:scale-110 transition-transform bg-white/5 group-hover:bg-emerald-500/20 group-hover:border-emerald-500">
@@ -105,18 +105,18 @@ export default function Home() {
                 </div>
             </nav>
 
-            {/* MAIN CONTENT */}
-            <main className="flex-1 pt-24 px-4 md:px-6 max-w-[1400px] mx-auto w-full">
+            {/* MAIN CONTENT - MODIFIÉ (100% largeur) */}
+            <main className="flex-1 pt-24 w-full px-4">
                 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full">
                     
-                    {/* Left Ads - MODIFIÉ: col-span-2 au lieu de 3 */}
+                    {/* Left Ads */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-10 h-fit">
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={6000} />
                         <LivingAdSlot pool={[AD_POOL_LEFT[1], AD_POOL_LEFT[2]]} initialDelay={2500} cycleDuration={8000} />
                     </div>
 
-                    {/* Center Content - MODIFIÉ: col-span-8 au lieu de 6 */}
+                    {/* Center Content */}
                     <div className="col-span-1 lg:col-span-8 flex flex-col items-center text-center pt-10 z-10 min-h-screen">
                         
                         {/* HERO */}
@@ -242,7 +242,7 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Right Ads - MODIFIÉ: col-span-2 au lieu de 3 */}
+                    {/* Right Ads */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-10 h-fit">
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={7000} />
                         
@@ -258,9 +258,9 @@ export default function Home() {
 
             </main>
 
-            {/* FOOTER */}
+            {/* FOOTER - MODIFIÉ (Full width) */}
             <footer className="border-t border-white/10 bg-black py-20 px-6">
-                <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-16 text-sm">
+                <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-16 text-sm">
                     <div className="col-span-1 md:col-span-1">
                         <span className="font-bold text-xl tracking-tight mb-6 block">Givn</span>
                         <p className="text-zinc-500 text-xs leading-relaxed max-w-xs">The global standard for verifying corporate philanthropy.</p>
