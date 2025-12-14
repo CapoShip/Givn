@@ -40,25 +40,29 @@ body {
 .glow-text { text-shadow: 0 0 30px rgba(16, 185, 129, 0.2); }
 .glow-dot-green { box-shadow: 0 0 12px 3px rgba(16, 185, 129, 0.4); }
 
-/* --- TREE ANIMATIONS --- */
+/* --- TREE ANIMATIONS (FIXED) --- */
 .tree-path {
   stroke-dasharray: 300;
   stroke-dashoffset: 300;
-  transition: stroke-dashoffset 2s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Pas de transition ici pour un reset instantané */
 }
 
 .tree-grown .tree-path {
   stroke-dashoffset: 0;
+  /* Transition uniquement lors de la croissance */
+  transition: stroke-dashoffset 2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .leaf {
   transform: scale(0);
   transform-origin: center;
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Pas de transition ici pour un reset instantané */
 }
 
 .tree-grown .leaf {
   transform: scale(1);
+  /* Transition uniquement lors de l'apparition */
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* --- KEYFRAMES --- */

@@ -84,7 +84,7 @@ export default function Home() {
     return (
         <div className="min-h-screen flex flex-col">
             
-            {/* NAVBAR - MODIFIÉ (Full width) */}
+            {/* NAVBAR */}
             <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
                 <div className="w-full px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-8">
@@ -105,15 +105,18 @@ export default function Home() {
                 </div>
             </nav>
 
-            {/* MAIN CONTENT - MODIFIÉ (100% largeur) */}
+            {/* MAIN CONTENT */}
             <main className="flex-1 pt-24 w-full px-4">
                 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full">
                     
-                    {/* Left Ads */}
-                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-10 h-fit">
+                    {/* Left Ads (Modifié pour descendre plus bas) */}
+                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-10 h-fit space-y-8">
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={6000} />
                         <LivingAdSlot pool={[AD_POOL_LEFT[1], AD_POOL_LEFT[2]]} initialDelay={2500} cycleDuration={8000} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={4000} cycleDuration={7000} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1500} cycleDuration={6500} />
+                        <LivingAdSlot pool={[AD_POOL_RIGHT[0]]} initialDelay={3200} cycleDuration={7500} />
                     </div>
 
                     {/* Center Content */}
@@ -242,8 +245,8 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Right Ads */}
-                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-10 h-fit">
+                    {/* Right Ads (Modifié pour descendre plus bas) */}
+                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-10 h-fit space-y-8">
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={7000} />
                         
                         <div className="glass-panel rounded-xl p-6 mt-4 border border-zinc-800 animate-[pop-in_2s_ease-out] hover:border-emerald-500/30 transition-colors group">
@@ -253,6 +256,10 @@ export default function Home() {
                                 Apply for spot <ArrowRight size={12} />
                             </button>
                         </div>
+
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={3500} cycleDuration={8500} />
+                        <LivingAdSlot pool={[AD_POOL_LEFT[0], AD_POOL_RIGHT[1]]} initialDelay={500} cycleDuration={6000} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2800} cycleDuration={9000} />
                     </div>
                 </div>
 
