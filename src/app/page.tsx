@@ -110,7 +110,7 @@ export default function Home() {
                 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full">
                     
-                    {/* Left Ads (Remonté + ajout de pubs) */}
+                    {/* Left Ads (Desktop Only) */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={6000} />
                         <LivingAdSlot pool={[AD_POOL_LEFT[1], AD_POOL_LEFT[2]]} initialDelay={2500} cycleDuration={8000} />
@@ -123,7 +123,7 @@ export default function Home() {
                     <div className="col-span-1 lg:col-span-8 flex flex-col items-center text-center pt-10 z-10 min-h-screen">
                         
                         {/* HERO */}
-                        <div className="mb-20">
+                        <div className="mb-12 md:mb-20 w-full">
                             <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9] mb-8 animate-[pop-in_0.7s_ease-out] glow-text">
                                 They say they donate.
                                 <br />
@@ -154,6 +154,11 @@ export default function Home() {
                             </div>
                         </div>
 
+                        {/* MOBILE AD 1 (Visible uniquement sur mobile) */}
+                        <div className="w-full lg:hidden mb-16 px-4">
+                             <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={7000} />
+                        </div>
+
                         {/* CATEGORIES */}
                         <div id="categories" className="flex flex-col items-center mb-16 scroll-mt-24 w-full">
                             <p className="text-[10px] text-zinc-500 mb-6 font-bold uppercase tracking-widest">Browse by category</p>
@@ -172,6 +177,11 @@ export default function Home() {
                                     </button>
                                 ))}
                             </div>
+                        </div>
+
+                        {/* MOBILE AD 2 (Visible uniquement sur mobile) */}
+                        <div className="w-full lg:hidden mb-16 px-4">
+                             <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={8000} />
                         </div>
 
                         {/* RECENTLY LISTED */}
@@ -245,7 +255,7 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Right Ads (Remonté + ajout de pubs) */}
+                    {/* Right Ads (Desktop Only) */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={7000} />
                         
