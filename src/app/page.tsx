@@ -110,8 +110,8 @@ export default function Home() {
                 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full">
                     
-                    {/* Left Ads (Modifié pour descendre plus bas) */}
-                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-10 h-fit space-y-8">
+                    {/* Left Ads (Remonté + ajout de pubs) */}
+                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={6000} />
                         <LivingAdSlot pool={[AD_POOL_LEFT[1], AD_POOL_LEFT[2]]} initialDelay={2500} cycleDuration={8000} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={4000} cycleDuration={7000} />
@@ -245,8 +245,8 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Right Ads (Modifié pour descendre plus bas) */}
-                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-10 h-fit space-y-8">
+                    {/* Right Ads (Remonté + ajout de pubs) */}
+                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={7000} />
                         
                         <div className="glass-panel rounded-xl p-6 mt-4 border border-zinc-800 animate-[pop-in_2s_ease-out] hover:border-emerald-500/30 transition-colors group">
@@ -265,7 +265,7 @@ export default function Home() {
 
             </main>
 
-            {/* FOOTER - MODIFIÉ (Full width) */}
+            {/* FOOTER */}
             <footer className="border-t border-white/10 bg-black py-20 px-6">
                 <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-16 text-sm">
                     <div className="col-span-1 md:col-span-1">
