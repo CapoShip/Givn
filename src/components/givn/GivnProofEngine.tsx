@@ -1,4 +1,6 @@
 "use client";
+import MarketingHomeSections from "@/components/givn/MarketingHomeSections";
+
 
 import React, { useMemo, useState, useEffect } from "react";
 import {
@@ -262,6 +264,9 @@ export default function GivnProofEngine() {
           )}
         </div>
       </section>
+      
+      <MarketingHomeSections />
+
 
       {/* ───────────── FOOTER ───────────── */}
       <footer className="border-t border-white/10 py-12 text-center text-xs text-white/40">
