@@ -6,7 +6,7 @@ import { Search, Plus, ArrowRight, X } from "lucide-react";
 import BrandCard from '@/components/givn/BrandCard';
 import LivingAdSlot from '@/components/givn/LivingAdSlot';
 import BrandDetailModal from '@/components/givn/BrandDetailModal';
-import Badge from '@/components/givn/Badge'; // Besoin pour le tableau
+import Badge from '@/components/givn/Badge';
 
 // --- DATA ---
 const RAW_BRANDS = [
@@ -110,14 +110,14 @@ export default function Home() {
                 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
                     
-                    {/* Left Ads */}
-                    <div className="hidden lg:block lg:col-span-3 lg:sticky lg:top-24 pt-10 h-fit">
+                    {/* Left Ads - MODIFIÉ: col-span-2 au lieu de 3 */}
+                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-10 h-fit">
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={6000} />
                         <LivingAdSlot pool={[AD_POOL_LEFT[1], AD_POOL_LEFT[2]]} initialDelay={2500} cycleDuration={8000} />
                     </div>
 
-                    {/* Center Content */}
-                    <div className="col-span-1 lg:col-span-6 flex flex-col items-center text-center pt-10 z-10 min-h-screen">
+                    {/* Center Content - MODIFIÉ: col-span-8 au lieu de 6 */}
+                    <div className="col-span-1 lg:col-span-8 flex flex-col items-center text-center pt-10 z-10 min-h-screen">
                         
                         {/* HERO */}
                         <div className="mb-20">
@@ -242,8 +242,8 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Right Ads */}
-                    <div className="hidden lg:block lg:col-span-3 lg:sticky lg:top-24 pt-10 h-fit">
+                    {/* Right Ads - MODIFIÉ: col-span-2 au lieu de 3 */}
+                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-10 h-fit">
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={7000} />
                         
                         <div className="glass-panel rounded-xl p-6 mt-4 border border-zinc-800 animate-[pop-in_2s_ease-out] hover:border-emerald-500/30 transition-colors group">
