@@ -4,10 +4,15 @@ import BrandTimeline from "@/components/givn/BrandTimeline";
 import type { PublicBrandResponse } from "@/lib/givn/publicBrand";
 
 async function getData(slug: string): Promise<PublicBrandResponse> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/api/public/brand/${slug}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error("Failed to load brand");
+  // IMPORTANT: use relative fetch (works on Vercel + local)
+  const res = await fetch(`/api/public/brand/${slug}`, { cache: "no-store" });
+
+  if (!res.ok) {
+    // make the error explicit in server logs
+    const text = await res.text().catch(() => "");
+    throw new Error(`Failed to load brand (${res.status}). ${text}`);
+  }
+
   return res.json();
 }
 

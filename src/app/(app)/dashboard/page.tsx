@@ -2,10 +2,11 @@ import ProofStatusPill from "@/components/givn/ProofStatusPill";
 import type { PublicBrandResponse } from "@/lib/givn/publicBrand";
 
 async function getDemo(): Promise<PublicBrandResponse> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/api/public/brand/demo-brand`, {
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error("Failed to load demo brand");
+  const res = await fetch(`/api/public/brand/demo-brand`, { cache: "no-store" });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Failed to load demo brand (${res.status}). ${text}`);
+  }
   return res.json();
 }
 
