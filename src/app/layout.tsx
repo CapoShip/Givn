@@ -1,9 +1,25 @@
-import "./globals.css";
+import './globals.css'
+import type { Metadata } from 'next'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
+
+export const metadata: Metadata = {
+  title: 'Givn - The Verification Layer',
+  description: 'Verified corporate philanthropy on-chain.',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="fr" className="dark">
+      <body className={`${inter.variable} ${mono.variable} font-sans antialiased bg-background text-white min-h-screen selection:bg-emerald-500 selection:text-black`}>
+        {children}
+      </body>
     </html>
-  );
+  )
 }
