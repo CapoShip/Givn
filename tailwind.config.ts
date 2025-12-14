@@ -10,16 +10,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: '#020403', // Ton fond noir teinté
+        background: '#020403',
         surface: '#0A0A0A',
         brand: {
           50: '#ecfdf5',
           100: '#d1fae5',
           200: '#a7f3d0',
-          400: '#34d399', // Emerald 400
-          500: '#10b981', // Emerald 500
-          600: '#059669', // Emerald 600
-          900: '#064e3b', // Emerald 900
+          400: '#34d399',
+          500: '#10b981',
+          600: '#059669',
+          900: '#064e3b',
         }
       },
       fontFamily: {
