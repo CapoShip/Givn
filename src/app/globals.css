@@ -31,3 +31,27 @@ html, body {
 * {
   box-sizing: border-box;
 }
+/* src/app/globals.css */
+
+/* Empêche le scroll horizontal */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Scrollbar plus clean (optionnel) */
+*::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.18);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.06);
+}
+
+/* Hide WebKit scrollbars for elements with scrollbar-width: none */
+[scrollbar-width="none"]::-webkit-scrollbar {
+  display: none;
+}
