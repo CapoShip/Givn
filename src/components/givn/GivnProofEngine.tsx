@@ -132,7 +132,8 @@ export default function GivnProofEngine() {
   );
 
   return (
-    <div className="min-h-screen bg-black text-white font-mono">
+  <div className="min-h-screen bg-red-500 text-white">
+
       {/* ───────────── HERO : EXISTENTIAL ACCUSATION ───────────── */}
       <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06),transparent_55%)]" />
