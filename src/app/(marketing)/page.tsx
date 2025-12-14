@@ -1,5 +1,5 @@
 import GivnProofEngine from "@/components/givn/GivnProofEngine";
 
-export default function MarketingHome() {
+export default function Page() {
   return <GivnProofEngine />;
 }

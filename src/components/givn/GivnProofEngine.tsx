@@ -1,10 +1,10 @@
 "use client";
+
 import React, { useMemo, useState, useEffect } from "react";
 import {
   ArrowRight,
   ShieldCheck,
   BadgeCheck,
-  Eye,
   EyeOff,
   Zap,
   Skull,
@@ -64,7 +64,10 @@ if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
     { id: "c", timestamp: "z", amount: 20, ngo: "n", status: "verified" },
   ];
   console.assert(sumVerified(t) === 30, "sumVerified should sum only verified entries");
-  console.assert(mostRecentVerifiedDate(t) === "x", "mostRecentVerifiedDate should return first verified entry date prefix");
+  console.assert(
+    mostRecentVerifiedDate(t) === "x",
+    "mostRecentVerifiedDate should return first verified entry date prefix"
+  );
 }
 
 // ────────────────────────────────────────────────────────────
@@ -72,34 +75,10 @@ if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
 // ────────────────────────────────────────────────────────────
 
 const LEDGER: ProofEntry[] = [
-  {
-    id: "l4",
-    timestamp: "2024-12-12T10:43Z",
-    amount: 500,
-    ngo: "Water.org",
-    status: "verified",
-  },
-  {
-    id: "l3",
-    timestamp: "2024-11-03T09:01Z",
-    amount: 420,
-    ngo: "Water.org",
-    status: "verified",
-  },
-  {
-    id: "l2",
-    timestamp: "2024-10-18T—",
-    amount: 0,
-    ngo: "—",
-    status: "missing",
-  },
-  {
-    id: "l1",
-    timestamp: "2024-09-02T08:11Z",
-    amount: 380,
-    ngo: "Water.org",
-    status: "verified",
-  },
+  { id: "l4", timestamp: "2024-12-12T10:43Z", amount: 500, ngo: "Water.org", status: "verified" },
+  { id: "l3", timestamp: "2024-11-03T09:01Z", amount: 420, ngo: "Water.org", status: "verified" },
+  { id: "l2", timestamp: "2024-10-18T—", amount: 0, ngo: "—", status: "missing" },
+  { id: "l1", timestamp: "2024-09-02T08:11Z", amount: 380, ngo: "Water.org", status: "verified" },
 ];
 
 // ────────────────────────────────────────────────────────────
@@ -107,7 +86,6 @@ const LEDGER: ProofEntry[] = [
 // ────────────────────────────────────────────────────────────
 
 export default function GivnProofEngine() {
-
   const [reveal, setReveal] = useState(false);
   const [showMissing, setShowMissing] = useState(true);
   const [badgeOpen, setBadgeOpen] = useState(false);
@@ -117,25 +95,25 @@ export default function GivnProofEngine() {
       if (window.scrollY > window.innerHeight * 0.6) setReveal(true);
     };
     window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+
+    // Prevent “blank screen” for users who don’t scroll
+    const t = window.setTimeout(() => setReveal(true), 1200);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.clearTimeout(t);
+    };
   }, []);
 
   const lastVerifiedDate = useMemo(() => mostRecentVerifiedDate(LEDGER), []);
-
-  // NOTE: For now, we degrade only when there is no verified record at all.
-  // If you want "stale" to mean "no proof for current month", tell me your exact month/period rules.
   const badgeState: "valid" | "stale" = lastVerifiedDate ? "valid" : "stale";
 
-  const verifiedTotal = useMemo(
-    () => sumVerified(LEDGER),
-    []
-  );
+  const verifiedTotal = useMemo(() => sumVerified(LEDGER), []);
 
   return (
-  <div className="min-h-screen bg-red-500 text-white">
-
+    <div className="min-h-screen bg-black text-white font-mono pt-16">
       {/* ───────────── HERO : EXISTENTIAL ACCUSATION ───────────── */}
-      <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
+      <section className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center text-center px-6 relative">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06),transparent_55%)]" />
         <h1 className="relative z-10 text-6xl md:text-8xl font-bold tracking-tight">
           THEY SAY THEY DONATE
@@ -149,14 +127,10 @@ export default function GivnProofEngine() {
       </section>
 
       {/* ───────────── PROOF REVEAL ───────────── */}
-      <section
-        className={`transition-opacity duration-700 ${reveal ? "opacity-100" : "opacity-0"}`}
-      >
+      <section className={`transition-opacity duration-700 ${reveal ? "opacity-100" : "opacity-0"}`}>
         <div className="max-w-4xl mx-auto px-6 pb-40">
           <div className="mb-16">
-            <h2 className="text-xs uppercase tracking-widest text-white/40">
-              Public donation ledger
-            </h2>
+            <h2 className="text-xs uppercase tracking-widest text-white/40">Public donation ledger</h2>
             <p className="mt-3 text-lg text-white/60 max-w-xl">
               This is not a claim. This is a record.
             </p>
@@ -185,9 +159,7 @@ export default function GivnProofEngine() {
                 </div>
 
                 <div className="text-right">
-                  <div
-                    className={`text-xl ${l.status === "missing" ? "text-red-400" : ""}`}
-                  >
+                  <div className={`text-xl ${l.status === "missing" ? "text-red-400" : ""}`}>
                     {l.status === "verified" ? money(l.amount) : "NO VERIFIED DONATION"}
                   </div>
                   <div className="text-[10px] uppercase tracking-widest text-white/30">
@@ -203,11 +175,14 @@ export default function GivnProofEngine() {
             <div className="text-sm text-white/50">
               Verified total → <span className="text-white">{money(verifiedTotal)}</span>
             </div>
+
+            {/* FIX: appearance-none removes the grey native button look */}
             <button
+              type="button"
               onClick={() => setShowMissing((v) => !v)}
-              className="inline-flex items-center gap-2 border border-white/30 px-4 py-2 text-xs text-white/70 hover:bg-white/10"
+              className="appearance-none bg-transparent inline-flex items-center gap-2 border border-white/30 px-4 py-2 text-xs text-white/70 hover:bg-white/10"
             >
-              {showMissing ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              <EyeOff className="h-4 w-4" />
               {showMissing ? "hide missing records" : "show missing records"}
             </button>
           </div>
@@ -217,17 +192,19 @@ export default function GivnProofEngine() {
       {/* ───────────── BADGE = LIVING CONTRACT ───────────── */}
       <section className="border-t border-white/10 py-40 text-center">
         <div className="max-w-xl mx-auto px-6">
-          {/* Badge core */}
+          {/* FIX: appearance-none + bg-transparent removes browser default buttonface */}
           <button
+            type="button"
             onClick={() => setBadgeOpen((v) => !v)}
-            className={`inline-flex w-full flex-col items-center gap-3 px-10 py-8 transition border ${
-              badgeState === "valid" ? "border-white/30" : "border-red-500/50 bg-red-500/5"
+            className={`appearance-none bg-transparent inline-flex w-full flex-col items-center gap-3 px-10 py-8 transition border ${
+              badgeState === "valid"
+                ? "border-white/30"
+                : "border-red-500/50 bg-red-500/5"
             }`}
           >
             <BadgeCheck className="h-7 w-7" />
             <div className="text-lg tracking-wide">VERIFIED IMPACT</div>
 
-            {/* Dynamic state */}
             <div className="mt-2 text-sm text-white/60">Verification valid for</div>
             <div className="text-xl font-semibold">December 2024</div>
 
@@ -246,25 +223,21 @@ export default function GivnProofEngine() {
             </div>
           </button>
 
-          {/* Verdict text */}
           <p className="mt-12 text-white/50 text-lg">
             This is not a promise.
             <br />
             This is a time-bound verification.
           </p>
 
-          {/* CTA */}
           <div className="mt-20 inline-flex items-center gap-3 bg-white text-black px-10 py-5 text-sm font-semibold">
             Install Givn on Shopify
             <Zap className="h-4 w-4" />
           </div>
 
-          {/* Disclaimer */}
           <p className="mt-12 text-xs text-white/40">
             Givn does not certify intent. Only verifiable records.
           </p>
 
-          {/* Expandable audit trail */}
           {badgeOpen && (
             <div className="mt-20 max-w-2xl mx-auto text-left border border-white/10 p-6">
               <div className="mb-6 text-xs uppercase tracking-widest text-white/40">
