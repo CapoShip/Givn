@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
@@ -14,8 +15,12 @@ import {
 
 /**
  * GIVN — Home
- * Public, verifiable impact records for brands.
- * Built to make donation proof visible, readable, and hard to fake.
+ * Objectif:
+ * - Page qui "fit" sur écran (pas de scroll horizontal global)
+ * - Centre large et lisible
+ * - Rails pubs seulement en très grand écran (2xl)
+ * - Sur écran normal: pubs deviennent "spotlights" intégrées dans le flux
+ * - Pubs animées: rotation automatique
  */
 
 // ────────────────────────────────────────────────────────────
@@ -26,10 +31,7 @@ type ProofStatus = "verified" | "missing";
 
 type Category =
   | "E-commerce"
-  | "SaaS"
-  | "Consumer"
   | "Fashion"
-  | "Beauty"
   | "Food"
   | "Health"
   | "Education"
@@ -40,39 +42,24 @@ type ImpactCard = {
   id: string;
   brand: string;
   category: Category;
-  verified: boolean;
   verifiedThisMonth: number; // dollars
+  verifiedAllTime: number; // dollars
   lastProof: string; // ISO-ish
   claim: string;
   proofStatus: ProofStatus;
 };
 
-type LeaderRow = {
-  rank: number;
-  brand: string;
-  category: Category;
-  verifiedThisMonth: number;
-  verifiedAllTime: number;
-  lastProof: string;
-  status: ProofStatus;
-};
-
 type AdTone = "blue" | "slate" | "violet" | "green" | "amber" | "indigo";
-
-type Ad = {
-  title: string;
-  desc: string;
-  tone: AdTone;
-};
+type Ad = { title: string; desc: string; tone: AdTone };
 
 // ────────────────────────────────────────────────────────────
 // Helpers
 // ────────────────────────────────────────────────────────────
 
 function money(n: number) {
-  if (n <= 0) return "—";
+  if (!Number.isFinite(n) || n <= 0) return "—";
   if (n >= 1000) return `$${(n / 1000).toFixed(1)}k`;
-  return `$${n}`;
+  return `$${Math.round(n)}`;
 }
 
 function matches(q: string, hay: string) {
@@ -89,24 +76,10 @@ function cx(...v: Array<string | false | undefined | null>) {
   return v.filter(Boolean).join(" ");
 }
 
-function nextIndex(current: number, length: number) {
-  if (length <= 0) return 0;
-  return (current + 1) % length;
-}
-
-// dev tests
-if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
-  console.assert(money(0) === "—", "money(0)");
-  console.assert(money(500) === "$500", "money(500)");
-  console.assert(money(1500) === "$1.5k", "money(1500)");
-  console.assert(matches("", "abc") === true, "matches empty");
-  console.assert(matches("ab", "abc") === true, "matches positive");
-  console.assert(matches("zz", "abc") === false, "matches negative");
-  console.assert(unique(["a", "a", "b"]).length === 2, "unique");
-  console.assert("2025-12-08T09:11Z".replace("T", " ").includes(" "), "lastProof replace T");
-  console.assert(nextIndex(0, 5) === 1, "nextIndex increments");
-  console.assert(nextIndex(4, 5) === 0, "nextIndex wraps");
-  console.assert(nextIndex(10, 0) === 0, "nextIndex safe on empty");
+function fmtStamp(s: string) {
+  // tolérant aux formats "2025-11-01T—"
+  if (!s) return "—";
+  return s.replace("T", " ");
 }
 
 // ────────────────────────────────────────────────────────────
@@ -118,8 +91,8 @@ const IMPACT: ImpactCard[] = [
     id: "b1",
     brand: "Lumen Goods",
     category: "E-commerce",
-    verified: true,
     verifiedThisMonth: 1250,
+    verifiedAllTime: 8420,
     lastProof: "2025-12-08T09:11Z",
     claim: "1% of revenue donated",
     proofStatus: "verified",
@@ -128,8 +101,8 @@ const IMPACT: ImpactCard[] = [
     id: "b2",
     brand: "VantaWear",
     category: "Fashion",
-    verified: true,
     verifiedThisMonth: 620,
+    verifiedAllTime: 3190,
     lastProof: "2025-12-05T14:22Z",
     claim: "A portion donated",
     proofStatus: "verified",
@@ -138,8 +111,8 @@ const IMPACT: ImpactCard[] = [
     id: "b3",
     brand: "Nori Market",
     category: "Food",
-    verified: false,
     verifiedThisMonth: 0,
+    verifiedAllTime: 0,
     lastProof: "2025-11-01T—",
     claim: "We give back monthly",
     proofStatus: "missing",
@@ -148,8 +121,8 @@ const IMPACT: ImpactCard[] = [
     id: "b4",
     brand: "Pulse Bloom",
     category: "Health",
-    verified: true,
     verifiedThisMonth: 310,
+    verifiedAllTime: 1440,
     lastProof: "2025-12-10T08:03Z",
     claim: "$1 per order donated",
     proofStatus: "verified",
@@ -158,8 +131,8 @@ const IMPACT: ImpactCard[] = [
     id: "b5",
     brand: "Cedar Kids",
     category: "Education",
-    verified: true,
     verifiedThisMonth: 980,
+    verifiedAllTime: 6110,
     lastProof: "2025-12-09T16:40Z",
     claim: "Supplies funded",
     proofStatus: "verified",
@@ -168,76 +141,28 @@ const IMPACT: ImpactCard[] = [
     id: "b6",
     brand: "Echo Cart",
     category: "Marketplace",
-    verified: true,
     verifiedThisMonth: 210,
+    verifiedAllTime: 980,
     lastProof: "2025-12-07T11:02Z",
     claim: "Carbon removal funded",
     proofStatus: "verified",
   },
 ];
 
-const LEADERBOARD: LeaderRow[] = [
-  {
-    rank: 1,
-    brand: "Lumen Goods",
-    category: "E-commerce",
-    verifiedThisMonth: 1250,
-    verifiedAllTime: 8420,
-    lastProof: "2025-12-08T09:11Z",
-    status: "verified",
-  },
-  {
-    rank: 2,
-    brand: "Cedar Kids",
-    category: "Education",
-    verifiedThisMonth: 980,
-    verifiedAllTime: 6110,
-    lastProof: "2025-12-09T16:40Z",
-    status: "verified",
-  },
-  {
-    rank: 3,
-    brand: "VantaWear",
-    category: "Fashion",
-    verifiedThisMonth: 620,
-    verifiedAllTime: 3190,
-    lastProof: "2025-12-05T14:22Z",
-    status: "verified",
-  },
-  {
-    rank: 4,
-    brand: "Pulse Bloom",
-    category: "Health",
-    verifiedThisMonth: 310,
-    verifiedAllTime: 1440,
-    lastProof: "2025-12-10T08:03Z",
-    status: "verified",
-  },
-  {
-    rank: 5,
-    brand: "Echo Cart",
-    category: "Marketplace",
-    verifiedThisMonth: 210,
-    verifiedAllTime: 980,
-    lastProof: "2025-12-07T11:02Z",
-    status: "verified",
-  },
-];
-
 const SIDE_ADS_LEFT: Ad[] = [
-  { title: "Replymer", desc: "Human replies that sell your product", tone: "blue" },
-  { title: "ace.me", desc: "Email + address + cloud storage", tone: "slate" },
-  { title: "Requesty", desc: "Centralize requests, route to the right team", tone: "violet" },
-  { title: "BlogSEO", desc: "Rank on Google & AI search, on autopilot", tone: "slate" },
-  { title: "HypeProxies", desc: "Proxy infra built for automating & scaling", tone: "green" },
+  { title: "Proof Vault", desc: "Store and timestamp your donation proofs", tone: "blue" },
+  { title: "Receipts Hub", desc: "Monthly donation statements, clean and public", tone: "slate" },
+  { title: "Impact Widget", desc: "Embed a badge that updates automatically", tone: "violet" },
+  { title: "Audit Ready", desc: "Make verification frictionless for customers", tone: "slate" },
+  { title: "Partner NGOs", desc: "Connect to verified orgs (soon)", tone: "green" },
 ];
 
 const SIDE_ADS_RIGHT: Ad[] = [
-  { title: "Newsletters.ai", desc: "Weekly AI catch-up for lazy readers", tone: "amber" },
-  { title: "ADMN", desc: "10x Linux Server Administration", tone: "indigo" },
-  { title: "WaitForIt", desc: "Build a waitlist for your idea in 3 minutes", tone: "slate" },
-  { title: "Postopus", desc: "Post everywhere, all at once", tone: "violet" },
-  { title: "Rewardful", desc: "Launch and scale your affiliate program", tone: "blue" },
+  { title: "Verified Spotlight", desc: "Top placement for verified brands", tone: "amber" },
+  { title: "Category Takeover", desc: "Own a category for a week", tone: "indigo" },
+  { title: "Homepage Banner", desc: "Get seen by shoppers who care", tone: "slate" },
+  { title: "Proof Story", desc: "Short narrative card beside your proof", tone: "violet" },
+  { title: "Trust Boost", desc: "Turn claims into conversion", tone: "blue" },
 ];
 
 // ────────────────────────────────────────────────────────────
@@ -269,17 +194,7 @@ function Pill({
   );
 }
 
-function AdCard({
-  title,
-  desc,
-  tone,
-  active,
-}: {
-  title: string;
-  desc: string;
-  tone: AdTone;
-  active: boolean;
-}) {
+function AdCard({ ad }: { ad: Ad }) {
   const toneClass: Record<AdTone, string> = {
     blue: "bg-sky-500/10 border-sky-500/20",
     slate: "bg-white/5 border-white/10",
@@ -290,88 +205,31 @@ function AdCard({
   };
 
   return (
-    <div
-      className={cx(
-        "rounded-2xl border p-5 transition-all duration-700 will-change-transform",
-        toneClass[tone],
-        active ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
-      )}
-    >
-      <div className="text-xs text-white/80 font-semibold">{title}</div>
-      <div className="mt-2 text-[11px] text-white/50 leading-relaxed">{desc}</div>
-      <div className="mt-4 h-px w-full bg-white/10" />
-      <div className="mt-3 text-[10px] text-white/40">Sponsored</div>
-    </div>
-  );
-}
-
-function RotatingAdRail({
-  ads,
-  intervalMs,
-  offset,
-}: {
-  ads: Ad[];
-  intervalMs: number;
-  offset?: number;
-}) {
-  const [idx, setIdx] = useState(0);
-
-  useEffect(() => {
-    if (!ads.length) return;
-
-    // optional offset so left/right don't change at the exact same time
-    let t0: number | undefined;
-    let int: ReturnType<typeof setInterval> | undefined;
-
-    const start = () => {
-      int = setInterval(() => {
-        setIdx((v) => nextIndex(v, ads.length));
-      }, intervalMs);
-    };
-
-    if (offset && offset > 0) {
-      t0 = window.setTimeout(() => start(), offset);
-    } else {
-      start();
-    }
-
-    return () => {
-      if (t0) window.clearTimeout(t0);
-      if (int) clearInterval(int);
-    };
-  }, [ads.length, intervalMs, offset]);
-
-  return (
-    <div className="flex flex-col gap-4">
-      {ads.map((a, i) => (
-        <AdCard
-          key={a.title}
-          title={a.title}
-          desc={a.desc}
-          tone={a.tone}
-          active={i === idx}
-        />
-      ))}
+    <div className={cx("rounded-2xl border p-5", toneClass[ad.tone])}>
+      <div className="text-xs text-white/85 font-semibold">{ad.title}</div>
+      <div className="mt-2 text-[11px] text-white/50 leading-relaxed">{ad.desc}</div>
+      <div className="mt-4 text-[10px] text-white/35">Sponsored</div>
     </div>
   );
 }
 
 function ImpactTile({ item }: { item: ImpactCard }) {
+  const verified = item.proofStatus === "verified";
   return (
-    <div className="w-[240px] shrink-0 rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition">
-
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-sm font-semibold text-white/90">{item.brand}</div>
           <div className="mt-1 text-[11px] text-white/50">{item.category}</div>
         </div>
+
         <span
           className={cx(
             "inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[10px] tracking-widest",
-            item.verified ? "border-white/15 text-white/70" : "border-red-500/30 text-red-200"
+            verified ? "border-white/15 text-white/70" : "border-red-500/30 text-red-200"
           )}
         >
-          {item.verified ? (
+          {verified ? (
             <>
               <BadgeCheck className="h-3.5 w-3.5" /> VERIFIED
             </>
@@ -389,18 +247,19 @@ function ImpactTile({ item }: { item: ImpactCard }) {
           <div className="mt-1 text-white">{money(item.verifiedThisMonth)}</div>
         </div>
         <div>
-          <div className="text-white/40">STATUS</div>
-          <div className="mt-1 text-white">{item.proofStatus}</div>
+          <div className="text-white/40">ALL TIME</div>
+          <div className="mt-1 text-white">{money(item.verifiedAllTime)}</div>
         </div>
         <div>
           <div className="text-white/40">LAST PROOF</div>
-          <div className="mt-1 text-white">{item.lastProof.replace("T", " ")}</div>
+          <div className="mt-1 text-white">{fmtStamp(item.lastProof)}</div>
         </div>
       </div>
 
       <div className="mt-4 text-[11px] text-white/55">Claim: {item.claim}</div>
 
       <div className="mt-4">
+        {/* Mets ton vrai lien plus tard: /brand/[slug] */}
         <a
           href="#"
           className="inline-flex items-center gap-2 text-xs text-white/70 hover:text-white transition"
@@ -417,6 +276,24 @@ function ImpactTile({ item }: { item: ImpactCard }) {
 // ────────────────────────────────────────────────────────────
 
 export default function GivnHome() {
+  // rotation pubs (wow simple)
+  const [adLeftIndex, setAdLeftIndex] = useState(0);
+  const [adRightIndex, setAdRightIndex] = useState(0);
+
+  useEffect(() => {
+    const i = window.setInterval(() => {
+      setAdLeftIndex((v) => (v + 1) % SIDE_ADS_LEFT.length);
+    }, 3200);
+    return () => window.clearInterval(i);
+  }, []);
+
+  useEffect(() => {
+    const i = window.setInterval(() => {
+      setAdRightIndex((v) => (v + 1) % SIDE_ADS_RIGHT.length);
+    }, 3600);
+    return () => window.clearInterval(i);
+  }, []);
+
   const categories = useMemo(() => {
     const cats = unique(IMPACT.map((x) => x.category));
     return ["All" as const, ...cats];
@@ -427,39 +304,54 @@ export default function GivnHome() {
 
   const filtered = useMemo(() => {
     return IMPACT.filter((x) => {
-      const okQ = matches(q, `${x.brand} ${x.category} ${x.claim}`);
+      const okQ = matches(q, `${x.brand} ${x.category} ${x.claim} ${x.proofStatus}`);
       const okC = cat === "All" ? true : x.category === cat;
       return okQ && okC;
     });
   }, [q, cat]);
 
+  const totalThisMonth = useMemo(() => {
+    return IMPACT.filter((x) => x.proofStatus === "verified").reduce((s, x) => s + x.verifiedThisMonth, 0);
+  }, []);
+
   return (
     <>
-      {/* Ensure the preview/container background never shows white gutters */}
+      {/* Anti scroll horizontal global */}
       <style jsx global>{`
-        html, body { background: #000; }
-        body { margin: 0; }
+        html,
+        body {
+          background: #000;
+          margin: 0;
+          overflow-x: hidden;
+        }
       `}</style>
 
-      <div className="min-h-screen w-full bg-black text-white overflow-x-hidden">
-
+      <div className="min-h-screen w-full bg-black text-white">
         {/* Top bar */}
         <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur">
-          <div className="max-w-[1200px] mx-auto px-5 h-14 flex items-center justify-between">
+          <div className="mx-auto w-full max-w-[1480px] px-6 h-14 flex items-center justify-between">
             <div className="inline-flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-white/70" />
               <span className="text-sm font-semibold text-white/85">Givn</span>
             </div>
 
-            <div className="hidden md:flex items-center gap-6 text-xs text-white/60">
-              <a className="hover:text-white transition" href="#database">Database</a>
-              <a className="hover:text-white transition" href="#leaderboard">Leaderboard</a>
-              <a className="hover:text-white transition" href="#categories">Categories</a>
-              <a className="hover:text-white transition" href="#ads">Ads</a>
-            </div>
+            <nav className="hidden md:flex items-center gap-6 text-xs text-white/60">
+              <a className="hover:text-white transition" href="#database">
+                Database
+              </a>
+              <a className="hover:text-white transition" href="#leaderboard">
+                Leaderboard
+              </a>
+              <a className="hover:text-white transition" href="#categories">
+                Categories
+              </a>
+              <a className="hover:text-white transition" href="#ads">
+                Ads
+              </a>
+            </nav>
 
             <a
-              href="#"
+              href="/(marketing)/request-access"
               className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white text-black px-3 py-2 text-xs font-semibold hover:opacity-90 transition"
             >
               Request access <ArrowRight className="h-4 w-4" />
@@ -467,35 +359,45 @@ export default function GivnHome() {
           </div>
         </header>
 
-        {/* Hero + rails layout */}
-        <main className="max-w-[1200px] mx-auto px-5 py-10">
-          <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)_240px] gap-6">
-
-            {/* Left rail (rotating fake ads) */}
-            <aside className="hidden lg:block">
-              <RotatingAdRail ads={SIDE_ADS_LEFT} intervalMs={3200} />
+        {/* Layout */}
+        <main className="mx-auto w-full max-w-[1480px] px-6 py-10">
+          {/* 2xl seulement = rails (sinon ça compresse) */}
+          <div className="grid grid-cols-1 2xl:grid-cols-[260px_minmax(0,1fr)_260px] gap-8">
+            {/* Left rail (2xl only) */}
+            <aside className="hidden 2xl:flex flex-col gap-4">
+              <div className="transition-opacity duration-500">
+                <AdCard ad={SIDE_ADS_LEFT[adLeftIndex]} />
+              </div>
+              {/* petit stack statique */}
+              {SIDE_ADS_LEFT.filter((_, i) => i !== adLeftIndex)
+                .slice(0, 3)
+                .map((ad) => (
+                  <AdCard key={ad.title} ad={ad} />
+                ))}
             </aside>
 
-            {/* Center */}
-            <section>
+            {/* Center (protégé, stable) */}
+            <section className="mx-auto w-full max-w-[1100px] 2xl:max-w-none">
+              {/* HERO */}
               <div className="text-center">
                 <div className="inline-flex items-center gap-2 text-white/70 text-sm">
                   <BadgeCheck className="h-4 w-4" />
                   <span className="font-semibold">Givn</span>
                 </div>
 
+                {/* Slogan demandé: proche du meilleur d’avant */}
                 <h1 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight">
                   They say they donate.
                   <br />
-                  <span className="text-white/60">Givn shows the proof.</span>
+                  <span className="text-white/55">Givn shows the proof.</span>
                 </h1>
 
                 <p className="mt-4 text-white/60 max-w-2xl mx-auto">
-                  Brands can claim anything. Givn shows what can be proven.
+                  Verified donation claims, visible to anyone. No vague promises. Just evidence.
                 </p>
 
                 {/* Search */}
-                <div className="mt-8 flex items-center justify-center gap-3">
+                <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <div className="flex items-center gap-2 w-full max-w-[520px] rounded-xl border border-white/10 bg-white/5 px-3 py-2">
                     <Search className="h-4 w-4 text-white/50" />
                     <input
@@ -508,20 +410,31 @@ export default function GivnHome() {
 
                   <button
                     type="button"
-                    className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white text-black px-4 py-2 text-sm font-semibold hover:opacity-90 transition"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white text-black px-4 py-2 text-sm font-semibold hover:opacity-90 transition"
                   >
                     <Plus className="h-4 w-4" /> Add brand
                   </button>
                 </div>
 
                 <div className="mt-4 text-xs text-white/40">
-                  All impact is verified through evidence uploads. Data updates when new proof is recorded.
+                  Verified this month across the database:{" "}
+                  <span className="text-white/70 font-semibold">{money(totalThisMonth)}</span>
                 </div>
               </div>
 
-              {/* Categories chips */}
+              {/* On screens < 2xl : pubs “spotlight” intégrées au flux (ne compressent jamais) */}
+              <div className="mt-10 2xl:hidden">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <AdCard ad={SIDE_ADS_LEFT[adLeftIndex]} />
+                  <AdCard ad={SIDE_ADS_RIGHT[adRightIndex]} />
+                </div>
+              </div>
+
+              {/* Categories */}
               <div id="categories" className="mt-12 border-t border-white/10 pt-10">
-                <div className="text-center text-sm font-semibold text-white/85">Browse by category</div>
+                <div className="text-center text-sm font-semibold text-white/85">
+                  Browse by category
+                </div>
                 <div className="mt-6 flex flex-wrap justify-center gap-2">
                   {categories.map((c) => (
                     <Pill key={c} active={c === cat} onClick={() => setCat(c)}>
@@ -531,7 +444,7 @@ export default function GivnHome() {
                 </div>
               </div>
 
-              {/* Recently listed */}
+              {/* DATABASE: grid (pas de scroll horizontal) */}
               <div id="database" className="mt-12">
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-semibold text-white/85">Recently verified</div>
@@ -540,9 +453,8 @@ export default function GivnHome() {
                   </a>
                 </div>
 
-                <div className="mt-4 -mx-5 px-5 flex gap-4 overflow-x-auto pb-2 max-w-full">
-
-                  {filtered.slice(0, 8).map((x) => (
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {filtered.slice(0, 6).map((x) => (
                     <ImpactTile key={x.id} item={x} />
                   ))}
                 </div>
@@ -551,26 +463,28 @@ export default function GivnHome() {
               {/* Featured */}
               <div className="mt-10">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm font-semibold text-white/85">Featured this week</div>
+                  <div className="text-sm font-semibold text-white/85">Featured</div>
                   <a href="#" className="text-xs text-white/50 hover:text-white transition">
                     View all <ArrowRight className="inline h-4 w-4" />
                   </a>
                 </div>
 
-                <div className="mt-4 -mx-5 px-5 flex gap-4 overflow-x-auto pb-2 max-w-full">
-
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {filtered
                     .slice()
                     .reverse()
-                    .slice(0, 8)
+                    .slice(0, 6)
                     .map((x) => (
                       <ImpactTile key={x.id} item={x} />
                     ))}
                 </div>
               </div>
 
-              {/* Leaderboard */}
-              <div id="leaderboard" className="mt-12 rounded-2xl border border-white/10 bg-white/5 p-6">
+              {/* Leaderboard (cohérent donations) */}
+              <div
+                id="leaderboard"
+                className="mt-12 rounded-2xl border border-white/10 bg-white/5 p-6"
+              >
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-semibold text-white/85">Impact leaderboard</div>
                   <div className="text-xs text-white/45">Ranked by verified donations</div>
@@ -590,56 +504,59 @@ export default function GivnHome() {
                       </tr>
                     </thead>
                     <tbody>
-                      {LEADERBOARD.map((r) => (
-                        <tr key={r.rank} className="border-t border-white/10">
-                          <td className="py-3 pr-3 text-white/70">
-                            {r.rank === 1 ? <Crown className="inline h-4 w-4 mr-2" /> : null}
-                            {r.rank}
-                          </td>
-                          <td className="py-3 text-white/85">{r.brand}</td>
-                          <td className="py-3 text-white/60">{r.category}</td>
-                          <td className="py-3 text-right text-white">{money(r.verifiedThisMonth)}</td>
-                          <td className="py-3 text-right text-white/85">{money(r.verifiedAllTime)}</td>
-                          <td className="py-3 text-right text-white/70">{r.lastProof.replace("T", " ")}</td>
-                          <td className="py-3 text-right">
-                            <span
-                              className={cx(
-                                "inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px]",
-                                r.status === "verified"
-                                  ? "border-white/15 text-white/70"
-                                  : "border-red-500/30 text-red-200"
-                              )}
-                            >
-                              {r.status === "verified" ? (
-                                <>
-                                  <BadgeCheck className="h-4 w-4" /> verified
-                                </>
-                              ) : (
-                                <>
-                                  <ShieldCheck className="h-4 w-4" /> missing
-                                </>
-                              )}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                      {IMPACT.slice()
+                        .filter((x) => x.proofStatus === "verified")
+                        .sort((a, b) => b.verifiedThisMonth - a.verifiedThisMonth)
+                        .slice(0, 7)
+                        .map((r, idx) => (
+                          <tr key={r.id} className="border-t border-white/10">
+                            <td className="py-3 pr-3 text-white/70">
+                              {idx === 0 ? <Crown className="inline h-4 w-4 mr-2" /> : null}
+                              {idx + 1}
+                            </td>
+                            <td className="py-3 text-white/85">{r.brand}</td>
+                            <td className="py-3 text-white/60">{r.category}</td>
+                            <td className="py-3 text-right text-white">{money(r.verifiedThisMonth)}</td>
+                            <td className="py-3 text-right text-white/85">{money(r.verifiedAllTime)}</td>
+                            <td className="py-3 text-right text-white/70">{fmtStamp(r.lastProof)}</td>
+                            <td className="py-3 text-right">
+                              <span className="inline-flex items-center gap-1 rounded-full border border-white/15 px-2 py-1 text-[11px] text-white/70">
+                                <BadgeCheck className="h-4 w-4" /> verified
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>
               </div>
 
-              {/* Footer links */}
-              <div className="mt-14 border-t border-white/10 pt-10 grid grid-cols-1 md:grid-cols-3 gap-10 text-xs text-white/50">
+              {/* Footer */}
+              <div
+                id="ads"
+                className="mt-14 border-t border-white/10 pt-10 grid grid-cols-1 md:grid-cols-3 gap-10 text-xs text-white/50"
+              >
                 <div>
                   <div className="text-white/70 font-semibold mb-3">Navigation</div>
                   <div className="space-y-2">
-                    <a className="block hover:text-white" href="#database">Search</a>
-                    <a className="block hover:text-white" href="#leaderboard">Stats</a>
-                    <a className="block hover:text-white" href="#categories">Categories</a>
-                    <a className="block hover:text-white" href="#ads">Advertise</a>
-                    <a className="block hover:text-white" href="#">Terms of service</a>
+                    <a className="block hover:text-white" href="#database">
+                      Search
+                    </a>
+                    <a className="block hover:text-white" href="#leaderboard">
+                      Leaderboard
+                    </a>
+                    <a className="block hover:text-white" href="#categories">
+                      Categories
+                    </a>
+                    <a className="block hover:text-white" href="#ads">
+                      Advertise
+                    </a>
+                    <a className="block hover:text-white" href="#">
+                      Terms
+                    </a>
                   </div>
                 </div>
+
                 <div>
                   <div className="text-white/70 font-semibold mb-3">Browse</div>
                   <div className="space-y-2">
@@ -658,7 +575,8 @@ export default function GivnHome() {
                       ))}
                   </div>
                 </div>
-                <div id="ads">
+
+                <div>
                   <div className="text-white/70 font-semibold mb-3">Placements</div>
                   <div className="space-y-2">
                     <div className="inline-flex items-center gap-2">
@@ -676,18 +594,26 @@ export default function GivnHome() {
 
               <div className="mt-10 text-xs text-white/35 flex items-center justify-between">
                 <div>© {new Date().getFullYear()} Givn</div>
-                <div className="text-white/45">Proof of Real Impact</div>
+                <div className="text-white/45">Proof is the product</div>
               </div>
             </section>
 
-            {/* Right rail (rotating fake ads) */}
-            <aside className="hidden lg:block">
-              <RotatingAdRail ads={SIDE_ADS_RIGHT} intervalMs={3600} offset={800} />
+            {/* Right rail (2xl only) */}
+            <aside className="hidden 2xl:flex flex-col gap-4">
+              <div className="transition-opacity duration-500">
+                <AdCard ad={SIDE_ADS_RIGHT[adRightIndex]} />
+              </div>
 
-              <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-5">
+              {SIDE_ADS_RIGHT.filter((_, i) => i !== adRightIndex)
+                .slice(0, 3)
+                .map((ad) => (
+                  <AdCard key={ad.title} ad={ad} />
+                ))}
+
+              <div className="mt-2 rounded-2xl border border-white/10 bg-white/5 p-5">
                 <div className="text-xs text-white/70 font-semibold">Advertise</div>
                 <div className="mt-2 text-[11px] text-white/45 leading-relaxed">
-                  Placements are vetted. Proof is the product.
+                  Placements are vetted. Proof wins.
                 </div>
                 <a
                   href="#"
