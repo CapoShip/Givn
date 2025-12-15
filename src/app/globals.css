@@ -41,97 +41,39 @@ body {
 .glow-dot-green { box-shadow: 0 0 12px 3px rgba(16, 185, 129, 0.4); }
 
 /* =========================================
-   ANIMATIONS STABILISÉES
+   ANIMATIONS CSS STABILISÉES
    ========================================= */
 
 /* --- ARBRE --- */
-.tree-path {
-  stroke-dasharray: 300;
-  stroke-dashoffset: 300;
-}
-.ad-grown .tree-path {
-  animation: draw-line 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+.tree-path { stroke-dasharray: 300; stroke-dashoffset: 300; }
+.ad-grown .tree-path { animation: draw-line 2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.leaf { transform: scale(0); transform-origin: center; }
+.ad-grown .leaf { animation: pop-scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 
-.leaf {
-  transform: scale(0);
-  transform-origin: center;
-}
-.ad-grown .leaf {
-  animation: pop-scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
+/* --- MAISON (Nouvelles couleurs) --- */
+.house-base { transform: scaleY(0); transform-origin: bottom; }
+.ad-grown .house-base { animation: grow-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.house-roof { transform: translateY(-20px) scale(0); transform-origin: center; opacity: 0; }
+.ad-grown .house-roof { animation: drop-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
+.house-fill { fill-opacity: 0; transition: fill-opacity 1s ease-in; }
+.ad-grown .house-fill { fill-opacity: 1; }
+.house-pop { transform: scale(0); transform-origin: center; }
+.ad-grown .house-pop { animation: pop-scale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 
-/* --- MAISON --- */
-.house-base {
-  transform: scaleY(0);
-  transform-origin: bottom;
-}
-.ad-grown .house-base {
-  animation: grow-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+/* --- NOUVEAU ROBINET (Laiton) --- */
+.pump-body { transform: translateY(20px); opacity: 0; }
+.ad-grown .pump-body { animation: slide-up-fade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-.house-roof {
-  transform: translateY(-20px) scale(0);
-  transform-origin: center;
-  opacity: 0;
-}
-.ad-grown .house-roof {
-  animation: drop-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
-}
+/* La poignée tourne */
+.pump-handle { }
+.ad-grown .pump-handle { animation: spin-handle 3s linear infinite 1s; }
 
-.house-fill {
-  fill-opacity: 0;
-  transition: fill-opacity 1s ease-in;
-}
-.ad-grown .house-fill {
-  fill-opacity: 1;
-}
+.water-drop { transform: translateY(0) scale(0); opacity: 0; }
+.ad-grown .water-drop { animation: drop-fall 2.5s infinite ease-in 1s; }
 
-.house-pop {
-  transform: scale(0);
-  transform-origin: center;
-}
-.ad-grown .house-pop {
-  animation: pop-scale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-/* --- POMPE À EAU --- */
-.pump-body {
-  transform: translateY(20px);
-  opacity: 0;
-}
-.ad-grown .pump-body {
-  animation: slide-up-fade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.pump-handle {
-  transform-origin: 85px 40px;
-  transform: rotate(0deg);
-}
-.ad-grown .pump-handle {
-  animation: pump-action 2.5s infinite ease-in-out 1s;
-}
-
-.water-drop {
-  transform: translateY(0) scale(0);
-  opacity: 0;
-}
-.ad-grown .water-drop {
-  animation: drop-fall 2.5s infinite ease-in 1s;
-}
-
-.ripple-1, .ripple-2 {
-  opacity: 0;
-  transform: scale(0.5);
-  transform-origin: 20px 130px; /* Centre de l'onde */
-  stroke-width: 2;
-}
-.ad-grown .ripple-1 {
-  animation: ripple-spread 2.5s infinite ease-out 1.6s;
-}
-.ad-grown .ripple-2 {
-  animation: ripple-spread 2.5s infinite ease-out 1.8s;
-}
+.ripple-1, .ripple-2 { opacity: 0; transform: scale(0.5); transform-origin: 25px 130px; /* Nouveau centre sous le bec */ stroke-width: 2; }
+.ad-grown .ripple-1 { animation: ripple-spread 2.5s infinite ease-out 1.6s; }
+.ad-grown .ripple-2 { animation: ripple-spread 2.5s infinite ease-out 1.8s; }
 
 /* --- KEYFRAMES --- */
 @keyframes draw-line { to { stroke-dashoffset: 0; } }
@@ -140,50 +82,30 @@ body {
 @keyframes drop-in { to { transform: translateY(0) scale(1); opacity: 1; } }
 @keyframes slide-up-fade { to { transform: translateY(0); opacity: 1; } }
 
-@keyframes pump-action {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(-15deg); } /* Levier bouge */
+@keyframes spin-handle {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @keyframes drop-fall {
   0% { transform: translateY(0) scale(0); opacity: 0; }
   20% { transform: translateY(5px) scale(1); opacity: 1; }
-  70% { transform: translateY(55px) scale(1); opacity: 1; } /* Tombe */
-  80% { transform: translateY(58px) scale(1.5, 0.5); opacity: 1; } /* S'écrase */
-  100% { transform: translateY(60px) scale(2, 0); opacity: 0; }
+  70% { transform: translateY(60px) scale(1); opacity: 1; }
+  80% { transform: translateY(63px) scale(1.5, 0.5); opacity: 1; }
+  100% { transform: translateY(65px) scale(2, 0); opacity: 0; }
 }
 
 @keyframes ripple-spread {
   0% { opacity: 0; transform: scale(0.2); stroke-width: 3; }
-  10% { opacity: 1; }
+  10% { opacity: 1; transform: scale(0.5); }
   100% { opacity: 0; transform: scale(2.5); stroke-width: 0; }
 }
 
 /* --- UI --- */
-@keyframes seed-fall {
-  0% { transform: translateY(-140px) scale(0); opacity: 0; }
-  20% { opacity: 1; transform: translateY(-120px) scale(1); }
-  80% { transform: translateY(0px) scale(1); opacity: 1; }
-  90% { transform: translateY(2px) scale(1.2, 0.8); opacity: 1; }
-  100% { transform: translateY(5px) scale(0); opacity: 0; }
-}
-
-@keyframes ad-grow {
-  0% { transform: scale(0) translateX(-20px) rotate(-10deg); opacity: 0; }
-  60% { transform: scale(1.05) translateX(0) rotate(2deg); opacity: 1; }
-  100% { transform: scale(1) translateX(0) rotate(0); opacity: 1; }
-}
-
-@keyframes wither {
-  0% { opacity: 1; transform: scale(1); filter: blur(0); }
-  100% { opacity: 0; transform: scale(0.9) translateY(10px); filter: blur(4px); }
-}
-
-@keyframes pop-in {
-  0% { opacity: 0; transform: scale(0.95); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
+@keyframes seed-fall { 0% { transform: translateY(-140px) scale(0); opacity: 0; } 20% { opacity: 1; transform: translateY(-120px) scale(1); } 80% { transform: translateY(0px) scale(1); opacity: 1; } 90% { transform: translateY(2px) scale(1.2, 0.8); opacity: 1; } 100% { transform: translateY(5px) scale(0); opacity: 0; } }
+@keyframes ad-grow { 0% { transform: scale(0) translateX(-20px) rotate(-10deg); opacity: 0; } 60% { transform: scale(1.05) translateX(0) rotate(2deg); opacity: 1; } 100% { transform: scale(1) translateX(0) rotate(0); opacity: 1; } }
+@keyframes wither { 0% { opacity: 1; transform: scale(1); filter: blur(0); } 100% { opacity: 0; transform: scale(0.9) translateY(10px); filter: blur(4px); } }
+@keyframes pop-in { 0% { opacity: 0; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes scaleUp { from { transform: scale(0.95) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
 
