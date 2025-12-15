@@ -1,49 +1,88 @@
-'use server'
+"use server";
 
-import { z } from "zod";
+// Assurez-vous que le nom du fichier est correct : db (pour db.ts) ou db.js (si renommé)
+import { db } from "@/lib/db.js"; 
+import { revalidatePath } from "next/cache";
 
-// On réutilise le schéma pour une double sécurité (Frontend + Backend)
-const schema = z.object({
-  name: z.string().min(2, "Nom trop court"),
-  website: z.string().url("URL invalide"),
-  sector: z.enum(['Tech', 'Fashion', 'Finance', 'Food', 'Energy', 'Other']),
-  contact: z.string().email("Email invalide"),
-});
+// Type pour la réponse du formulaire
+type ActionState = {
+    success: boolean;
+    message: string;
+};
 
-export type FormState = {
-  message: string;
-  errors?: Record<string, string[]>;
-  success?: boolean;
+// 1. Récupérer toutes les marques depuis la DB
+export async function getBrands() {
+  try {
+    const brands = await db.brand.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+    return brands;
+  } catch (error) {
+    console.error("Erreur database lors de la lecture:", error);
+    // Retourne un tableau vide en cas d'erreur pour ne pas bloquer l'interface
+    return []; 
+  }
 }
 
-export async function submitBrandAction(prevState: any, formData: FormData): Promise<FormState> {
-  // 1. Extraction des données brutes
-  const rawData = {
-    name: formData.get('name'),
-    website: formData.get('website'),
-    sector: formData.get('sector'),
-    contact: formData.get('contact'),
-  };
+// 2. Ajouter une nouvelle marque (connecté au formulaire)
+export async function addBrand(prevState: ActionState, formData: FormData): Promise<ActionState> {
+  const name = formData.get("name") as string;
+  const website = formData.get("website") as string;
+  const email = formData.get("email") as string;
 
-  // 2. Validation Zod côté serveur
-  const result = schema.safeParse(rawData);
-
-  if (!result.success) {
-    return {
-      message: "Erreur de validation",
-      errors: result.error.flatten().fieldErrors,
-      success: false
-    };
+  if (!name || !website || !email) {
+    return { success: false, message: "Veuillez remplir tous les champs" };
   }
 
-  // 3. Simulation Backend (Ici, vous connecterez plus tard Supabase ou Prisma)
-  // Ex: await db.insert(brands).values(result.data)
-  console.log("--- NOUVELLE SOUMISSION REÇUE ---");
-  console.log(result.data);
-  console.log("---------------------------------");
+  try {
+    // Création dans Supabase via Prisma
+    await db.brand.create({
+      data: {
+        name,
+        website,
+        email,
+        status: "PENDING", // Statut par défaut à la création
+      },
+    });
 
-  // Simulation d'attente réseau
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Rafraîchir la page admin pour que la nouvelle marque apparaisse
+    revalidatePath("/admin");
+    return { success: true, message: "Marque ajoutée avec succès !" };
+    
+  } catch (error) {
+    console.error("Erreur création dans la DB:", error);
+    return { success: false, message: "Erreur lors de l'ajout (Base de données)" };
+  }
+}
 
-  return { message: "Demande enregistrée avec succès !", success: true };
+// 3. Supprimer une marque (pour le tableau de bord Admin)
+export async function deleteBrand(id: string) {
+  try {
+    await db.brand.delete({
+      where: { id }
+    });
+    // Rafraîchir la page admin après la suppression
+    revalidatePath("/admin");
+    return { success: true, message: `Marque ${id} supprimée.` };
+  } catch (error) {
+    console.error("Erreur suppression dans la DB:", error);
+    return { success: false, message: "Échec de la suppression." };
+  }
+}
+
+// 4. Mettre à jour le statut d'une marque (pour le tableau de bord Admin)
+export async function updateBrandStatus(id: string, status: 'PENDING' | 'APPROVED' | 'REJECTED') {
+  try {
+    await db.brand.update({
+      where: { id },
+      data: { status }
+    });
+    
+    revalidatePath("/admin");
+    return { success: true, message: `Statut de la marque ${id} mis à jour.` };
+
+  } catch (error) {
+    console.error("Erreur mise à jour du statut dans la DB:", error);
+    return { success: false, message: "Échec de la mise à jour du statut." };
+  }
 }
