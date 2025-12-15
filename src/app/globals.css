@@ -189,3 +189,42 @@ body {
 .group:hover .animate-scan { animation: scan-line 1.5s ease-in-out infinite; }
 @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 .animate-enter { opacity: 0; animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* --- Pump & Water Animations --- */
+@keyframes pump-handle {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(15deg); }
+}
+
+.animate-pump-handle {
+    animation: pump-handle 2s ease-in-out infinite;
+}
+
+@keyframes water-flow {
+    0% { stroke-dashoffset: 10; }
+    100% { stroke-dashoffset: 0; }
+}
+
+.animate-water-flow {
+    animation: water-flow 0.5s linear infinite;
+}
+
+@keyframes drop-fall {
+    0% { transform: translateY(0); opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateY(55px); opacity: 0; }
+}
+
+.animate-drop-fall {
+    animation: drop-fall 1.5s infinite ease-in;
+}
+
+@keyframes ripple-expand {
+    0% { transform: scale(0.5); opacity: 0.8; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+.animate-ripple {
+    animation: ripple-expand 1.5s infinite ease-out;
+    transform-origin: center;
+}

@@ -10,10 +10,10 @@ export interface Ad {
 }
 
 // ==========================================
-// 1. COMPOSANTS GRAPHIQUES (CORRIGÉS & SOLIDIFIÉS)
+// 1. COMPOSANTS GRAPHIQUES (AMÉLIORÉS & CORRIGÉS)
 // ==========================================
 
-/* --- ARBRE --- */
+/* --- ARBRE (Inchangé) --- */
 const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-500 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <path d="M50 140 C50 110 45 90 50 60 C52 45 48 30 50 10" stroke="#10b981" strokeWidth="4" fill="none" strokeLinecap="round" className="tree-path" />
@@ -31,7 +31,7 @@ const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 TreeGraphic.displayName = 'TreeGraphic';
 
-/* --- MAISON --- */
+/* --- MAISON (Inchangé) --- */
 const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <g className="house-base">
@@ -48,25 +48,47 @@ const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 HouseGraphic.displayName = 'HouseGraphic';
 
-/* --- ROBINET --- */
+/* --- ROBINET (AMÉLIORÉ : Animation de l'eau qui coule, levier qui bouge, éclaboussures) --- */
 const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+        <defs>
+            <linearGradient id="waterStreamGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.2" />
+            </linearGradient>
+        </defs>
+
+        {/* Corps de la pompe */}
         <g className="pump-body">
-            <rect x="45" y="50" width="10" height="90" fill="#94a3b8" rx="1" />
-            <path d="M45 60 H 30 Q 25 60 25 70" stroke="#94a3b8" strokeWidth="8" fill="none" strokeLinecap="round" />
-            <path d="M45 50 L 60 40" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" className="pump-handle" />
-            <circle cx="60" cy="40" r="3" fill="#b91c1c" className="pump-handle" />
+            <rect x="42" y="50" width="16" height="90" fill="#64748b" rx="2" />
+            <path d="M42 65 H 25 Q 15 65 15 80" stroke="#64748b" strokeWidth="10" fill="none" strokeLinecap="round" />
+            {/* Levier animé */}
+            <g className="origin-[42px_50px] animate-pump-handle">
+                <path d="M42 50 L 65 35" stroke="#ef4444" strokeWidth="5" strokeLinecap="round" />
+                <circle cx="65" cy="35" r="4" fill="#b91c1c" />
+            </g>
         </g>
-        <circle cx="25" cy="75" r="4" fill="#3b82f6" className="water-drop" />
-        <g className="water-ripples">
-            <ellipse cx="25" cy="135" rx="12" ry="3" stroke="#3b82f6" strokeWidth="1" fill="none" className="ripple-1" />
-            <ellipse cx="25" cy="135" rx="20" ry="5" stroke="#3b82f6" strokeWidth="1" fill="none" className="ripple-2" />
+
+        {/* Flux d'eau animé */}
+        <g className={grown ? 'opacity-100' : 'opacity-0 transition-opacity delay-500'}>
+            <path d="M15 80 L 15 135" stroke="url(#waterStreamGrad)" strokeWidth="6" fill="none" className="animate-water-flow" strokeDasharray="5,5" />
+            
+            {/* Gouttes qui tombent */}
+            <circle cx="15" cy="80" r="3" fill="#3b82f6" className="animate-drop-fall" style={{ animationDelay: '0s' }} />
+            <circle cx="15" cy="80" r="3" fill="#3b82f6" className="animate-drop-fall" style={{ animationDelay: '0.5s' }} />
+            <circle cx="15" cy="80" r="3" fill="#3b82f6" className="animate-drop-fall" style={{ animationDelay: '1.0s' }} />
+
+            {/* Éclaboussures au sol */}
+            <g className="water-ripples" transform="translate(15, 135)">
+                <ellipse cx="0" cy="0" rx="10" ry="3" stroke="#3b82f6" strokeWidth="1.5" fill="none" className="animate-ripple" style={{ animationDelay: '0s' }}/>
+                <ellipse cx="0" cy="0" rx="15" ry="4" stroke="#3b82f6" strokeWidth="1" fill="none" className="animate-ripple" style={{ animationDelay: '0.4s' }}/>
+            </g>
         </g>
     </svg>
 ));
 PumpGraphic.displayName = 'PumpGraphic';
 
-/* --- ÉCOLE --- */
+/* --- ÉCOLE (Inchangé) --- */
 const SchoolGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <g className="house-base">
@@ -89,25 +111,47 @@ const SchoolGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 SchoolGraphic.displayName = 'SchoolGraphic';
 
-/* --- OCÉAN (FIXÉ : Plus de gradients, couleurs solides) --- */
+/* --- OCÉAN (CORRIGÉ : Ajout d'un fond dégradé pour la visibilité, couleurs vives) --- */
 const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
-        {/* Algues solides Teal/Cyan */}
-        <g className="kelp-sway">
-             <path d="M30 140 Q 20 110 35 70" stroke="#0d9488" strokeWidth="5" fill="none" strokeLinecap="round" />
-             <path d="M70 140 Q 80 120 65 80" stroke="#2dd4bf" strokeWidth="5" fill="none" strokeLinecap="round" style={{ animationDelay: '0.3s' }} />
-             <path d="M50 140 Q 40 100 55 50" stroke="#5eead4" strokeWidth="4" fill="none" strokeLinecap="round" style={{ animationDelay: '0.6s' }} />
+        <defs>
+            {/* Dégradé de fond marin profond */}
+            <linearGradient id="oceanBg" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stopColor="#0c4a6e" /> {/* Bleu foncé bas */}
+                <stop offset="100%" stopColor="#075985" /> {/* Bleu moyen haut */}
+            </linearGradient>
+            {/* Effet de lueur pour les éléments */}
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+
+        {/* Fond marin */}
+        <rect x="0" y="0" width="100" height="140" fill="url(#oceanBg)" opacity="0.8" rx="12" />
+        
+        {/* Algues lumineuses (Cyan vif avec lueur) */}
+        <g className="kelp-sway" filter="url(#glow)">
+             <path d="M30 140 Q 20 110 35 70" stroke="#67e8f9" strokeWidth="4" fill="none" strokeLinecap="round" />
+             <path d="M70 140 Q 80 120 65 80" stroke="#22d3ee" strokeWidth="4" fill="none" strokeLinecap="round" style={{ animationDelay: '0.3s' }} />
+             <path d="M50 140 Q 40 100 55 50" stroke="#a5f3fc" strokeWidth="3" fill="none" strokeLinecap="round" style={{ animationDelay: '0.6s' }} />
         </g>
         
-        {/* Bulles solides Blanches/Cyan */}
-        <circle cx="40" cy="90" r="4" fill="#ccfbf1" className="ocean-bubble-rise" style={{ animationDelay: '0.5s' }} />
-        <circle cx="65" cy="70" r="3" fill="#99f6e4" className="ocean-bubble-rise" style={{ animationDelay: '1.2s' }} />
-        <circle cx="55" cy="30" r="5" fill="#fff" className="ocean-bubble-rise" style={{ animationDelay: '2s', opacity: 0.9 }} />
+        {/* Bulles blanches/cyan très visibles */}
+        <g filter="url(#glow)">
+            <circle cx="40" cy="90" r="4" fill="#fff" className="ocean-bubble-rise" style={{ animationDelay: '0.5s' }} />
+            <circle cx="65" cy="70" r="3" fill="#cffafe" className="ocean-bubble-rise" style={{ animationDelay: '1.2s' }} />
+            <circle cx="55" cy="30" r="5" fill="#fff" className="ocean-bubble-rise" style={{ animationDelay: '2s', opacity: 0.9 }} />
+             <circle cx="20" cy="120" r="2" fill="#cffafe" className="ocean-bubble-rise" style={{ animationDelay: '0.2s', animationDuration: '3s' }} />
+        </g>
     </svg>
 ));
 OceanGraphic.displayName = 'OceanGraphic';
 
-/* --- SANTÉ --- */
+/* --- SANTÉ (Inchangé) --- */
 const HealthGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <rect x="5" y="40" width="90" height="60" rx="4" fill="#1e293b" stroke="#334155" strokeWidth="2" className="house-base" />
@@ -118,7 +162,7 @@ const HealthGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 HealthGraphic.displayName = 'HealthGraphic';
 
-/* --- NOURRITURE (FIXÉ : Plus de gradients, Or solide) --- */
+/* --- NOURRITURE (Inchangé) --- */
 const FoodGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         {/* Tiges solides */}
@@ -151,7 +195,7 @@ const FoodGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 FoodGraphic.displayName = 'FoodGraphic';
 
-/* --- ÉNERGIE --- */
+/* --- ÉNERGIE (Inchangé) --- */
 const EnergyGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <rect x="48" y="45" width="4" height="95" fill="#94a3b8" className="house-base" />
@@ -168,7 +212,7 @@ EnergyGraphic.displayName = 'EnergyGraphic';
 
 
 // ==========================================
-// 2. COMPOSANT PRINCIPAL
+// 2. COMPOSANT PRINCIPAL (Inchangé)
 // ==========================================
 
 export default function LivingAdSlot({ 
