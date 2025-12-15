@@ -97,14 +97,15 @@ body {
     transform-origin: center;
 }
 
-/* --- 4. ÉNERGIE (Turbine fluide) --- */
-.turbine-spin-fast {
-  animation: spin 2s linear infinite;
+/* --- 4. ÉNERGIE (Nouvelle Turbine Réaliste Lente) --- */
+.turbine-spin-slow {
+  /* Rotation plus lente (6s) avec ease-in-out pour un effet de masse réaliste */
+  animation: spin 6s ease-in-out infinite; 
   transform-box: fill-box;
   transform-origin: center;
 }
 
-/* --- 5. SANTÉ (Holographique) --- */
+/* --- 5. SANTÉ (Holographique Rouge) --- */
 .ecg-line {
   stroke-dasharray: 300;
   stroke-dashoffset: 300;
@@ -125,7 +126,7 @@ body {
     animation: fade-in-up-small 0.5s ease-out 1.2s forwards, wheat-wave 3s infinite ease-in-out 1.7s; 
 }
 
-/* --- 7. OCÉAN (Deep Sea WOW) --- */
+/* --- 7. OCÉAN (Abyssal Cohérent) --- */
 @keyframes kelp-sway-continuous {
     0%, 100% { transform: skewX(-2deg) scaleY(1); }
     50% { transform: skewX(4deg) scaleY(1.02); }
@@ -141,40 +142,41 @@ body {
     100% { transform: translateY(-20px) scale(1); opacity: 0; }
 }
 .jellyfish-swim {
-    animation: jellyfish-swim 8s infinite linear;
+    /* Plus lent pour être cohérent avec une méduse abyssale */
+    animation: jellyfish-swim 10s infinite linear;
 }
 
 @keyframes biolum-pulse {
-    0%, 100% { opacity: 0.6; filter: brightness(1); }
-    50% { opacity: 1; filter: brightness(1.3); }
+    0%, 100% { opacity: 0.5; filter: brightness(1); }
+    50% { opacity: 1; filter: brightness(1.5); }
 }
 .biolum-pulse {
-    animation: biolum-pulse 3s infinite ease-in-out;
+    animation: biolum-pulse 4s infinite ease-in-out;
 }
 
 @keyframes tentacle-wiggle {
     0%, 100% { transform: skewX(0deg); }
-    50% { transform: skewX(10deg); }
+    50% { transform: skewX(8deg); }
 }
 .tentacle-wiggle {
     transform-origin: top center;
-    animation: tentacle-wiggle 2s infinite ease-in-out alternate;
+    animation: tentacle-wiggle 3s infinite ease-in-out alternate;
 }
 
 @keyframes light-ray-shimmer {
     0%, 100% { opacity: 0.05; }
-    50% { opacity: 0.2; }
+    50% { opacity: 0.15; }
 }
 .ocean-light-rays path {
-    animation: light-ray-shimmer 6s infinite ease-in-out alternate;
+    animation: light-ray-shimmer 8s infinite ease-in-out alternate;
 }
 
 @keyframes ocean-particle-drift {
     0%, 100% { transform: translate(0,0); }
-    50% { transform: translate(5px, -10px); }
+    50% { transform: translate(3px, -5px); }
 }
 .ocean-particles circle {
-    animation: ocean-particle-drift 10s infinite ease-in-out alternate;
+    animation: ocean-particle-drift 12s infinite ease-in-out alternate;
 }
 
 
