@@ -144,13 +144,13 @@ export default function Home() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full z-10">
                     
-                    {/* Left Ads (Desktop Only) - UTILISATION DU POOL DIVERSIFIÉ */}
+                    {/* Left Ads (Desktop Only) - AVEC STARTINDEX */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={12000} />
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={2500} cycleDuration={16000} />
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={4000} cycleDuration={14000} />
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1500} cycleDuration={13000} />
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={3200} cycleDuration={15000} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={12000} startIndex={0} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={2500} cycleDuration={16000} startIndex={1} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={4000} cycleDuration={14000} startIndex={2} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1500} cycleDuration={13000} startIndex={3} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={3200} cycleDuration={15000} startIndex={4} />
                     </div>
 
                     {/* Center Content */}
@@ -199,7 +199,7 @@ export default function Home() {
 
                         {/* MOBILE AD 1 */}
                         <div className="w-full lg:hidden mb-16 px-4">
-                             <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={14000} />
+                             <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={14000} startIndex={0} />
                         </div>
 
                         {/* CATEGORIES */}
@@ -224,7 +224,7 @@ export default function Home() {
 
                         {/* MOBILE AD 2 */}
                         <div className="w-full lg:hidden mb-16 px-4">
-                             <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={16000} />
+                             <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={16000} startIndex={1} />
                         </div>
 
                         {/* RECENTLY LISTED */}
@@ -303,12 +303,12 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Right Ads (Desktop Only) - UTILISATION DU POOL DIVERSIFIÉ */}
+                    {/* Right Ads (Desktop Only) - AVEC STARTINDEX */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={14000} />
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={3500} cycleDuration={17000} />
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={12000} />
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2800} cycleDuration={18000} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={14000} startIndex={0} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={3500} cycleDuration={17000} startIndex={1} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={12000} startIndex={2} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2800} cycleDuration={18000} startIndex={3} />
                         
                         <div className="glass-panel rounded-xl p-6 mt-4 border border-zinc-800 animate-[pop-in_2s_ease-out] hover:border-emerald-500/30 transition-colors group">
                             <h4 className="text-sm font-bold mb-1 text-white group-hover:text-emerald-400 transition-colors">Advertise</h4>
@@ -337,7 +337,7 @@ export default function Home() {
 
             {/* MODALS */}
             <BrandDetailModal brand={selectedBrand} onClose={() => setSelectedBrand(null)} />
-            {/* ... Autres modales (identiques à avant) ... */}
+            
              <Modal isOpen={isBrandModalOpen} onClose={() => setIsBrandModalOpen(false)}>
                 <div className="flex flex-col items-center">
                     <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 relative">
