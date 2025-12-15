@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from 'react';
-import { Search, Plus, ArrowRight, X } from "lucide-react";
+import { Search, Plus, ArrowRight, X, Scan, Globe, Building2 } from "lucide-react";
 
 import BrandCard from '@/components/givn/BrandCard';
 import LivingAdSlot from '@/components/givn/LivingAdSlot';
@@ -40,7 +40,7 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean, onClose: () => 
             <div className="absolute inset-0 bg-black/90 backdrop-blur-md transition-opacity modal-overlay" onClick={onClose}></div>
             <div className="relative w-full max-w-2xl bg-[#090909] border border-white/10 rounded-2xl shadow-2xl overflow-hidden modal-content">
                 <div className="p-8 md:p-12">
-                    <button onClick={onClose} className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors bg-white/5 p-2 rounded-full hover:bg-white/10">
+                    <button onClick={onClose} className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors bg-white/5 p-2 rounded-full hover:bg-white/10 z-50">
                         <X size={20} />
                     </button>
                     {children}
@@ -154,22 +154,17 @@ export default function Home() {
                                     />
                                 </div>
                                 
-                                {/* --- NOUVEAU BOUTON "WOW" --- */}
+                                {/* --- BOUTON "WOW" --- */}
                                 <button 
                                     onClick={() => setIsBrandModalOpen(true)} 
                                     className="relative group overflow-hidden rounded-xl p-[2px] transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_40px_rgba(16,185,129,0.5)]"
                                 >
-                                    {/* Bordure animée (Conic Gradient qui tourne) */}
                                     <div className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#000000_0%,#10b981_50%,#000000_100%)]" />
-                                    
-                                    {/* Contenu du bouton */}
                                     <div className="relative h-full bg-black rounded-[10px] px-8 flex items-center justify-center gap-2 transition-all group-hover:bg-zinc-900">
                                         <Plus size={20} className="text-emerald-400 group-hover:rotate-180 transition-transform duration-500" />
                                         <span className="font-bold text-white tracking-wide group-hover:text-emerald-400 transition-colors uppercase text-xs">Add Brand</span>
                                     </div>
                                 </button>
-                                {/* --------------------------- */}
-
                             </div>
                         </div>
 
@@ -334,11 +329,50 @@ export default function Home() {
                 </div>
             </Modal>
 
+            {/* --- NOUVELLE MODALE "WOW" --- */}
              <Modal isOpen={isBrandModalOpen} onClose={() => setIsBrandModalOpen(false)}>
-                <div className="text-center py-8">
-                    <h2 className="text-2xl font-bold mb-2">Suggest Brand</h2>
-                    <input type="text" placeholder="Brand Name" className="w-full bg-zinc-900 border border-white/20 p-3 rounded-lg text-white mb-2 mt-4" />
-                    <button onClick={() => {setIsBrandModalOpen(false); alert('Thanks!');}} className="bg-white text-black px-6 py-3 rounded-lg font-bold mt-4 hover:bg-emerald-400 transition-colors">Submit</button>
+                <div className="flex flex-col items-center">
+                    {/* Header avec animation radar */}
+                    <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 relative">
+                        <div className="absolute inset-0 border border-emerald-500/30 rounded-full animate-ping opacity-20"></div>
+                        <Scan size={32} className="text-emerald-400 relative z-10" />
+                    </div>
+                    
+                    <h2 className="text-2xl font-bold mb-1 tracking-tight text-white">INITIATE VERIFICATION</h2>
+                    <p className="text-xs text-zinc-500 mb-8 uppercase tracking-widest">Submit candidate for blockchain audit</p>
+                    
+                    <div className="w-full space-y-4">
+                        <div className="space-y-1">
+                            <label className="text-[10px] uppercase text-zinc-500 font-bold ml-1">Brand Name</label>
+                            <div className="relative group">
+                                <Building2 size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-emerald-400 transition-colors" />
+                                <input type="text" placeholder="Ex: Patagonia" className="w-full bg-white/5 border border-white/10 p-4 pl-12 rounded-xl text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black transition-all placeholder:text-zinc-700" />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1">
+                            <label className="text-[10px] uppercase text-zinc-500 font-bold ml-1">Official Website</label>
+                            <div className="relative group">
+                                <Globe size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-emerald-400 transition-colors" />
+                                <input type="text" placeholder="Ex: https://patagonia.com" className="w-full bg-white/5 border border-white/10 p-4 pl-12 rounded-xl text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black transition-all placeholder:text-zinc-700" />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1 pt-2">
+                            <label className="text-[10px] uppercase text-zinc-500 font-bold ml-1">Sector</label>
+                            <div className="flex gap-2 flex-wrap">
+                                {['Tech', 'Fashion', 'Finance', 'Food', 'Energy'].map((sector) => (
+                                    <button key={sector} className="text-xs border border-white/10 bg-white/5 px-3 py-2 rounded-lg text-zinc-400 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/30 transition-all">
+                                        {sector}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onClick={() => {setIsBrandModalOpen(false); alert('Audit Initiated.');}} className="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 text-white p-4 rounded-xl font-bold mt-8 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all uppercase text-xs tracking-widest">
+                        Submit for Audit
+                    </button>
                 </div>
             </Modal>
 
