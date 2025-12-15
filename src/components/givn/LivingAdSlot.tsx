@@ -10,17 +10,14 @@ export interface Ad {
 }
 
 // ==========================================
-// COMPOSANTS GRAPHIQUES (GOUTTES RÉALISTES 3D)
+// COMPOSANTS GRAPHIQUES (FINAUX)
 // ==========================================
 
-/* --- ARBRE SIMPLE & CLAIR --- */
+/* --- ARBRE SIMPLE (Conforme) --- */
 const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 160" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-1000 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
-        {/* Tronc */}
         <path d="M48 160 L48 100 Q48 90 45 80" stroke="#8B4513" strokeWidth="4" fill="none" strokeLinecap="round" className="tree-trunk-simple" />
         <path d="M48 160 L48 100" stroke="#8B4513" strokeWidth="4" className="tree-trunk-simple" />
-        
-        {/* Branches & Feuilles */}
         <g className="swaying-branch" style={{ transformOrigin: '48px 100px' }}>
             {/* Gauche */}
             <path d="M48 110 Q 30 100 20 90" stroke="#8B4513" strokeWidth="2" fill="none" className="branch-grow" />
@@ -40,7 +37,7 @@ const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 TreeGraphic.displayName = 'TreeGraphic';
 
-/* --- ROBINET (EAU CORRECTE) --- */
+/* --- ROBINET (FLUIDITÉ PARFAITE) --- */
 const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 160" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
@@ -49,10 +46,8 @@ const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
                 <stop offset="50%" stopColor="#e2e8f0" />
                 <stop offset="100%" stopColor="#64748b" />
             </linearGradient>
-            
-            {/* Dégradé Radial pour les gouttes (Effet 3D) */}
             <radialGradient id="waterDropGrad" cx="30%" cy="30%" r="70%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" /> {/* Reflet */}
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
                 <stop offset="20%" stopColor="#60a5fa" />
                 <stop offset="100%" stopColor="#2563eb" />
             </radialGradient>
@@ -69,15 +64,16 @@ const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
 
         {/* EAU */}
         <g className={grown ? 'opacity-100 transition-opacity delay-200' : 'opacity-0'}>
-            {/* Gouttes alignées verticalement sous le bec (x=15) */}
+            {/* Délais ajustés pour un rythme continu sur 0.9s d'animation : 0, 0.3, 0.6 */}
             <circle cx="15" cy="65" r="3.5" fill="url(#waterDropGrad)" className="water-drop" style={{animationDelay: '0s'}} />
             <circle cx="15" cy="65" r="3.5" fill="url(#waterDropGrad)" className="water-drop" style={{animationDelay: '0.3s'}} />
             <circle cx="15" cy="65" r="3.5" fill="url(#waterDropGrad)" className="water-drop" style={{animationDelay: '0.6s'}} />
             
             <ellipse cx="15" cy="160" rx="12" ry="3" fill="#3b82f6" opacity="0.5" />
             
-            <circle cx="10" cy="160" r="1.5" fill="url(#waterDropGrad)" className="splash-particle" style={{animationDelay: '0.85s'}} />
-            <circle cx="20" cy="160" r="1" fill="url(#waterDropGrad)" className="splash-particle" style={{animationDelay: '1.15s'}} />
+            {/* Éclaboussures qui apparaissent quand une goutte arrive en bas (approx 0.8-0.9s) */}
+            <circle cx="10" cy="160" r="1.5" fill="url(#waterDropGrad)" className="splash-particle" style={{animationDelay: '0.8s'}} />
+            <circle cx="20" cy="160" r="1" fill="url(#waterDropGrad)" className="splash-particle" style={{animationDelay: '1.1s'}} />
         </g>
     </svg>
 ));
