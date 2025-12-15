@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Search, Plus, ArrowRight, X, Scan, Globe, Building2 } from "lucide-react";
 
 import BrandCard from '@/components/givn/BrandCard';
-import LivingAdSlot, { Ad } from '@/components/givn/LivingAdSlot'; // Import type
+import LivingAdSlot, { Ad } from '@/components/givn/LivingAdSlot';
 import BrandDetailModal from '@/components/givn/BrandDetailModal';
 import Badge from '@/components/givn/Badge';
 
@@ -24,14 +24,18 @@ const RAW_BRANDS = [
 
 const AD_POOL_LEFT: Ad[] = [
     { title: "Proof Drop", subtitle: "Evidence uploaded → badge updates instantly.", type: 'tree' },
-    { title: "EcoTrack", subtitle: "Carbon offset verification in real-time.", type: 'house' }, // Forcing house to test
+    { title: "EcoTrack", subtitle: "Carbon offset verification in real-time.", type: 'energy' }, 
     { title: "WaterLife", subtitle: "Clean water projects verified by satellite.", type: 'water' },
+    { title: "MediChain", subtitle: "Medical supply tracking.", type: 'health' }, 
+    { title: "AgroFund", subtitle: "Direct farmer support.", type: 'food' }, 
 ];
 
 const AD_POOL_RIGHT: Ad[] = [
     { title: "Blue Future", subtitle: "Protecting marine ecosystems.", type: 'ocean' },
     { title: "Bright Minds", subtitle: "Funding schools in rural areas.", type: 'school' },
-    { title: "Verified Spotlight", subtitle: "One brand. One claim. One proof trail.", type: 'tree' },
+    { title: "HomeBase", subtitle: "Housing for everyone.", type: 'house' },
+    { title: "WildLife", subtitle: "Preserving biodiversity.", type: 'tree' },
+    { title: "SolarShare", subtitle: "Community solar grids.", type: 'energy' },
 ];
 
 const Modal = ({ isOpen, onClose, children }: { isOpen: boolean, onClose: () => void, children: React.ReactNode }) => {
@@ -56,6 +60,30 @@ const formatMoney = (amount: number) => {
     return amount >= 1000 ? `$${(amount / 1000).toFixed(1)}k` : `$${amount}`;
 };
 
+// --- COMPOSANT PARTICULES ---
+const ParticlesBackground = () => {
+    // Générer des positions aléatoires statiques pour éviter l'hydratation mismatch
+    // On utilise un simple array et CSS pour l'animation
+    return (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+            {[...Array(15)].map((_, i) => (
+                <div 
+                    key={i}
+                    className="absolute bg-emerald-500/20 rounded-full animate-float"
+                    style={{
+                        width: Math.random() * 4 + 1 + 'px',
+                        height: Math.random() * 4 + 1 + 'px',
+                        top: Math.random() * 100 + '%',
+                        left: Math.random() * 100 + '%',
+                        animationDuration: Math.random() * 10 + 10 + 's',
+                        animationDelay: Math.random() * 5 + 's',
+                    }}
+                />
+            ))}
+        </div>
+    );
+};
+
 export default function Home() {
     const [activeCategory, setActiveCategory] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
@@ -64,6 +92,9 @@ export default function Home() {
     const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
     const [selectedBrand, setSelectedBrand] = useState<any>(null);
     const [viewFullList, setViewFullList] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => setMounted(true), []);
 
     const filteredBrands = useMemo(() => {
         return RAW_BRANDS.filter(brand => {
@@ -83,7 +114,7 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col relative">
             
             {/* NAVBAR */}
             <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
@@ -107,29 +138,27 @@ export default function Home() {
             </nav>
 
             {/* MAIN CONTENT */}
-            <main className="flex-1 pt-24 w-full px-4">
+            <main className="flex-1 pt-24 w-full px-4 relative">
                 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full">
+                {/* BACKGROUND PARTICLES */}
+                {mounted && <ParticlesBackground />}
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full z-10">
                     
-                    {/* Left Ads (Desktop Only) */}
+                    {/* Left Ads */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
-                        {/* 1. Arbre (Proof Drop) */}
-                        <LivingAdSlot pool={[AD_POOL_LEFT[0]]} initialDelay={0} cycleDuration={12000} />
-                        {/* 2. Maison (EcoTrack) */}
-                        <LivingAdSlot pool={[AD_POOL_LEFT[1]]} initialDelay={2500} cycleDuration={16000} />
-                        {/* 3. Eau (WaterLife) */}
-                        <LivingAdSlot pool={[AD_POOL_LEFT[2]]} initialDelay={4000} cycleDuration={14000} />
-                        {/* 4. Arbre (Repeat) */}
-                        <LivingAdSlot pool={[AD_POOL_LEFT[0]]} initialDelay={1500} cycleDuration={13000} />
-                        {/* 5. Maison (Repeat) */}
-                        <LivingAdSlot pool={[AD_POOL_LEFT[1]]} initialDelay={3200} cycleDuration={15000} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={12000} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={2500} cycleDuration={16000} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={4000} cycleDuration={14000} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1500} cycleDuration={13000} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={3200} cycleDuration={15000} />
                     </div>
 
                     {/* Center Content */}
-                    <div className="col-span-1 lg:col-span-8 flex flex-col items-center text-center pt-10 z-10 min-h-screen">
+                    <div className="col-span-1 lg:col-span-8 flex flex-col items-center text-center pt-10 min-h-screen">
                         
                         {/* HERO */}
-                        <div className="mb-12 md:mb-20 w-full">
+                        <div className="mb-12 md:mb-20 w-full relative">
                             <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9] mb-8 animate-[pop-in_0.7s_ease-out] glow-text">
                                 They say they donate.
                                 <br />
@@ -155,7 +184,7 @@ export default function Home() {
                                     />
                                 </div>
                                 
-                                {/* --- BOUTON "WOW" --- */}
+                                {/* BOUTON WOW */}
                                 <button 
                                     onClick={() => setIsBrandModalOpen(true)} 
                                     className="relative group overflow-hidden rounded-xl p-[2px] transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_40px_rgba(16,185,129,0.5)]"
@@ -169,9 +198,9 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* MOBILE AD 1 */}
+                        {/* MOBILE ADS */}
                         <div className="w-full lg:hidden mb-16 px-4">
-                             <LivingAdSlot pool={[AD_POOL_LEFT[1]]} initialDelay={1000} cycleDuration={14000} />
+                             <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={14000} />
                         </div>
 
                         {/* CATEGORIES */}
@@ -194,12 +223,12 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* MOBILE AD 2 */}
+                        {/* MOBILE ADS */}
                         <div className="w-full lg:hidden mb-16 px-4">
-                             <LivingAdSlot pool={[AD_POOL_RIGHT[0]]} initialDelay={2000} cycleDuration={16000} />
+                             <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={16000} />
                         </div>
 
-                        {/* RECENTLY LISTED */}
+                        {/* RECENTLY LISTED (Staggered Animation) */}
                         <div id="database" className="mb-24 scroll-mt-24 w-full text-left">
                             <div className="flex justify-between items-end mb-8 border-b border-white/5 pb-4">
                                 <div>
@@ -213,7 +242,7 @@ export default function Home() {
                             
                             <div className={`grid gap-4 transition-all ${viewFullList ? 'grid-cols-1 md:grid-cols-2' : 'flex overflow-x-auto pb-8 hide-scrollbar snap-x -mx-4 px-4'}`}>
                                 {displayedBrandsList.map((brand, i) => (
-                                    <div key={brand.id} className={`${viewFullList ? '' : 'min-w-[300px]'}`}>
+                                    <div key={brand.id} className={`animate-enter ${viewFullList ? '' : 'min-w-[300px]'}`} style={{ animationDelay: `${i * 100}ms` }}>
                                         <BrandCard brand={brand} onClick={setSelectedBrand} />
                                     </div>
                                 ))}
@@ -225,7 +254,7 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* LEADERBOARD */}
+                        {/* LEADERBOARD (Staggered Animation) */}
                         <div id="leaderboard" className="mb-32 scroll-mt-24 w-full text-left">
                             <div className="flex justify-between items-center mb-8">
                                 <div>
@@ -247,7 +276,12 @@ export default function Home() {
                                     </thead>
                                     <tbody className="text-sm">
                                         {sortedBrands.map((brand, index) => (
-                                            <tr key={brand.id} onClick={() => setSelectedBrand(brand)} className="border-b border-white/5 hover:bg-white/[0.03] transition-colors group cursor-pointer h-16">
+                                            <tr 
+                                                key={brand.id} 
+                                                onClick={() => setSelectedBrand(brand)} 
+                                                className="border-b border-white/5 hover:bg-white/[0.03] transition-colors group cursor-pointer h-16 animate-enter"
+                                                style={{ animationDelay: `${index * 50}ms` }}
+                                            >
                                                 <td className="p-4 text-zinc-500 font-mono text-xs text-center font-bold">
                                                     {index === 0 ? <span className="text-xl">👑</span> : index + 1}
                                                 </td>
@@ -270,21 +304,13 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Right Ads (Desktop Only) - FORCED ALTERNATE TYPES */}
+                    {/* Right Ads */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
-                        {/* 1. Océan */}
-                        <LivingAdSlot pool={[AD_POOL_RIGHT[0]]} initialDelay={1200} cycleDuration={14000} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={14000} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={3500} cycleDuration={17000} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={12000} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2800} cycleDuration={18000} />
                         
-                        {/* 2. École */}
-                        <LivingAdSlot pool={[AD_POOL_RIGHT[1]]} initialDelay={3500} cycleDuration={17000} />
-                        
-                        {/* 3. Arbre */}
-                        <LivingAdSlot pool={[AD_POOL_RIGHT[2]]} initialDelay={500} cycleDuration={12000} />
-                        
-                        {/* 4. Océan (Repeat) */}
-                        <LivingAdSlot pool={[AD_POOL_RIGHT[0]]} initialDelay={2800} cycleDuration={18000} />
-
-                        {/* Advertise Block */}
                         <div className="glass-panel rounded-xl p-6 mt-4 border border-zinc-800 animate-[pop-in_2s_ease-out] hover:border-emerald-500/30 transition-colors group">
                             <h4 className="text-sm font-bold mb-1 text-white group-hover:text-emerald-400 transition-colors">Advertise</h4>
                             <p className="text-xs text-zinc-500 mb-4 leading-relaxed">Want a placement? Your proof must be real.</p>
@@ -310,8 +336,49 @@ export default function Home() {
                 </div>
             </footer>
 
-            {/* --- MODALS --- */}
+            {/* MODALS */}
             <BrandDetailModal brand={selectedBrand} onClose={() => setSelectedBrand(null)} />
+            {/* ... Autres modales (identiques) ... */}
+            {/* ... Modal Brand avec animation radar (déjà fournie avant, je la garde telle quelle) ... */}
+             <Modal isOpen={isBrandModalOpen} onClose={() => setIsBrandModalOpen(false)}>
+                <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 relative">
+                        <div className="absolute inset-0 border border-emerald-500/30 rounded-full animate-ping opacity-20"></div>
+                        <Scan size={32} className="text-emerald-400 relative z-10" />
+                    </div>
+                    <h2 className="text-2xl font-bold mb-1 tracking-tight text-white">INITIATE VERIFICATION</h2>
+                    <p className="text-xs text-zinc-500 mb-8 uppercase tracking-widest">Submit candidate for blockchain audit</p>
+                    <div className="w-full space-y-4">
+                        <div className="space-y-1">
+                            <label className="text-[10px] uppercase text-zinc-500 font-bold ml-1">Brand Name</label>
+                            <div className="relative group">
+                                <Building2 size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-emerald-400 transition-colors" />
+                                <input type="text" placeholder="Ex: Patagonia" className="w-full bg-white/5 border border-white/10 p-4 pl-12 rounded-xl text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black transition-all placeholder:text-zinc-700" />
+                            </div>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] uppercase text-zinc-500 font-bold ml-1">Official Website</label>
+                            <div className="relative group">
+                                <Globe size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-emerald-400 transition-colors" />
+                                <input type="text" placeholder="Ex: https://patagonia.com" className="w-full bg-white/5 border border-white/10 p-4 pl-12 rounded-xl text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black transition-all placeholder:text-zinc-700" />
+                            </div>
+                        </div>
+                        <div className="space-y-1 pt-2">
+                            <label className="text-[10px] uppercase text-zinc-500 font-bold ml-1">Sector</label>
+                            <div className="flex gap-2 flex-wrap">
+                                {['Tech', 'Fashion', 'Finance', 'Food', 'Energy'].map((sector) => (
+                                    <button key={sector} className="text-xs border border-white/10 bg-white/5 px-3 py-2 rounded-lg text-zinc-400 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/30 transition-all">
+                                        {sector}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    <button onClick={() => {setIsBrandModalOpen(false); alert('Audit Initiated.');}} className="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 text-white p-4 rounded-xl font-bold mt-8 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all uppercase text-xs tracking-widest">
+                        Submit for Audit
+                    </button>
+                </div>
+            </Modal>
             
             <Modal isOpen={isAccessModalOpen} onClose={() => setIsAccessModalOpen(false)}>
                  <div className="flex flex-col gap-8">
@@ -327,53 +394,6 @@ export default function Home() {
                 <div className="text-center py-10">
                     <h2 className="text-2xl font-bold mb-4">Advertise on Givn</h2>
                     <button onClick={() => {setIsAdModalOpen(false); setIsAccessModalOpen(true);}} className="bg-white text-black px-6 py-3 rounded-lg font-bold hover:bg-emerald-400 transition-colors">Get Verified</button>
-                </div>
-            </Modal>
-
-            {/* --- NOUVELLE MODALE "WOW" --- */}
-             <Modal isOpen={isBrandModalOpen} onClose={() => setIsBrandModalOpen(false)}>
-                <div className="flex flex-col items-center">
-                    {/* Header avec animation radar */}
-                    <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 relative">
-                        <div className="absolute inset-0 border border-emerald-500/30 rounded-full animate-ping opacity-20"></div>
-                        <Scan size={32} className="text-emerald-400 relative z-10" />
-                    </div>
-                    
-                    <h2 className="text-2xl font-bold mb-1 tracking-tight text-white">INITIATE VERIFICATION</h2>
-                    <p className="text-xs text-zinc-500 mb-8 uppercase tracking-widest">Submit candidate for blockchain audit</p>
-                    
-                    <div className="w-full space-y-4">
-                        <div className="space-y-1">
-                            <label className="text-[10px] uppercase text-zinc-500 font-bold ml-1">Brand Name</label>
-                            <div className="relative group">
-                                <Building2 size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-emerald-400 transition-colors" />
-                                <input type="text" placeholder="Ex: Patagonia" className="w-full bg-white/5 border border-white/10 p-4 pl-12 rounded-xl text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black transition-all placeholder:text-zinc-700" />
-                            </div>
-                        </div>
-
-                        <div className="space-y-1">
-                            <label className="text-[10px] uppercase text-zinc-500 font-bold ml-1">Official Website</label>
-                            <div className="relative group">
-                                <Globe size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-emerald-400 transition-colors" />
-                                <input type="text" placeholder="Ex: https://patagonia.com" className="w-full bg-white/5 border border-white/10 p-4 pl-12 rounded-xl text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black transition-all placeholder:text-zinc-700" />
-                            </div>
-                        </div>
-
-                        <div className="space-y-1 pt-2">
-                            <label className="text-[10px] uppercase text-zinc-500 font-bold ml-1">Sector</label>
-                            <div className="flex gap-2 flex-wrap">
-                                {['Tech', 'Fashion', 'Finance', 'Food', 'Energy'].map((sector) => (
-                                    <button key={sector} className="text-xs border border-white/10 bg-white/5 px-3 py-2 rounded-lg text-zinc-400 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/30 transition-all">
-                                        {sector}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    <button onClick={() => {setIsBrandModalOpen(false); alert('Audit Initiated.');}} className="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 text-white p-4 rounded-xl font-bold mt-8 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all uppercase text-xs tracking-widest">
-                        Submit for Audit
-                    </button>
                 </div>
             </Modal>
 
