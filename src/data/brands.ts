@@ -1,0 +1,12 @@
+export const BRANDS_DATA = [
+    { id: 1, name: 'Lumen Goods', category: 'E-commerce', month: 1300, total: 8400, lastProof: '2025-12-08 09:11Z', status: 'VERIFIED', claim: '1% of revenue donated', description: "Sustainable home goods store focusing on carbon neutrality.", website: "https://lumengoods.com" },
+    { id: 2, name: 'VantaWear', category: 'Fashion', month: 620, total: 3200, lastProof: '2025-12-05 14:22Z', status: 'VERIFIED', claim: 'A portion donated', description: "Ethically sourced streetwear brand.", website: "https://vantawear.com" },
+    { id: 3, name: 'Nori Market', category: 'Food', month: 0, total: 0, lastProof: '2025-11-01 —', status: 'MISSING', claim: 'We give back monthly', description: "Organic grocery delivery service.", website: "https://norimarket.com" },
+    { id: 4, name: 'Pulse Bloom', category: 'Health', month: 310, total: 1400, lastProof: '2025-12-10 08:03Z', status: 'VERIFIED', claim: '$1 per order donated', description: "Wellness supplements for modern life.", website: "https://pulsebloom.com" },
+    { id: 5, name: 'Cedar Kids', category: 'Education', month: 980, total: 6100, lastProof: '2025-12-09 16:40Z', status: 'VERIFIED', claim: 'Scholarships funded', description: "Wooden toys that fund early education.", website: "https://cedarkids.com" },
+    { id: 6, name: 'Echo Cart', category: 'Marketplace', month: 210, total: 980, lastProof: '2025-12-07 11:02Z', status: 'VERIFIED', claim: 'Green shipping', description: "Zero-waste shipping supplies.", website: "https://echocart.com" },
+    { id: 7, name: 'Aura', category: 'Fashion', month: 150, total: 450, lastProof: '2025-12-11 09:00Z', status: 'VERIFIED', claim: 'Trees planted per sale', description: "Jewelry inspired by nature.", website: "https://aura.com" },
+    { id: 8, name: 'Zenith', category: 'Health', month: 890, total: 5200, lastProof: '2025-12-01 10:15Z', status: 'VERIFIED', claim: 'Mental health support', description: "Meditation apps and tools.", website: "https://zenith.com" },
+    { id: 9, name: 'Terra', category: 'E-commerce', month: 2200, total: 15000, lastProof: '2025-12-12 10:00Z', status: 'VERIFIED', claim: '5% to ocean cleanup', description: "Plastic-free bathroom essentials.", website: "https://terra.com" },
+    { id: 10, name: 'Nova', category: 'Tech', month: 5000, total: 45000, lastProof: '2025-12-13 08:00Z', status: 'VERIFIED', claim: 'Open source funding', description: "Developer tools for the open web.", website: "https://nova.dev" }
+];

@@ -1,28 +1,16 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Plus, ArrowRight, X, Scan, Globe, Building2 } from "lucide-react";
+import { Search, Plus, ArrowRight, X, Scan, Globe, Building2, ShieldCheck, Filter } from "lucide-react"; // ShieldCheck & Filter ajoutés
 
 import BrandCard from '@/components/givn/BrandCard';
 import LivingAdSlot, { Ad } from '@/components/givn/LivingAdSlot';
 import BrandDetailModal from '@/components/givn/BrandDetailModal';
+import ProofModal from '@/components/givn/ProofModal'; // Import nouveau modal
 import Badge from '@/components/givn/Badge';
+import { BRANDS_DATA } from '@/data/brands'; // Import des données
 
-// --- DATA ---
-const RAW_BRANDS = [
-    { id: 1, name: 'Lumen Goods', category: 'E-commerce', month: 1300, total: 8400, lastProof: '2025-12-08 09:11Z', status: 'VERIFIED', claim: '1% of revenue donated', description: "Sustainable home goods store focusing on carbon neutrality." },
-    { id: 2, name: 'VantaWear', category: 'Fashion', month: 620, total: 3200, lastProof: '2025-12-05 14:22Z', status: 'VERIFIED', claim: 'A portion donated', description: "Ethically sourced streetwear brand." },
-    { id: 3, name: 'Nori Market', category: 'Food', month: 0, total: 0, lastProof: '2025-11-01 —', status: 'MISSING', claim: 'We give back monthly', description: "Organic grocery delivery service." },
-    { id: 4, name: 'Pulse Bloom', category: 'Health', month: 310, total: 1400, lastProof: '2025-12-10 08:03Z', status: 'VERIFIED', claim: '$1 per order donated', description: "Wellness supplements for modern life." },
-    { id: 5, name: 'Cedar Kids', category: 'Education', month: 980, total: 6100, lastProof: '2025-12-09 16:40Z', status: 'VERIFIED', claim: 'Scholarships funded', description: "Wooden toys that fund early education." },
-    { id: 6, name: 'Echo Cart', category: 'Marketplace', month: 210, total: 980, lastProof: '2025-12-07 11:02Z', status: 'VERIFIED', claim: 'Green shipping', description: "Zero-waste shipping supplies." },
-    { id: 7, name: 'Aura', category: 'Fashion', month: 150, total: 450, lastProof: '2025-12-11 09:00Z', status: 'VERIFIED', claim: 'Trees planted per sale', description: "Jewelry inspired by nature." },
-    { id: 8, name: 'Zenith', category: 'Health', month: 890, total: 5200, lastProof: '2025-12-01 10:15Z', status: 'VERIFIED', claim: 'Mental health support', description: "Meditation apps and tools." },
-    { id: 9, name: 'Terra', category: 'E-commerce', month: 2200, total: 15000, lastProof: '2025-12-12 10:00Z', status: 'VERIFIED', claim: '5% to ocean cleanup', description: "Plastic-free bathroom essentials." },
-    { id: 10, name: 'Nova', category: 'Tech', month: 5000, total: 45000, lastProof: '2025-12-13 08:00Z', status: 'VERIFIED', claim: 'Open source funding', description: "Developer tools for the open web." }
-];
-
-// Pools diversifiés
+// ... (AD_POOL_LEFT, AD_POOL_RIGHT, Modal, formatMoney, ParticlesBackground inchangés) ...
 const AD_POOL_LEFT: Ad[] = [
     { title: "Proof Drop", subtitle: "Evidence uploaded → badge updates.", type: 'tree' },
     { title: "EcoTrack", subtitle: "Carbon offset verification.", type: 'energy' }, 
@@ -61,7 +49,6 @@ const formatMoney = (amount: number) => {
     return amount >= 1000 ? `$${(amount / 1000).toFixed(1)}k` : `$${amount}`;
 };
 
-// --- COMPOSANT PARTICULES ---
 const ParticlesBackground = () => {
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
@@ -86,26 +73,32 @@ const ParticlesBackground = () => {
 export default function Home() {
     const [activeCategory, setActiveCategory] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
+    const [verifiedOnly, setVerifiedOnly] = useState(false); // NOUVEAU: Etat du filtre
+    
     const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
     const [isAdModalOpen, setIsAdModalOpen] = useState(false);
     const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
+    
     const [selectedBrand, setSelectedBrand] = useState<any>(null);
+    const [proofBrand, setProofBrand] = useState<string | null>(null); // Pour le modal de preuve
+
     const [viewFullList, setViewFullList] = useState(false);
     const [mounted, setMounted] = useState(false);
 
-    // VITESSE UNIFIÉE POUR ÉVITER LES COLLISIONS
     const UNIFIED_CYCLE_DURATION = 10000;
 
     useEffect(() => setMounted(true), []);
 
+    // Logique de filtrage améliorée
     const filteredBrands = useMemo(() => {
-        return RAW_BRANDS.filter(brand => {
+        return BRANDS_DATA.filter(brand => {
             const matchesCategory = activeCategory === 'All' || brand.category === activeCategory;
             const matchesSearch = brand.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                                   brand.claim.toLowerCase().includes(searchQuery.toLowerCase());
-            return matchesCategory && matchesSearch;
+            const matchesVerified = verifiedOnly ? brand.status === 'VERIFIED' : true;
+            return matchesCategory && matchesSearch && matchesVerified;
         });
-    }, [activeCategory, searchQuery]);
+    }, [activeCategory, searchQuery, verifiedOnly]);
 
     const sortedBrands = [...filteredBrands].sort((a, b) => b.month - a.month);
     const displayedBrandsList = viewFullList ? sortedBrands : sortedBrands.slice(0, 6);
@@ -117,8 +110,7 @@ export default function Home() {
 
     return (
         <div className="min-h-screen flex flex-col relative">
-            
-            {/* NAVBAR */}
+            {/* ... (Navbar inchangée) ... */}
             <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
                 <div className="w-full px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-8">
@@ -139,20 +131,12 @@ export default function Home() {
                 </div>
             </nav>
 
-            {/* MAIN CONTENT */}
             <main className="flex-1 pt-24 w-full px-4 relative">
-                
-                {/* BACKGROUND PARTICLES */}
                 {mounted && <ParticlesBackground />}
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full z-10">
-                    
-                    {/* Left Ads (Desktop Only) */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
-                        {/* STARTINDEX = 0, 1, 2... force un décalage.
-                           INITIALDELAY inverse (2000 -> 0) assure que le "bas" change AVANT le "haut", 
-                           évitant que le haut ne "rattrape" le bas visuellement.
-                        */}
+                        {/* Ads Left */}
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={2000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={0} />
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={1} />
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={2} />
@@ -160,17 +144,16 @@ export default function Home() {
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={4} />
                     </div>
 
-                    {/* Center Content */}
                     <div className="col-span-1 lg:col-span-8 flex flex-col items-center text-center pt-10 min-h-screen">
                         
                         {/* HERO */}
                         <div className="mb-12 md:mb-20 w-full relative">
+                            {/* ... (Hero Titre/Texte inchangés) ... */}
                             <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9] mb-8 animate-[pop-in_0.7s_ease-out] glow-text">
                                 They say they donate.
                                 <br />
                                 <span className="text-zinc-600">Givn shows the proof.</span>
                             </h1>
-
                             <p className="text-zinc-400 max-w-lg mx-auto mb-12 text-base md:text-lg animate-[pop-in_0.9s_ease-out] leading-relaxed">
                                 Brands can claim anything. Givn only shows what is verifiable.
                                 Transparent tracking for corporate philanthropy.
@@ -189,8 +172,6 @@ export default function Home() {
                                         className="w-full bg-zinc-900/80 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:bg-zinc-900 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-zinc-600 shadow-xl"
                                     />
                                 </div>
-                                
-                                {/* BOUTON WOW */}
                                 <button 
                                     onClick={() => setIsBrandModalOpen(true)} 
                                     className="relative group overflow-hidden rounded-xl p-[2px] transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_40px_rgba(16,185,129,0.5)]"
@@ -204,14 +185,20 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* MOBILE AD 1 */}
-                        <div className="w-full lg:hidden mb-16 px-4">
-                             <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={14000} startIndex={0} />
-                        </div>
-
-                        {/* CATEGORIES */}
+                        {/* NOUVEAU: FILTRE "VERIFIED ONLY" */}
                         <div id="categories" className="flex flex-col items-center mb-16 scroll-mt-24 w-full">
-                            <p className="text-[10px] text-zinc-500 mb-6 font-bold uppercase tracking-widest">Browse by category</p>
+                            <div className="flex items-center gap-2 mb-6">
+                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Filter by category</p>
+                                <div className="h-4 w-[1px] bg-zinc-800 mx-2"></div>
+                                <button 
+                                    onClick={() => setVerifiedOnly(!verifiedOnly)}
+                                    className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border transition-all ${verifiedOnly ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400' : 'bg-transparent border-zinc-800 text-zinc-600 hover:border-zinc-700'}`}
+                                >
+                                    {verifiedOnly ? <ShieldCheck size={12} /> : <Filter size={12} />}
+                                    Verified Only
+                                </button>
+                            </div>
+                            
                             <div className="flex flex-wrap justify-center gap-3">
                                 {['All', 'E-commerce', 'Fashion', 'Food', 'Health', 'Education'].map(cat => (
                                     <button 
@@ -229,13 +216,11 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* MOBILE AD 2 */}
-                        <div className="w-full lg:hidden mb-16 px-4">
-                             <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={16000} startIndex={1} />
-                        </div>
-
+                        {/* ... (RECENTLY LISTED et LEADERBOARD - structure similaire, juste mettre à jour displayedBrandsList) ... */}
+                        
                         {/* RECENTLY LISTED */}
                         <div id="database" className="mb-24 scroll-mt-24 w-full text-left">
+                            {/* ... (En-tête inchangé) ... */}
                             <div className="flex justify-between items-end mb-8 border-b border-white/5 pb-4">
                                 <div>
                                     <h2 className="text-xl font-bold mb-1">Recently listed</h2>
@@ -254,7 +239,7 @@ export default function Home() {
                                 ))}
                                 {displayedBrandsList.length === 0 && (
                                     <div className="col-span-full text-center py-20 border border-dashed border-zinc-800 rounded-xl bg-white/5">
-                                        <p className="text-zinc-500 font-medium">No brands found.</p>
+                                        <p className="text-zinc-500 font-medium">No verified brands found matching criteria.</p>
                                     </div>
                                 )}
                             </div>
@@ -262,7 +247,8 @@ export default function Home() {
 
                         {/* LEADERBOARD */}
                         <div id="leaderboard" className="mb-32 scroll-mt-24 w-full text-left">
-                            <div className="flex justify-between items-center mb-8">
+                             {/* ... (Tableau inchangé, juste utiliser sortedBrands) ... */}
+                             <div className="flex justify-between items-center mb-8">
                                 <div>
                                     <h2 className="text-xl font-bold mb-1">Impact leaderboard</h2>
                                     <p className="text-xs text-zinc-500">Ranked by verified donations</p>
@@ -310,8 +296,8 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Right Ads (Desktop Only) */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
+                        {/* Ads Right */}
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={0} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={1} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={2} />
@@ -326,26 +312,58 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
-
             </main>
 
-            {/* FOOTER */}
-            <footer className="border-t border-white/10 bg-black py-20 px-6">
-                <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-16 text-sm">
+            {/* FOOTER AMÉLIORÉ */}
+            <footer className="border-t border-white/10 bg-black py-20 px-6 mt-20">
+                <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-16 text-sm max-w-7xl mx-auto">
                     <div className="col-span-1 md:col-span-1">
-                        <span className="font-bold text-xl tracking-tight mb-6 block">Givn</span>
-                        <p className="text-zinc-500 text-xs leading-relaxed max-w-xs">The global standard for verifying corporate philanthropy.</p>
+                        <span className="font-bold text-xl tracking-tight mb-6 block text-white">Givn</span>
+                        <p className="text-zinc-500 text-xs leading-relaxed max-w-xs">The global standard for verifying corporate philanthropy using blockchain transparency.</p>
                     </div>
-                    <div className="col-span-3 text-right">
+                    <div className="col-span-1">
+                        <h4 className="font-bold text-white mb-4">Platform</h4>
+                        <ul className="space-y-2 text-xs text-zinc-500">
+                            <li><a href="#" className="hover:text-emerald-400 transition-colors">Database</a></li>
+                            <li><a href="#" className="hover:text-emerald-400 transition-colors">Leaderboard</a></li>
+                            <li><a href="#" className="hover:text-emerald-400 transition-colors">Submit Brand</a></li>
+                        </ul>
+                    </div>
+                    <div className="col-span-1">
+                        <h4 className="font-bold text-white mb-4">Legal & Trust</h4>
+                        <ul className="space-y-2 text-xs text-zinc-500">
+                            <li><a href="#" className="hover:text-emerald-400 transition-colors">Methodology</a></li>
+                            <li><a href="#" className="hover:text-emerald-400 transition-colors">Terms of Service</a></li>
+                            <li><a href="#" className="hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div className="col-span-1 text-right">
                         <p className="text-zinc-600 text-xs">© 2025 Givn Inc.</p>
                     </div>
                 </div>
             </footer>
 
             {/* MODALS */}
-            <BrandDetailModal brand={selectedBrand} onClose={() => setSelectedBrand(null)} />
+            <BrandDetailModal 
+                brand={selectedBrand} 
+                onClose={() => setSelectedBrand(null)} 
+                onOpenProof={() => {
+                    setProofBrand(selectedBrand.name);
+                    // Ne pas fermer BrandDetail, on empile ou on ferme ? 
+                    // Ici choix UX : on garde BrandDetail dessous, ou on le ferme.
+                    // On peut laisser ouvert car z-index du proof sera plus haut.
+                }}
+            />
             
+            <ProofModal 
+                isOpen={!!proofBrand} 
+                onClose={() => setProofBrand(null)} 
+                brandName={proofBrand || ''} 
+            />
+            
+            {/* ... (Autres modals inchangées) ... */}
              <Modal isOpen={isBrandModalOpen} onClose={() => setIsBrandModalOpen(false)}>
+                {/* Contenu Audit (inchangé) */}
                 <div className="flex flex-col items-center">
                     <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 relative">
                         <div className="absolute inset-0 border border-emerald-500/30 rounded-full animate-ping opacity-20"></div>

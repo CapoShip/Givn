@@ -10,12 +10,18 @@ export interface Ad {
 }
 
 // ==========================================
-// COMPOSANTS GRAPHIQUES (FINAUX)
+// COMPOSANTS GRAPHIQUES (FINAUX & ACCESSIBLES)
 // ==========================================
 
-/* --- ARBRE SIMPLE (Conforme) --- */
+/* --- ARBRE SIMPLE --- */
 const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg viewBox="0 0 100 160" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-1000 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+    <svg 
+        role="img" 
+        aria-label="Un arbre qui pousse symbolisant la reforestation"
+        viewBox="0 0 100 160" 
+        className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-1000 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} 
+        preserveAspectRatio="xMidYBottom slice"
+    >
         <path d="M48 160 L48 100 Q48 90 45 80" stroke="#8B4513" strokeWidth="4" fill="none" strokeLinecap="round" className="tree-trunk-simple" />
         <path d="M48 160 L48 100" stroke="#8B4513" strokeWidth="4" className="tree-trunk-simple" />
         <g className="swaying-branch" style={{ transformOrigin: '48px 100px' }}>
@@ -39,7 +45,13 @@ TreeGraphic.displayName = 'TreeGraphic';
 
 /* --- ROBINET (FLUIDITÉ PARFAITE) --- */
 const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg viewBox="0 0 100 160" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+    <svg 
+        role="img" 
+        aria-label="Une pompe distribuant de l'eau potable"
+        viewBox="0 0 100 160" 
+        className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} 
+        preserveAspectRatio="xMidYBottom slice"
+    >
         <defs>
             <linearGradient id="chromeGrad" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0%" stopColor="#94a3b8" />
@@ -64,14 +76,12 @@ const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
 
         {/* EAU */}
         <g className={grown ? 'opacity-100 transition-opacity delay-200' : 'opacity-0'}>
-            {/* Délais ajustés pour un rythme continu sur 0.9s d'animation : 0, 0.3, 0.6 */}
             <circle cx="15" cy="65" r="3.5" fill="url(#waterDropGrad)" className="water-drop" style={{animationDelay: '0s'}} />
             <circle cx="15" cy="65" r="3.5" fill="url(#waterDropGrad)" className="water-drop" style={{animationDelay: '0.3s'}} />
             <circle cx="15" cy="65" r="3.5" fill="url(#waterDropGrad)" className="water-drop" style={{animationDelay: '0.6s'}} />
             
             <ellipse cx="15" cy="160" rx="12" ry="3" fill="#3b82f6" opacity="0.5" />
             
-            {/* Éclaboussures qui apparaissent quand une goutte arrive en bas (approx 0.8-0.9s) */}
             <circle cx="10" cy="160" r="1.5" fill="url(#waterDropGrad)" className="splash-particle" style={{animationDelay: '0.8s'}} />
             <circle cx="20" cy="160" r="1" fill="url(#waterDropGrad)" className="splash-particle" style={{animationDelay: '1.1s'}} />
         </g>
@@ -80,9 +90,15 @@ const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
 PumpGraphic.displayName = 'PumpGraphic';
 
 
-/* --- AUTRES GRAPHIQUES (Inchangés) --- */
+/* --- MAISON --- */
 const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+    <svg 
+        role="img" 
+        aria-label="Construction d'une maison pour l'aide au logement"
+        viewBox="0 0 100 140" 
+        className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} 
+        preserveAspectRatio="xMidYBottom slice"
+    >
         <g className="house-base">
             <rect x="25" y="70" width="50" height="50" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1" className="house-fill" />
         </g>
@@ -97,8 +113,15 @@ const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 HouseGraphic.displayName = 'HouseGraphic';
 
+/* --- ÉCOLE --- */
 const SchoolGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+    <svg 
+        role="img" 
+        aria-label="Construction d'une école pour le soutien à l'éducation"
+        viewBox="0 0 100 140" 
+        className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} 
+        preserveAspectRatio="xMidYBottom slice"
+    >
         <g className="house-base">
             <rect x="15" y="70" width="70" height="50" fill="#9a3412" stroke="#7c2d12" strokeWidth="1" className="house-fill" />
             <rect x="40" y="90" width="20" height="30" fill="#fcd34d" className="house-fill" style={{ opacity: 0.3 }} />
@@ -119,8 +142,15 @@ const SchoolGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 SchoolGraphic.displayName = 'SchoolGraphic';
 
+/* --- OCÉAN --- */
 const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-500 ${grown ? 'opacity-100' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+    <svg 
+        role="img" 
+        aria-label="Vie marine animée symbolisant la protection des océans"
+        viewBox="0 0 100 140" 
+        className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-500 ${grown ? 'opacity-100' : 'opacity-0'}`} 
+        preserveAspectRatio="xMidYBottom slice"
+    >
         <defs>
             <linearGradient id="deepSeaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#020617" /> 
@@ -167,8 +197,15 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 OceanGraphic.displayName = 'OceanGraphic';
 
+/* --- SANTÉ --- */
 const HealthGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+    <svg 
+        role="img" 
+        aria-label="Rythme cardiaque sur moniteur symbolisant l'aide médicale"
+        viewBox="0 0 100 140" 
+        className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} 
+        preserveAspectRatio="xMidYBottom slice"
+    >
         <defs>
             <linearGradient id="ecgRedGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="#ef4444" />
@@ -198,8 +235,15 @@ const HealthGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 HealthGraphic.displayName = 'HealthGraphic';
 
+/* --- NOURRITURE --- */
 const FoodGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+    <svg 
+        role="img" 
+        aria-label="Blé qui pousse symbolisant l'agriculture et l'alimentation"
+        viewBox="0 0 100 140" 
+        className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} 
+        preserveAspectRatio="xMidYBottom slice"
+    >
         <g className="wheat-stem">
             <path d="M50 140 Q 50 100 50 60" stroke="#a16207" strokeWidth="3" fill="none" />
             <path d="M25 140 Q 30 110 30 70" stroke="#854d0e" strokeWidth="2.5" fill="none" style={{ animationDelay: '0.2s' }} />
@@ -221,8 +265,15 @@ const FoodGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 FoodGraphic.displayName = 'FoodGraphic';
 
+/* --- ÉNERGIE --- */
 const EnergyGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+    <svg 
+        role="img" 
+        aria-label="Éolienne et soleil symbolisant l'énergie verte"
+        viewBox="0 0 100 140" 
+        className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} 
+        preserveAspectRatio="xMidYBottom slice"
+    >
         <defs>
             <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#0f172a" stopOpacity="0" />
