@@ -22,20 +22,21 @@ const RAW_BRANDS = [
     { id: 10, name: 'Nova', category: 'Tech', month: 5000, total: 45000, lastProof: '2025-12-13 08:00Z', status: 'VERIFIED', claim: 'Open source funding', description: "Developer tools for the open web." }
 ];
 
+// Pools diversifiés pour éviter les répétitions
 const AD_POOL_LEFT: Ad[] = [
-    { title: "Proof Drop", subtitle: "Evidence uploaded → badge updates instantly.", type: 'tree' },
-    { title: "EcoTrack", subtitle: "Carbon offset verification in real-time.", type: 'energy' }, 
-    { title: "WaterLife", subtitle: "Clean water projects verified by satellite.", type: 'water' },
-    { title: "MediChain", subtitle: "Medical supply tracking.", type: 'health' }, 
-    { title: "AgroFund", subtitle: "Direct farmer support.", type: 'food' }, 
+    { title: "Proof Drop", subtitle: "Evidence uploaded → badge updates.", type: 'tree' },
+    { title: "EcoTrack", subtitle: "Carbon offset verification.", type: 'energy' }, 
+    { title: "WaterLife", subtitle: "Clean water projects verified.", type: 'water' },
+    { title: "MediChain", subtitle: "Medical supply tracking on-chain.", type: 'health' }, 
+    { title: "AgroFund", subtitle: "Direct farmer support verified.", type: 'food' }, 
 ];
 
 const AD_POOL_RIGHT: Ad[] = [
     { title: "Blue Future", subtitle: "Protecting marine ecosystems.", type: 'ocean' },
-    { title: "Bright Minds", subtitle: "Funding schools in rural areas.", type: 'school' },
-    { title: "HomeBase", subtitle: "Housing for everyone.", type: 'house' },
-    { title: "WildLife", subtitle: "Preserving biodiversity.", type: 'tree' },
-    { title: "SolarShare", subtitle: "Community solar grids.", type: 'energy' },
+    { title: "Bright Minds", subtitle: "Funding rural schools directly.", type: 'school' },
+    { title: "HomeBase", subtitle: "Housing for everyone, verified.", type: 'house' },
+    { title: "WildLife", subtitle: "Preserving biodiversity habitats.", type: 'tree' },
+    { title: "SolarShare", subtitle: "Community solar grids funded.", type: 'energy' },
 ];
 
 const Modal = ({ isOpen, onClose, children }: { isOpen: boolean, onClose: () => void, children: React.ReactNode }) => {
@@ -62,8 +63,6 @@ const formatMoney = (amount: number) => {
 
 // --- COMPOSANT PARTICULES ---
 const ParticlesBackground = () => {
-    // Générer des positions aléatoires statiques pour éviter l'hydratation mismatch
-    // On utilise un simple array et CSS pour l'animation
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
             {[...Array(15)].map((_, i) => (
@@ -145,7 +144,7 @@ export default function Home() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full z-10">
                     
-                    {/* Left Ads */}
+                    {/* Left Ads (Desktop Only) - UTILISATION DU POOL DIVERSIFIÉ */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={12000} />
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={2500} cycleDuration={16000} />
@@ -198,7 +197,7 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* MOBILE ADS */}
+                        {/* MOBILE AD 1 */}
                         <div className="w-full lg:hidden mb-16 px-4">
                              <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={14000} />
                         </div>
@@ -223,12 +222,12 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* MOBILE ADS */}
+                        {/* MOBILE AD 2 */}
                         <div className="w-full lg:hidden mb-16 px-4">
                              <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={16000} />
                         </div>
 
-                        {/* RECENTLY LISTED (Staggered Animation) */}
+                        {/* RECENTLY LISTED */}
                         <div id="database" className="mb-24 scroll-mt-24 w-full text-left">
                             <div className="flex justify-between items-end mb-8 border-b border-white/5 pb-4">
                                 <div>
@@ -254,7 +253,7 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* LEADERBOARD (Staggered Animation) */}
+                        {/* LEADERBOARD */}
                         <div id="leaderboard" className="mb-32 scroll-mt-24 w-full text-left">
                             <div className="flex justify-between items-center mb-8">
                                 <div>
@@ -304,7 +303,7 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Right Ads */}
+                    {/* Right Ads (Desktop Only) - UTILISATION DU POOL DIVERSIFIÉ */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={14000} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={3500} cycleDuration={17000} />
@@ -338,8 +337,7 @@ export default function Home() {
 
             {/* MODALS */}
             <BrandDetailModal brand={selectedBrand} onClose={() => setSelectedBrand(null)} />
-            {/* ... Autres modales (identiques) ... */}
-            {/* ... Modal Brand avec animation radar (déjà fournie avant, je la garde telle quelle) ... */}
+            {/* ... Autres modales (identiques à avant) ... */}
              <Modal isOpen={isBrandModalOpen} onClose={() => setIsBrandModalOpen(false)}>
                 <div className="flex flex-col items-center">
                     <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 relative">
