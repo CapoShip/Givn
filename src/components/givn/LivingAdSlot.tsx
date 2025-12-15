@@ -10,7 +10,7 @@ export interface Ad {
 }
 
 // ==========================================
-// COMPOSANTS GRAPHIQUES REFONDUS
+// COMPOSANTS GRAPHIQUES REFONDUS (GOUTTES)
 // ==========================================
 
 /* --- ARBRE SIMPLE & CLAIR --- */
@@ -54,7 +54,7 @@ const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 TreeGraphic.displayName = 'TreeGraphic';
 
-/* --- ROBINET (EAU BLEUE REALISTE) --- */
+/* --- ROBINET (GOUTTES QUI TOMBENT) --- */
 const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 160" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
@@ -75,28 +75,19 @@ const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
             </g>
         </g>
 
-        {/* Eau Réaliste (Bleu + Transparence) */}
+        {/* EAU: Gouttes individuelles */}
         <g className={grown ? 'opacity-100 transition-opacity delay-200' : 'opacity-0'}>
-            {/* Flux Continu */}
-            <rect 
-                x="12" y="65" width="6" height="95" 
-                fill="#3b82f6" /* Bleu standard */
-                className="water-stream-real" 
-            />
-            {/* Reflet blanc pour le volume */}
-            <rect 
-                x="13" y="65" width="2" height="95" 
-                fill="#fff" 
-                opacity="0.3"
-                className="water-stream-real" 
-            />
+            {/* Gouttes avec délais pour créer un rythme */}
+            <circle cx="15" cy="65" r="3.5" fill="#3b82f6" className="water-drop" style={{animationDelay: '0s'}} />
+            <circle cx="15" cy="65" r="3.5" fill="#60a5fa" className="water-drop" style={{animationDelay: '0.33s'}} />
+            <circle cx="15" cy="65" r="3.5" fill="#93c5fd" className="water-drop" style={{animationDelay: '0.66s'}} />
             
             {/* Flaque au sol */}
-            <ellipse cx="15" cy="155" rx="12" ry="3" fill="#3b82f6" opacity="0.5" />
+            <ellipse cx="15" cy="160" rx="12" ry="3" fill="#3b82f6" opacity="0.5" />
             
-            {/* Éclaboussures */}
-            <circle cx="10" cy="155" r="1.5" fill="#60a5fa" className="splash-particle" style={{animationDelay: '0s'}} />
-            <circle cx="20" cy="155" r="1" fill="#60a5fa" className="splash-particle" style={{animationDelay: '0.2s'}} />
+            {/* Éclaboussures synchronisées approximativement */}
+            <circle cx="10" cy="160" r="1.5" fill="#60a5fa" className="splash-particle" style={{animationDelay: '0.9s'}} />
+            <circle cx="20" cy="160" r="1" fill="#60a5fa" className="splash-particle" style={{animationDelay: '1.2s'}} />
         </g>
     </svg>
 ));
