@@ -32,9 +32,7 @@ export default function ProofModal({ isOpen, onClose, brandName }: { isOpen: boo
                     </div>
 
                     <a 
-                        href="https://etherscan.io" 
-                        target="_blank" 
-                        rel="noreferrer"
+                        href="#" 
                         className="w-full bg-emerald-500 text-black font-bold py-3 rounded-xl hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2"
                     >
                         View on Etherscan <ExternalLink size={16} />
