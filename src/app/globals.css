@@ -15,60 +15,17 @@ body {
   overflow-x: hidden;
 }
 
-/* --- Utilities --- */
-.hide-scrollbar::-webkit-scrollbar { display: none; }
-.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-.custom-scrollbar::-webkit-scrollbar { width: 6px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
-.glass-panel { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); }
-.glass-panel:hover { background: rgba(16, 185, 129, 0.03); border-color: rgba(16, 185, 129, 0.2); box-shadow: 0 0 20px rgba(16, 185, 129, 0.05); }
-.glow-text { text-shadow: 0 0 30px rgba(16, 185, 129, 0.2); }
-.glow-dot-green { box-shadow: 0 0 12px 3px rgba(16, 185, 129, 0.4); }
+/* --- Utilities (Inchangés) --- */
+.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } .custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); } .glass-panel { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); } .glass-panel:hover { background: rgba(16, 185, 129, 0.03); border-color: rgba(16, 185, 129, 0.2); box-shadow: 0 0 20px rgba(16, 185, 129, 0.05); } .glow-text { text-shadow: 0 0 30px rgba(16, 185, 129, 0.2); } .glow-dot-green { box-shadow: 0 0 12px 3px rgba(16, 185, 129, 0.4); }
 
 /* =========================================
    ANIMATIONS DES PUBLICITÉS (LivingAdSlot)
    ========================================= */
 
-/* --- 1. ARBRE (Structure simple et claire) --- */
-.tree-trunk-simple {
-    transform: scaleY(0);
-    transform-origin: bottom center;
-}
-.ad-grown .tree-trunk-simple {
-    animation: grow-up 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
+/* --- 1. ARBRE (Inchangé) --- */
+.tree-trunk-simple { transform: scaleY(0); transform-origin: bottom center; } .ad-grown .tree-trunk-simple { animation: grow-up 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; } .branch-grow { stroke-dasharray: 50; stroke-dashoffset: 50; } .ad-grown .branch-grow { animation: draw-line 1s ease-out 0.5s forwards; } .leaf-pop { transform: scale(0); transform-origin: center; } .ad-grown .leaf-pop { animation: pop-scale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; } @keyframes branch-sway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } } .ad-grown .swaying-branch { transform-origin: 0% 100%; animation: branch-sway 4s ease-in-out infinite; }
 
-/* Branches qui poussent */
-.branch-grow {
-    stroke-dasharray: 50;
-    stroke-dashoffset: 50;
-}
-.ad-grown .branch-grow {
-    animation: draw-line 1s ease-out 0.5s forwards;
-}
-
-/* Feuilles qui apparaissent */
-.leaf-pop {
-    transform: scale(0);
-    transform-origin: center;
-}
-.ad-grown .leaf-pop {
-    animation: pop-scale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-/* Vent léger sur les branches */
-@keyframes branch-sway {
-    0%, 100% { transform: rotate(-2deg); }
-    50% { transform: rotate(2deg); }
-}
-.ad-grown .swaying-branch {
-    transform-origin: 0% 100%; /* Pivot à la base de la branche */
-    animation: branch-sway 4s ease-in-out infinite;
-}
-
-/* --- 3. ROBINET (GOUTTES QUI TOMBENT) --- */
+/* --- 3. ROBINET (GOUTTES REALISTES) --- */
 @keyframes pump-handle-active {
     0%, 100% { transform: rotate(0deg); }
     50% { transform: rotate(20deg); }
@@ -77,61 +34,48 @@ body {
     animation: pump-handle-active 3s ease-in-out infinite;
 }
 
-/* Animation de la goutte qui tombe (Gravité) */
-@keyframes water-drop-fall {
+/* NOUVEAU : Animation de chute réaliste avec étirement */
+@keyframes water-drop-fall-realistic {
     0% { 
-        transform: translateY(0) scale(1); 
+        /* Départ : Goutte ronde juste sous le robinet */
+        transform: translateY(0) scale(1, 1); 
         opacity: 0; 
     }
-    10% {
-        opacity: 1; /* Apparaît juste à la sortie */
+    5% {
+        opacity: 1; /* Apparition rapide */
+    }
+    30% {
+        /* Mi-course : Commence à s'étirer un peu */
+         transform: translateY(25px) scale(0.9, 1.1);
     }
     100% { 
-        transform: translateY(95px) scale(0.8); 
+        /* Fin de course : Très étirée verticalement, compressée horizontalement à cause de la vitesse */
+        transform: translateY(98px) scale(0.7, 1.5); 
         opacity: 1; 
     }
 }
+
 .water-drop {
-    /* cubic-bezier pour simuler l'accélération de la gravité */
-    animation: water-drop-fall 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) infinite;
-    transform-origin: center;
+    /* Utilisation d'une courbe d'accélération (cubic-bezier) pour simuler la gravité */
+    animation: water-drop-fall-realistic 0.9s cubic-bezier(0.55, 0.085, 0.68, 0.53) infinite;
+    transform-origin: center; /* Important pour que l'étirement se fasse depuis le centre */
 }
 
-/* Éclaboussures qui apparaissent quand la goutte touche le sol */
+/* Éclaboussures au sol */
 @keyframes splash-pop {
     0%, 80% { transform: scale(0); opacity: 0; }
-    90% { transform: scale(1.2); opacity: 1; }
+    90% { transform: scale(1.4); opacity: 0.8; }
     100% { transform: scale(0); opacity: 0; }
 }
 .splash-particle {
-    animation: splash-pop 1s infinite;
+    animation: splash-pop 0.9s infinite; /* Synchronisé avec la chute */
+    transform-origin: center bottom;
 }
 
-/* --- GÉNÉRIQUES --- */
-@keyframes grow-up { to { transform: scaleY(1); } }
-@keyframes draw-line { to { stroke-dashoffset: 0; } }
-@keyframes pop-scale { to { transform: scale(1); } }
-@keyframes drop-in { to { transform: translateY(0) scale(1); opacity: 1; } }
-@keyframes slide-right { to { transform: scaleX(1); opacity: 1; } }
-@keyframes fade-in { to { opacity: 1; } }
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes draw-ecg { 0% { stroke-dashoffset: 300; } 100% { stroke-dashoffset: 0; } }
-@keyframes fade-in-out { 0%, 100% { opacity: 0; } 10%, 90% { opacity: 1; } }
-@keyframes wheat-wave { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(8deg); } }
-@keyframes fade-in-up-small { from { opacity: 0; transform: translateY(5px) scale(0.8); } to { opacity: 1; transform: translateY(0) scale(1); } }
-@keyframes flag-wave { 0%, 100% { transform: scaleX(1) skewY(0deg); } 50% { transform: scaleX(0.95) skewY(5deg); } }
-
-/* UI Keyframes */
-@keyframes seed-fall { 0% { transform: translateY(-140px) scale(0); opacity: 0; } 20% { opacity: 1; transform: translateY(-120px) scale(1); } 80% { transform: translateY(0px) scale(1); opacity: 1; } 90% { transform: translateY(2px) scale(1.2, 0.8); opacity: 1; } 100% { transform: translateY(5px) scale(0); opacity: 0; } }
-@keyframes ad-grow { 0% { transform: scale(0) translateX(-20px) rotate(-10deg); opacity: 0; } 60% { transform: scale(1.05) translateX(0) rotate(2deg); opacity: 1; } 100% { transform: scale(1) translateX(0) rotate(0); opacity: 1; } }
-@keyframes wither { 0% { opacity: 1; transform: scale(1); filter: blur(0); } 100% { opacity: 0; transform: scale(0.9) translateY(10px); filter: blur(4px); } }
-@keyframes scan-line { 0% { transform: translateY(-100%); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(300%); opacity: 0; } }
-.animate-seed-fall { animation: seed-fall 1s linear forwards; }
-.animate-ad-grow { animation: ad-grow 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-.animate-wither { animation: wither 0.6s ease-in forwards; }
-.group:hover .animate-scan { animation: scan-line 1.5s ease-in-out infinite; }
-
-/* Autres animations existantes conservées... */
+/* --- GÉNÉRIQUES & AUTRES (Inchangés) --- */
+@keyframes grow-up { to { transform: scaleY(1); } } @keyframes draw-line { to { stroke-dashoffset: 0; } } @keyframes pop-scale { to { transform: scale(1); } } @keyframes drop-in { to { transform: translateY(0) scale(1); opacity: 1; } } @keyframes slide-right { to { transform: scaleX(1); opacity: 1; } } @keyframes fade-in { to { opacity: 1; } } @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } @keyframes draw-ecg { 0% { stroke-dashoffset: 300; } 100% { stroke-dashoffset: 0; } } @keyframes fade-in-out { 0%, 100% { opacity: 0; } 10%, 90% { opacity: 1; } } @keyframes wheat-wave { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(8deg); } } @keyframes fade-in-up-small { from { opacity: 0; transform: translateY(5px) scale(0.8); } to { opacity: 1; transform: translateY(0) scale(1); } } @keyframes flag-wave { 0%, 100% { transform: scaleX(1) skewY(0deg); } 50% { transform: scaleX(0.95) skewY(5deg); } }
+@keyframes seed-fall { 0% { transform: translateY(-140px) scale(0); opacity: 0; } 20% { opacity: 1; transform: translateY(-120px) scale(1); } 80% { transform: translateY(0px) scale(1); opacity: 1; } 90% { transform: translateY(2px) scale(1.2, 0.8); opacity: 1; } 100% { transform: translateY(5px) scale(0); opacity: 0; } } @keyframes ad-grow { 0% { transform: scale(0) translateX(-20px) rotate(-10deg); opacity: 0; } 60% { transform: scale(1.05) translateX(0) rotate(2deg); opacity: 1; } 100% { transform: scale(1) translateX(0) rotate(0); opacity: 1; } } @keyframes wither { 0% { opacity: 1; transform: scale(1); filter: blur(0); } 100% { opacity: 0; transform: scale(0.9) translateY(10px); filter: blur(4px); } } @keyframes scan-line { 0% { transform: translateY(-100%); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(300%); opacity: 0; } }
+.animate-seed-fall { animation: seed-fall 1s linear forwards; } .animate-ad-grow { animation: ad-grow 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; } .animate-wither { animation: wither 0.6s ease-in forwards; } .group:hover .animate-scan { animation: scan-line 1.5s ease-in-out infinite; }
 .house-base { transform: scaleY(0); transform-origin: bottom; } .ad-grown .house-base { animation: grow-up 0.8s forwards; } .house-roof { transform: translateY(-20px) scale(0); transform-origin: center; opacity: 0; } .ad-grown .house-roof { animation: drop-in 0.8s 0.5s forwards; } .house-fill { fill-opacity: 0; transition: fill-opacity 1s; } .ad-grown .house-fill { fill-opacity: 1; } .house-pop { transform: scale(0); transform-origin: center; } .ad-grown .house-pop { animation: pop-scale 0.5s forwards; }
 .turbine-spin-fast { animation: spin 2s linear infinite; transform-origin: 50px 45px; transform-box: view-box; } .ecg-line { stroke-dasharray: 300; stroke-dashoffset: 300; } .ad-grown .ecg-line { animation: draw-ecg 2.5s linear forwards infinite; } .ecg-blip { opacity: 0; } .ad-grown .ecg-blip { animation: fade-in-out 2.5s linear infinite; } .wheat-stem { stroke-dasharray: 100; stroke-dashoffset: 100; } .ad-grown .wheat-stem { animation: draw-line 1.5s ease-out forwards; } .wheat-head { opacity: 0; transform-origin: bottom center; } .ad-grown .wheat-head { animation: fade-in-up-small 0.5s ease-out 1.2s forwards, wheat-wave 3s infinite ease-in-out 1.7s; }
 @keyframes jellyfish-swim-up { 0% { transform: translateY(140px); } 100% { transform: translateY(-30px); } } .jellyfish-swim { animation: jellyfish-swim-up 10s linear infinite; } @keyframes bell-pulse { 0%, 100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(0.9) scaleX(1.1); } } .jellyfish-bell-pulse { transform-origin: center; animation: bell-pulse 2s ease-in-out infinite; } @keyframes tentacle-trail { 0%, 100% { transform: scaleY(1); opacity: 0.8; } 50% { transform: scaleY(1.2); opacity: 0.5; } } .jellyfish-tentacles path { transform-origin: top; animation: tentacle-trail 2s ease-in-out infinite; } .tentacle-1 { animation-delay: 0s; } .tentacle-2 { animation-delay: 0.1s; } .tentacle-3 { animation-delay: 0.2s; } .tentacle-4 { animation-delay: 0.3s; } @keyframes light-ray-shimmer { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.15; } } .ocean-light-rays path { animation: light-ray-shimmer 8s infinite ease-in-out alternate; } @keyframes ocean-particle-drift { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(3px, -5px); } } .ocean-particles circle { animation: ocean-particle-drift 12s infinite ease-in-out alternate; }
