@@ -13,56 +13,70 @@ export interface Ad {
 // COMPOSANTS GRAPHIQUES
 // ==========================================
 
-/* --- ARBRE "WOW" (Organique & Luxuriant) --- */
+/* --- ARBRE "WOW" V2 (Structuré, Majestueux et Cyber) --- */
 const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-700 ${grown ? 'opacity-100' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+    <svg viewBox="0 0 100 160" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-700 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
-            <linearGradient id="treeTrunk" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0%" stopColor="#064e3b" />
-                <stop offset="50%" stopColor="#065f46" />
-                <stop offset="100%" stopColor="#064e3b" />
+            {/* Dégradé pour le tronc */}
+            <linearGradient id="trunkGrad" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0%" stopColor="#022c22" /> {/* Très sombre */}
+                <stop offset="50%" stopColor="#064e3b" /> {/* Vert forêt */}
+                <stop offset="100%" stopColor="#022c22" />
             </linearGradient>
-            <filter id="glowGreen">
-                <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
-                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            
+            {/* Dégradé pour le feuillage */}
+            <linearGradient id="leafGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#10b981" /> {/* Emerald clair en haut */}
+                <stop offset="100%" stopColor="#047857" /> {/* Emerald foncé en bas */}
+            </linearGradient>
+
+            {/* Lueur interne pour le feuillage */}
+            <filter id="innerGlow">
+                <feGaussianBlur stdDeviation="2" result="blur"/>
+                <feComposite in="SourceGraphic" in2="blur" operator="arithmetic" k2="1.2" k3="-0.8" result="edge"/>
+                 <feMerge>
+                    <feMergeNode in="SourceGraphic" />
+                    <feMergeNode in="edge" />
+                </feMerge>
             </filter>
         </defs>
 
-        {/* Tronc plus réaliste */}
-        <path d="M48 140 L 45 100 Q 42 70 50 50 Q 58 70 55 100 L 52 140 Z" fill="url(#treeTrunk)" className={`origin-bottom transition-transform duration-1000 ${grown ? 'scale-y-100' : 'scale-y-0'}`} />
+        {/* 1. Le Tronc solide (Animation : pousse du bas) */}
+        <path 
+            d="M46 160 L 48 110 Q 50 100 52 110 L 54 160 Q 50 165 46 160 Z" 
+            fill="url(#trunkGrad)" 
+            className="tree-trunk-grow"
+        />
         
-        {/* Branches principales */}
-        <g className={grown ? 'opacity-100 transition-opacity delay-300 duration-500' : 'opacity-0'}>
-             <path d="M50 90 Q 30 80 20 60" stroke="#065f46" strokeWidth="2" fill="none" className="tree-path" />
-             <path d="M50 70 Q 70 60 80 40" stroke="#065f46" strokeWidth="2" fill="none" className="tree-path" style={{animationDelay: '0.2s'}} />
+        {/* Conteneur du feuillage qui se balance doucement */}
+        <g className="tree-crown-sway">
+             {/* 2. Les Branches (Animation : se dessinent) */}
+            <g fill="none" stroke="#065f46" strokeWidth="1.5" strokeLinecap="round">
+                {/* Branche gauche */}
+                <path d="M50 110 Q 40 100 30 105" className="tree-branch" style={{animationDelay: '0.8s'}} />
+                {/* Branche droite */}
+                <path d="M50 110 Q 60 100 70 105" className="tree-branch" style={{animationDelay: '0.9s'}} />
+                {/* Branche haut */}
+                <path d="M50 110 Q 50 90 50 70" className="tree-branch" style={{animationDelay: '1.0s'}} />
+            </g>
+
+            {/* 3. Le Feuillage (Animation : Pop des nuages de feuilles) */}
+            <g fill="url(#leafGrad)" filter="url(#innerGlow)">
+                {/* Nuage Gauche */}
+                 <ellipse cx="30" cy="100" rx="15" ry="12" className="leaf-cloud" style={{animationDelay: '1.2s'}} />
+                {/* Nuage Droit */}
+                 <ellipse cx="70" cy="100" rx="15" ry="12" className="leaf-cloud" style={{animationDelay: '1.4s'}} />
+                {/* Nuage Haut Central (le plus gros) */}
+                 <ellipse cx="50" cy="70" rx="20" ry="18" className="leaf-cloud" style={{animationDelay: '1.6s'}} />
+                {/* Petit nuage sommet */}
+                 <circle cx="50" cy="55" r="10" className="leaf-cloud" style={{animationDelay: '1.8s'}} />
+            </g>
         </g>
 
-        {/* Feuillage dense (Canopy) */}
-        <g className={`origin-center ${grown ? 'animate-sway' : ''}`}>
-            {/* Groupe de feuilles gauche */}
-            <g className={`transition-all duration-700 delay-500 ${grown ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} style={{transformOrigin: '20px 60px'}}>
-                <circle cx="20" cy="60" r="12" fill="#10b981" opacity="0.8" />
-                <circle cx="25" cy="55" r="10" fill="#34d399" opacity="0.6" />
-            </g>
-            {/* Groupe de feuilles droite */}
-            <g className={`transition-all duration-700 delay-700 ${grown ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} style={{transformOrigin: '80px 40px'}}>
-                <circle cx="80" cy="40" r="14" fill="#10b981" opacity="0.8" />
-                <circle cx="75" cy="45" r="10" fill="#059669" opacity="0.6" />
-            </g>
-            {/* Sommet */}
-            <g className={`transition-all duration-700 delay-900 ${grown ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} style={{transformOrigin: '50px 30px'}}>
-                <circle cx="50" cy="30" r="18" fill="#10b981" />
-                <circle cx="50" cy="25" r="12" fill="#34d399" />
-                {/* Fruit/Baie brillante */}
-                <circle cx="55" cy="35" r="3" fill="#fbbf24" filter="url(#glowGreen)" className="animate-pulse" />
-            </g>
-        </g>
-
-        {/* Particules de vie (Pollen/Lucioles) */}
+        {/* Particules/Lucioles autour de l'arbre */}
         <g className={grown ? 'opacity-100' : 'opacity-0'}>
-            <circle r="1" fill="#fff" className="firefly" style={{animationDelay: '1s', cx: '40', cy: '80'}} />
-            <circle r="1" fill="#fff" className="firefly" style={{animationDelay: '2.5s', cx: '60', cy: '70'}} />
-            <circle r="1.5" fill="#34d399" className="firefly" style={{animationDelay: '4s', cx: '50', cy: '50'}} />
+             <circle r="1" fill="#34d399" className="firefly" style={{animationDelay: '2s', cx: '40', cy: '80'}} />
+             <circle r="1.5" fill="#10b981" className="firefly" style={{animationDelay: '3s', cx: '60', cy: '60'}} />
         </g>
     </svg>
 ));
