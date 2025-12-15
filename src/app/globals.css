@@ -44,13 +44,75 @@ body {
    ANIMATIONS DES PUBLICITÉS (LivingAdSlot)
    ========================================= */
 
-/* --- 1. ARBRE (Base) --- */
+/* --- 1. ARBRE (Base & V4) --- */
 .tree-path { stroke-dasharray: 300; stroke-dashoffset: 300; }
 .ad-grown .tree-path { animation: draw-line 2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .leaf { transform: scale(0); transform-origin: center; }
 .ad-grown .leaf { animation: pop-scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 
-/* --- 2. MAISON / ÉCOLE --- */
+/* Tronc qui pousse et s'ancre */
+.tree-trunk-grow { transform: scaleY(0); transform-origin: bottom center; }
+.ad-grown .tree-trunk-grow { animation: grow-up-bounce 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+/* Branches qui se dessinent */
+.tree-branch { stroke-dasharray: 150; stroke-dashoffset: 150; opacity: 0; }
+.ad-grown .tree-branch { animation: fade-in 0.1s forwards, draw-line 1.5s ease-out forwards; }
+
+/* Nuages de feuilles (Canopée) */
+.leaf-cloud { transform: scale(0); transform-origin: center; opacity: 0.9; }
+.ad-grown .leaf-cloud { animation: pop-scale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+/* Balancement Majestueux */
+@keyframes tree-sway-slow {
+    0%, 100% { transform: rotate(-1.5deg); }
+    50% { transform: rotate(1.5deg); }
+}
+.ad-grown .tree-crown-sway {
+    animation: tree-sway-slow 7s ease-in-out infinite alternate;
+    transform-origin: 50px 100px;
+}
+
+/* Feuilles qui tombent */
+@keyframes leaf-fall {
+    0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    100% { transform: translateY(80px) translateX(25px) rotate(180deg); opacity: 0; }
+}
+.falling-leaf { animation: leaf-fall 8s linear infinite; }
+
+/* --- 2. ROBINET (EAU DYNAMIQUE) --- */
+/* Écoulement de l'eau */
+@keyframes water-stream-flow {
+    0% { stroke-dashoffset: 20; }
+    100% { stroke-dashoffset: 0; }
+}
+.water-stream {
+    stroke-dasharray: 10 5;
+    animation: water-stream-flow 0.5s linear infinite;
+}
+
+/* Éclaboussure au sol */
+@keyframes splash-bounce {
+    0%, 100% { transform: scaleY(1) scaleX(1); opacity: 0.6; }
+    50% { transform: scaleY(0.8) scaleX(1.3); opacity: 0.8; }
+}
+.splash-base { animation: splash-bounce 0.4s ease-in-out infinite; transform-origin: center bottom; }
+
+/* Gouttelettes qui sautent */
+@keyframes droplet-jump {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--tx), -20px) scale(0); opacity: 0; }
+}
+.droplet-particle { animation: droplet-jump 0.8s ease-out infinite; }
+
+/* Brillance Métallique */
+@keyframes metal-shine {
+    0%, 100% { opacity: 0; transform: translateX(-100%); }
+    50% { opacity: 0.5; transform: translateX(100%); }
+}
+.shine-effect { animation: metal-shine 3s ease-in-out infinite; }
+
+/* --- 3. MAISON / ÉCOLE --- */
 .house-base { transform: scaleY(0); transform-origin: bottom; }
 .ad-grown .house-base { animation: grow-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .house-roof { transform: translateY(-20px) scale(0); transform-origin: center; opacity: 0; }
@@ -62,45 +124,10 @@ body {
 .flag-banner { transform: scaleX(0); transform-origin: left; opacity: 0; }
 .ad-grown .flag-banner { animation: flag-wave 2s infinite ease-in-out 1.5s, slide-right 0.5s ease-out 1.5s forwards; }
 
-/* --- 3. ROBINET (Dynamique) --- */
-@keyframes pump-handle {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(15deg); }
-}
-.animate-pump-handle {
-    animation: pump-handle 2s ease-in-out infinite;
-}
-
-@keyframes water-flow {
-    0% { stroke-dashoffset: 10; }
-    100% { stroke-dashoffset: 0; }
-}
-.animate-water-flow {
-    animation: water-flow 0.5s linear infinite;
-}
-
-@keyframes drop-fall {
-    0% { transform: translateY(0); opacity: 1; }
-    80% { opacity: 1; }
-    100% { transform: translateY(55px); opacity: 0; }
-}
-.animate-drop-fall {
-    animation: drop-fall 1.5s infinite ease-in;
-}
-
-@keyframes ripple-expand {
-    0% { transform: scale(0.5); opacity: 0.8; }
-    100% { transform: scale(1.5); opacity: 0; }
-}
-.animate-ripple {
-    animation: ripple-expand 1.5s infinite ease-out;
-    transform-origin: center;
-}
-
 /* --- 4. ÉNERGIE (Fix Centre de rotation) --- */
 .turbine-spin-fast {
   animation: spin 2s linear infinite;
-  transform-origin: 50px 45px; /* CRUCIAL: Point de pivot exact du SVG */
+  transform-origin: 50px 45px; 
   transform-box: view-box;
 }
 
@@ -136,7 +163,7 @@ body {
 /* Contraction de la cloche (Propulsion) */
 @keyframes bell-pulse {
     0%, 100% { transform: scaleY(1) scaleX(1); }
-    50% { transform: scaleY(0.9) scaleX(1.1); } /* Contraction pour avancer */
+    50% { transform: scaleY(0.9) scaleX(1.1); } 
 }
 .jellyfish-bell-pulse {
     transform-origin: center;
@@ -146,13 +173,12 @@ body {
 /* Mouvement des tentacules (Suivent la propulsion) */
 @keyframes tentacle-trail {
     0%, 100% { transform: scaleY(1); opacity: 0.8; }
-    50% { transform: scaleY(1.2); opacity: 0.5; } /* S'allongent quand la méduse avance */
+    50% { transform: scaleY(1.2); opacity: 0.5; }
 }
 .jellyfish-tentacles path {
     transform-origin: top;
     animation: tentacle-trail 2s ease-in-out infinite;
 }
-/* Décalage pour effet naturel */
 .tentacle-1 { animation-delay: 0s; }
 .tentacle-2 { animation-delay: 0.1s; }
 .tentacle-3 { animation-delay: 0.2s; }
@@ -179,14 +205,15 @@ body {
    KEYFRAMES GÉNÉRIQUES
    ========================================= */
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes draw-line { to { stroke-dashoffset: 0; } }
 @keyframes pop-scale { to { transform: scale(1); } }
 @keyframes grow-up { to { transform: scaleY(1); } }
+@keyframes grow-up-bounce { 
+    0% { transform: scaleY(0); } 
+    60% { transform: scaleY(1.1); } 
+    100% { transform: scaleY(1); } 
+}
 @keyframes drop-in { to { transform: translateY(0) scale(1); opacity: 1; } }
 @keyframes slide-right { to { transform: scaleX(1); opacity: 1; } }
 @keyframes fade-in { to { opacity: 1; } }
@@ -263,7 +290,7 @@ body {
    NOUVELLES ANIMATIONS "WOW" ULTIMES (V3)
    ========================================================================= */
 
-/* --- 1. NATURE & ARBRE --- */
+/* --- NATURE (Lucioles) --- */
 @keyframes firefly-move {
   0% { transform: translate(0, 0); opacity: 0; }
   20% { opacity: 1; }
@@ -272,81 +299,25 @@ body {
 }
 .firefly { animation: firefly-move 4s ease-out infinite; }
 
-/* Chute de feuilles */
-@keyframes leaf-fall {
-    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-    10% { opacity: 1; }
-    100% { transform: translateY(60px) translateX(20px) rotate(360deg); opacity: 0; }
-}
-.falling-leaf { animation: leaf-fall 6s linear infinite; }
-
-/* Le tronc qui sort du sol */
-.tree-trunk-grow {
-    transform: scaleY(0);
-    transform-origin: bottom center;
-}
-.ad-grown .tree-trunk-grow {
-    animation: grow-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Les branches qui se dessinent */
-.tree-branch {
-    stroke-dasharray: 150;
-    stroke-dashoffset: 150;
-    opacity: 0;
-}
-.ad-grown .tree-branch {
-    animation: fade-in 0.1s forwards, draw-line 1.5s ease-out forwards;
-}
-
-/* Les masses de feuilles qui apparaissent */
-.leaf-cloud {
-    transform: scale(0);
-    transform-origin: center;
-    opacity: 0.9;
-}
-.ad-grown .leaf-cloud {
-    animation: pop-scale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-/* Balancement doux de tout le feuillage */
-@keyframes tree-sway-slow {
-    0%, 100% { transform: rotate(-1deg); }
-    50% { transform: rotate(1deg); }
-}
-.ad-grown .tree-crown-sway {
-    animation: tree-sway-slow 6s ease-in-out infinite alternate;
-    transform-origin: 50px 100px;
-}
-
-/* --- 2. OCÉAN (Bulles, Poissons, Électricité) --- */
-@keyframes bubble-rise {
-  0% { transform: translateY(0) scale(0.5); opacity: 0; }
-  20% { opacity: 0.6; }
-  100% { transform: translateY(-60px) scale(1.2); opacity: 0; }
-}
-.bubble { animation: bubble-rise 4s linear infinite; }
-
-@keyframes fish-swim {
-  0% { transform: translateX(-20px) rotate(5deg); opacity: 0; }
-  10% { opacity: 0.8; }
-  90% { opacity: 0.8; }
-  100% { transform: translateX(120px) rotate(-5deg); opacity: 0; }
-}
-.fish-school { animation: fish-swim 8s linear infinite; }
-
+/* --- OCÉAN (Bio-Pulse) --- */
 @keyframes bio-pulse {
     0%, 100% { opacity: 0.4; }
     50% { opacity: 1; filter: drop-shadow(0 0 5px #2dd4bf); }
 }
 .bio-electric { animation: bio-pulse 3s ease-in-out infinite; }
 
-/* --- 3. ÉNERGIE (Nuages, Oiseaux, Flux) --- */
+/* --- ÉNERGIE (Nuages, Flux) --- */
 @keyframes cloud-drift {
   from { transform: translateX(-30px); }
   to { transform: translateX(130px); }
 }
 .cloud { animation: cloud-drift 20s linear infinite; }
+
+@keyframes energy-stream {
+    0% { transform: scale(0.5) translate(0,0); opacity: 0.8; }
+    100% { transform: scale(0) translate(20px, -20px); opacity: 0; }
+}
+.energy-particle { animation: energy-stream 1s ease-out infinite; }
 
 @keyframes bird-fly {
   0% { transform: translate(-10px, 10px) scale(0.5); opacity: 0; }
@@ -354,9 +325,3 @@ body {
   100% { transform: translate(120px, -20px) scale(0.8); opacity: 0; }
 }
 .bird { animation: bird-fly 6s linear infinite; }
-
-@keyframes energy-stream {
-    0% { transform: scale(0.5) translate(0,0); opacity: 0.8; }
-    100% { transform: scale(0) translate(20px, -20px); opacity: 0; }
-}
-.energy-particle { animation: energy-stream 1s ease-out infinite; }
