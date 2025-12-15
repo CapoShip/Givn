@@ -159,9 +159,9 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* MOBILE AD 1 */}
+                        {/* MOBILE AD 1 (Maison) */}
                         <div className="w-full lg:hidden mb-16 px-4">
-                             <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={14000} forcedType={0} />
+                             <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={14000} forcedType={1} />
                         </div>
 
                         {/* CATEGORIES */}
@@ -184,7 +184,7 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* MOBILE AD 2 */}
+                        {/* MOBILE AD 2 (Eau) */}
                         <div className="w-full lg:hidden mb-16 px-4">
                              <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={16000} forcedType={2} />
                         </div>
@@ -260,18 +260,18 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Right Ads (Desktop Only) - FORCED TYPES ADDED (Alternating with Left) */}
+                    {/* Right Ads (Desktop Only) - FORCED ALTERNATE TYPES */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
-                        {/* 1. Eau (vs Arbre) */}
+                        {/* 1. Eau (vs Arbre gauche) */}
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={14000} forcedType={2} />
                         
-                        {/* 2. Arbre (vs Maison) */}
+                        {/* 2. Arbre (vs Maison gauche) */}
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={3500} cycleDuration={17000} forcedType={0} />
                         
-                        {/* 3. Maison (vs Eau) */}
+                        {/* 3. Maison (vs Eau gauche) */}
                         <LivingAdSlot pool={[AD_POOL_LEFT[0], AD_POOL_RIGHT[1]]} initialDelay={500} cycleDuration={12000} forcedType={1} />
                         
-                        {/* 4. Eau (vs Arbre) */}
+                        {/* 4. Eau (vs Arbre gauche) */}
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2800} cycleDuration={18000} forcedType={2} />
 
                         {/* Advertise Block */}

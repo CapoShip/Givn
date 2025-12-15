@@ -7,16 +7,15 @@ interface Ad {
 }
 
 // ==========================================
-// 1. COMPOSANTS GRAPHIQUES (REDESIGN MODERNE)
+// 1. COMPOSANTS GRAPHIQUES (CORRECTIFS VISUELS)
 // ==========================================
 
-/* --- ARBRE (Inchangé car il fonctionnait bien) --- */
+/* --- ARBRE (Inchangé) --- */
 const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-500 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
             <linearGradient id="treeGradient" x1="0" y1="1" x2="0" y2="0">
                 <stop offset="0%" stopColor="#064e3b" />
-                <stop offset="40%" stopColor="#10b981" />
                 <stop offset="100%" stopColor="#34d399" />
             </linearGradient>
             <filter id="glowTree" x="-40%" y="-40%" width="180%" height="180%">
@@ -43,81 +42,91 @@ const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 TreeGraphic.displayName = 'TreeGraphic';
 
-/* --- MAISON "MODERN ECO-CABIN" --- */
+/* --- MAISON (Design Traditionnel Clean) --- */
 const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
-            <linearGradient id="wallDark" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#111827" />
-                <stop offset="100%" stopColor="#1f2937" />
+            <linearGradient id="wallWhite" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#e2e8f0" />
+                <stop offset="100%" stopColor="#cbd5e1" />
             </linearGradient>
-            <linearGradient id="accentWood" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#d97706" />
-                <stop offset="100%" stopColor="#92400e" />
+            <linearGradient id="roofDark" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#334155" />
+                <stop offset="100%" stopColor="#1e293b" />
             </linearGradient>
         </defs>
         
-        {/* Structure A-Frame (Triangle moderne) */}
-        <path d="M50 40 L90 130 H10 L50 40 Z" fill="url(#wallDark)" stroke="#4b5563" strokeWidth="2" className="house-base" />
+        {/* Corps de la maison (Carré solide) */}
+        <g className="house-base">
+            <rect x="25" y="70" width="50" height="50" fill="url(#wallWhite)" stroke="#94a3b8" strokeWidth="1" className="house-fill" />
+        </g>
         
-        {/* Grande Baie Vitrée (Triangle intérieur) */}
-        <path d="M50 55 L80 125 H20 L50 55 Z" fill="#34d399" fillOpacity="0.1" stroke="#34d399" strokeWidth="1" className="house-fill" />
+        {/* Toit (Classique) */}
+        <g className="house-roof">
+            <path d="M15 70 L50 35 L85 70" fill="url(#roofDark)" stroke="#0f172a" strokeWidth="1" strokeLinejoin="round" />
+            <rect x="65" y="45" width="8" height="15" fill="#475569" className="house-fill" /> {/* Cheminée */}
+        </g>
         
-        {/* Poutres en bois (Détails) */}
-        <path d="M50 40 L10 130" stroke="url(#accentWood)" strokeWidth="4" strokeLinecap="round" className="house-roof" />
-        <path d="M50 40 L90 130" stroke="url(#accentWood)" strokeWidth="4" strokeLinecap="round" className="house-roof" />
+        {/* Porte (Bois) */}
+        <rect x="43" y="95" width="14" height="25" fill="#78350f" className="house-pop" style={{ animationDelay: '1s' }} />
         
-        {/* Lumière intérieure */}
-        <circle cx="50" cy="100" r="8" fill="#fcd34d" className="house-pop" style={{ animationDelay: '1s', filter: 'blur(4px)' }} />
-        <circle cx="50" cy="100" r="4" fill="#fff" className="house-pop" style={{ animationDelay: '1s' }} />
+        {/* Fenêtres (Bleutées) */}
+        <rect x="30" y="80" width="10" height="10" fill="#93c5fd" className="house-pop" style={{ animationDelay: '1.2s' }} />
+        <rect x="60" y="80" width="10" height="10" fill="#93c5fd" className="house-pop" style={{ animationDelay: '1.3s' }} />
+        
+        {/* Verdure bas */}
+        <path d="M20 120 Q 25 115 30 120 T 40 120" stroke="#16a34a" strokeWidth="2" fill="none" className="house-pop" style={{ animationDelay: '1.5s' }} />
+        <path d="M60 120 Q 65 115 70 120 T 80 120" stroke="#16a34a" strokeWidth="2" fill="none" className="house-pop" style={{ animationDelay: '1.6s' }} />
     </svg>
 ));
 HouseGraphic.displayName = 'HouseGraphic';
 
-/* --- ROBINET "CLEAN WATER" (Minimaliste) --- */
+/* --- ROBINET (Design Corrigé + Goutte alignée) --- */
 const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
-            <linearGradient id="pipeGradient" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#475569" />
-                <stop offset="50%" stopColor="#94a3b8" />
-                <stop offset="100%" stopColor="#475569" />
+            <linearGradient id="metalPipe" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#94a3b8" />
+                <stop offset="50%" stopColor="#cbd5e1" />
+                <stop offset="100%" stopColor="#64748b" />
             </linearGradient>
-            <filter id="waterGlow" x="-40%" y="-40%" width="180%" height="180%">
+            <filter id="glowWater" x="-40%" y="-40%" width="180%" height="180%">
                 <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
                 <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
         </defs>
         
-        {/* Tuyau principal (Sort du sol) */}
-        <rect x="45" y="60" width="10" height="80" fill="url(#pipeGradient)" className="pump-body" />
-        
-        {/* Tête du robinet */}
-        <path d="M40 60 H60 V50 C60 45 55 40 50 40 C45 40 40 45 40 50 Z" fill="url(#pipeGradient)" className="pump-body" />
-        
-        {/* Bec verseur (Courbe élégante) */}
-        <path d="M45 55 H35 Q 25 55 25 70" stroke="url(#pipeGradient)" strokeWidth="6" fill="none" strokeLinecap="round" className="pump-body" />
-        
-        {/* Vanne (Roue sur le dessus) */}
-        <rect x="42" y="35" width="16" height="4" rx="2" fill="#ef4444" className="pump-handle" />
-        <rect x="48" y="32" width="4" height="10" rx="1" fill="#ef4444" className="pump-handle" />
-        
-        {/* Goutte d'eau */}
-        <g filter="url(#waterGlow)">
-            <path d="M25 75 Q 25 85 25 85 Q 21 82 25 75 Z" fill="#60a5fa" className="water-drop" />
-            <circle cx="25" cy="80" r="3" fill="#3b82f6" className="water-drop" />
+        {/* Corps Robinet */}
+        <g className="pump-body">
+            {/* Tuyau vertical */}
+            <rect x="45" y="50" width="10" height="90" fill="url(#metalPipe)" rx="1" />
+            
+            {/* Bec verseur (Sortie exacte à x=25, y=60) */}
+            <path d="M45 60 H 30 Q 25 60 25 70" stroke="url(#metalPipe)" strokeWidth="8" fill="none" strokeLinecap="round" />
+            
+            {/* Poignée (Rouge) */}
+            <path d="M45 50 L 60 40" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" className="pump-handle" />
+            <circle cx="60" cy="40" r="3" fill="#b91c1c" className="pump-handle" />
         </g>
         
-        {/* Ondes (Ripples) */}
-        <ellipse cx="25" cy="130" rx="12" ry="3" stroke="#3b82f6" strokeWidth="1.5" fill="none" className="ripple-1" />
-        <ellipse cx="25" cy="130" rx="20" ry="5" stroke="#3b82f6" strokeWidth="1" fill="none" className="ripple-2" />
+        {/* Goutte d'eau (Coordonnées exactes sous le bec : x=25, y=70 + marge) */}
+        <g filter="url(#glowWater)">
+            {/* Start at cy=75 to be just below the lip */}
+            <circle cx="25" cy="75" r="4" fill="#3b82f6" className="water-drop" />
+        </g>
+        
+        {/* Ondes (Centrées sur x=25) */}
+        <g className="water-ripples">
+            <ellipse cx="25" cy="135" rx="12" ry="3" stroke="#3b82f6" strokeWidth="1" fill="none" className="ripple-1" />
+            <ellipse cx="25" cy="135" rx="20" ry="5" stroke="#3b82f6" strokeWidth="1" fill="none" className="ripple-2" />
+        </g>
     </svg>
 ));
 PumpGraphic.displayName = 'PumpGraphic';
 
 
 // ==========================================
-// 2. COMPOSANT PRINCIPAL (LOGIQUE STABILISÉE)
+// 2. COMPOSANT PRINCIPAL (LOGIQUE)
 // ==========================================
 
 export default function LivingAdSlot({ 
@@ -129,7 +138,7 @@ export default function LivingAdSlot({
     pool: Ad[], 
     initialDelay: number, 
     cycleDuration?: number, 
-    forcedType?: number // 0=Tree, 1=House, 2=Pump
+    forcedType?: number 
 }) {
     const [adIndex, setAdIndex] = useState(0);
     const [phase, setPhase] = useState('waiting');
@@ -141,7 +150,7 @@ export default function LivingAdSlot({
         return () => clearTimeout(t);
     }, [initialDelay]);
 
-    // Cycle Loop
+    // Cycle
     useEffect(() => {
         if (phase === 'waiting') return;
         let timer: NodeJS.Timeout;
@@ -165,7 +174,6 @@ export default function LivingAdSlot({
     const currentAd = pool[adIndex];
     if (phase === 'waiting' || !currentAd) return <div className="h-[140px] mb-6"></div>;
 
-    // Si forcedType est défini, on l'utilise. Sinon on utilise l'index.
     const type = forcedType !== undefined ? forcedType : adIndex % 3;
     const isGrown = phase === 'blooming' || phase === 'displayed' || phase === 'withering';
 
@@ -174,7 +182,6 @@ export default function LivingAdSlot({
             <div className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-emerald-900/50 to-transparent"></div>
 
             <div className="absolute left-0 bottom-0 w-24 h-[160px] flex flex-col justify-end items-center pointer-events-none z-0">
-                 {/* Seed only for Tree (0) */}
                  {phase === 'seed' && type === 0 && (
                      <div className="w-2 h-2 bg-emerald-200 rounded-full glow-dot-green absolute bottom-0 animate-seed-fall"></div>
                  )}
