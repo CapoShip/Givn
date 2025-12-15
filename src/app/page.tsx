@@ -110,13 +110,18 @@ export default function Home() {
                 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full">
                     
-                    {/* Left Ads (Desktop Only) - Durées augmentées */}
+                    {/* Left Ads (Desktop Only) */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={12000} />
-                        <LivingAdSlot pool={[AD_POOL_LEFT[1], AD_POOL_LEFT[2]]} initialDelay={2500} cycleDuration={16000} />
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={4000} cycleDuration={14000} />
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1500} cycleDuration={13000} />
-                        <LivingAdSlot pool={[AD_POOL_RIGHT[0]]} initialDelay={3200} cycleDuration={15000} />
+                        {/* Arbre */}
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={12000} variantOffset={0} />
+                        {/* Maison */}
+                        <LivingAdSlot pool={[AD_POOL_LEFT[1], AD_POOL_LEFT[2]]} initialDelay={2500} cycleDuration={16000} variantOffset={1} />
+                        {/* Eau */}
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={4000} cycleDuration={14000} variantOffset={2} />
+                        {/* Arbre (cycle) */}
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1500} cycleDuration={13000} variantOffset={0} />
+                        {/* Maison (cycle) */}
+                        <LivingAdSlot pool={[AD_POOL_RIGHT[0]]} initialDelay={3200} cycleDuration={15000} variantOffset={1} />
                     </div>
 
                     {/* Center Content */}
@@ -154,9 +159,9 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* MOBILE AD 1 (Visible uniquement sur mobile) - Durée augmentée */}
+                        {/* MOBILE AD 1 */}
                         <div className="w-full lg:hidden mb-16 px-4">
-                             <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={14000} />
+                             <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={14000} variantOffset={0} />
                         </div>
 
                         {/* CATEGORIES */}
@@ -179,9 +184,9 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* MOBILE AD 2 (Visible uniquement sur mobile) - Durée augmentée */}
+                        {/* MOBILE AD 2 */}
                         <div className="w-full lg:hidden mb-16 px-4">
-                             <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={16000} />
+                             <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={16000} variantOffset={1} />
                         </div>
 
                         {/* RECENTLY LISTED */}
@@ -255,10 +260,19 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Right Ads (Desktop Only) - Durées augmentées */}
+                    {/* Right Ads (Desktop Only) */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={14000} />
+                        {/* Eau */}
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={14000} variantOffset={2} />
                         
+                        {/* Arbre */}
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={3500} cycleDuration={17000} variantOffset={0} />
+                        {/* Maison */}
+                        <LivingAdSlot pool={[AD_POOL_LEFT[0], AD_POOL_RIGHT[1]]} initialDelay={500} cycleDuration={12000} variantOffset={1} />
+                        {/* Eau (cycle) */}
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2800} cycleDuration={18000} variantOffset={2} />
+
+                        {/* Advertise Block - NOW AT THE BOTTOM */}
                         <div className="glass-panel rounded-xl p-6 mt-4 border border-zinc-800 animate-[pop-in_2s_ease-out] hover:border-emerald-500/30 transition-colors group">
                             <h4 className="text-sm font-bold mb-1 text-white group-hover:text-emerald-400 transition-colors">Advertise</h4>
                             <p className="text-xs text-zinc-500 mb-4 leading-relaxed">Want a placement? Your proof must be real.</p>
@@ -266,10 +280,6 @@ export default function Home() {
                                 Apply for spot <ArrowRight size={12} />
                             </button>
                         </div>
-
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={3500} cycleDuration={17000} />
-                        <LivingAdSlot pool={[AD_POOL_LEFT[0], AD_POOL_RIGHT[1]]} initialDelay={500} cycleDuration={12000} />
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2800} cycleDuration={18000} />
                     </div>
                 </div>
 
