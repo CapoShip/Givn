@@ -10,21 +10,27 @@ export interface Ad {
 }
 
 // ==========================================
-// COMPOSANTS GRAPHIQUES (GOUTTES RÉALISTES)
+// COMPOSANTS GRAPHIQUES (GOUTTES RÉALISTES 3D)
 // ==========================================
 
-/* --- ARBRE SIMPLE & CLAIR (Inchangé) --- */
+/* --- ARBRE SIMPLE & CLAIR --- */
 const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 160" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-1000 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+        {/* Tronc */}
         <path d="M48 160 L48 100 Q48 90 45 80" stroke="#8B4513" strokeWidth="4" fill="none" strokeLinecap="round" className="tree-trunk-simple" />
         <path d="M48 160 L48 100" stroke="#8B4513" strokeWidth="4" className="tree-trunk-simple" />
+        
+        {/* Branches & Feuilles */}
         <g className="swaying-branch" style={{ transformOrigin: '48px 100px' }}>
+            {/* Gauche */}
             <path d="M48 110 Q 30 100 20 90" stroke="#8B4513" strokeWidth="2" fill="none" className="branch-grow" />
             <circle cx="20" cy="90" r="5" fill="#22c55e" className="leaf-pop" style={{animationDelay: '1s'}} />
             <circle cx="30" cy="100" r="4" fill="#4ade80" className="leaf-pop" style={{animationDelay: '1.1s'}} />
+            {/* Droite */}
             <path d="M48 120 Q 70 110 80 100" stroke="#8B4513" strokeWidth="2" fill="none" className="branch-grow" style={{animationDelay: '0.6s'}} />
             <circle cx="80" cy="100" r="5" fill="#22c55e" className="leaf-pop" style={{animationDelay: '1.2s'}} />
             <circle cx="65" cy="110" r="4" fill="#4ade80" className="leaf-pop" style={{animationDelay: '1.3s'}} />
+            {/* Haut */}
             <path d="M48 100 L 48 60" stroke="#8B4513" strokeWidth="2" fill="none" className="branch-grow" style={{animationDelay: '0.7s'}} />
             <circle cx="48" cy="60" r="6" fill="#16a34a" className="leaf-pop" style={{animationDelay: '1.4s'}} />
             <circle cx="35" cy="70" r="4" fill="#4ade80" className="leaf-pop" style={{animationDelay: '1.5s'}} />
@@ -34,7 +40,7 @@ const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 TreeGraphic.displayName = 'TreeGraphic';
 
-/* --- ROBINET (GOUTTES RÉALISTES 3D) --- */
+/* --- ROBINET (EAU CORRECTE) --- */
 const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 160" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
@@ -44,15 +50,14 @@ const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
                 <stop offset="100%" stopColor="#64748b" />
             </linearGradient>
             
-            {/* NOUVEAU : Dégradé radial pour un effet Goutte 3D (reflet lumineux) */}
+            {/* Dégradé Radial pour les gouttes (Effet 3D) */}
             <radialGradient id="waterDropGrad" cx="30%" cy="30%" r="70%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" /> {/* Point lumineux blanc */}
-                <stop offset="20%" stopColor="#60a5fa" /> {/* Bleu clair */}
-                <stop offset="100%" stopColor="#2563eb" /> {/* Bleu plus profond */}
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" /> {/* Reflet */}
+                <stop offset="20%" stopColor="#60a5fa" />
+                <stop offset="100%" stopColor="#2563eb" />
             </radialGradient>
         </defs>
 
-        {/* Corps du Robinet */}
         <g transform="translate(0, -20)">
             <rect x="42" y="50" width="16" height="100" fill="url(#chromeGrad)" rx="2" />
             <path d="M42 70 H 25 Q 15 70 15 85" stroke="url(#chromeGrad)" strokeWidth="10" fill="none" strokeLinecap="round" />
@@ -62,15 +67,15 @@ const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
             </g>
         </g>
 
-        {/* EAU: Gouttes individuelles 3D qui s'étirent */}
+        {/* EAU */}
         <g className={grown ? 'opacity-100 transition-opacity delay-200' : 'opacity-0'}>
-            {/* Utilisation du dégradé "waterDropGrad" au lieu d'une couleur unie */}
+            {/* Gouttes alignées verticalement sous le bec (x=15) */}
             <circle cx="15" cy="65" r="3.5" fill="url(#waterDropGrad)" className="water-drop" style={{animationDelay: '0s'}} />
             <circle cx="15" cy="65" r="3.5" fill="url(#waterDropGrad)" className="water-drop" style={{animationDelay: '0.3s'}} />
             <circle cx="15" cy="65" r="3.5" fill="url(#waterDropGrad)" className="water-drop" style={{animationDelay: '0.6s'}} />
             
-            {/* Flaque et éclaboussures (utilisent aussi le dégradé pour la cohérence) */}
             <ellipse cx="15" cy="160" rx="12" ry="3" fill="#3b82f6" opacity="0.5" />
+            
             <circle cx="10" cy="160" r="1.5" fill="url(#waterDropGrad)" className="splash-particle" style={{animationDelay: '0.85s'}} />
             <circle cx="20" cy="160" r="1" fill="url(#waterDropGrad)" className="splash-particle" style={{animationDelay: '1.15s'}} />
         </g>
