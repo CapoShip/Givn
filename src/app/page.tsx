@@ -153,9 +153,23 @@ export default function Home() {
                                         className="w-full bg-zinc-900/80 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:bg-zinc-900 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-zinc-600 shadow-xl"
                                     />
                                 </div>
-                                <button onClick={() => setIsBrandModalOpen(true)} className="bg-white text-black px-6 py-4 rounded-xl flex items-center gap-2 text-sm font-bold hover:bg-emerald-400 hover:scale-105 transition-all whitespace-nowrap shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_20px_rgba(52,211,153,0.3)]">
-                                    <Plus size={16} /> Add
+                                
+                                {/* --- NOUVEAU BOUTON "WOW" --- */}
+                                <button 
+                                    onClick={() => setIsBrandModalOpen(true)} 
+                                    className="relative group overflow-hidden rounded-xl p-[2px] transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_40px_rgba(16,185,129,0.5)]"
+                                >
+                                    {/* Bordure animée (Conic Gradient qui tourne) */}
+                                    <div className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#000000_0%,#10b981_50%,#000000_100%)]" />
+                                    
+                                    {/* Contenu du bouton */}
+                                    <div className="relative h-full bg-black rounded-[10px] px-8 flex items-center justify-center gap-2 transition-all group-hover:bg-zinc-900">
+                                        <Plus size={20} className="text-emerald-400 group-hover:rotate-180 transition-transform duration-500" />
+                                        <span className="font-bold text-white tracking-wide group-hover:text-emerald-400 transition-colors uppercase text-xs">Add Brand</span>
+                                    </div>
                                 </button>
+                                {/* --------------------------- */}
+
                             </div>
                         </div>
 
