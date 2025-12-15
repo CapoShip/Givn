@@ -1,14 +1,14 @@
 "use client";
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 
 interface Ad {
     title: string;
     subtitle: string;
 }
 
-// --- GRAPHICS ---
+// --- GRAPHICS (Memoized to prevent flickering) ---
 
-const TreeGraphic = ({ grown }: { grown: boolean }) => (
+const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
             <linearGradient id="treeGradient" x1="0" y1="1" x2="0" y2="0">
@@ -29,6 +29,8 @@ const TreeGraphic = ({ grown }: { grown: boolean }) => (
         <path d="M50 90 Q70 80 80 70" stroke="url(#treeGradient)" strokeWidth="3" fill="none" className="tree-path" style={{ animationDelay: '0.3s' }} strokeLinecap="round" />
         <path d="M48 60 Q30 50 25 40" stroke="url(#treeGradient)" strokeWidth="2.5" fill="none" className="tree-path" style={{ animationDelay: '0.4s' }} strokeLinecap="round" />
         <path d="M52 50 Q70 40 75 30" stroke="url(#treeGradient)" strokeWidth="2.5" fill="none" className="tree-path" style={{ animationDelay: '0.5s' }} strokeLinecap="round" />
+        <path d="M50 30 Q40 20 35 10" stroke="url(#treeGradient)" strokeWidth="2" fill="none" className="tree-path" style={{ animationDelay: '0.6s' }} strokeLinecap="round" />
+        <path d="M50 30 Q60 20 65 10" stroke="url(#treeGradient)" strokeWidth="2" fill="none" className="tree-path" style={{ animationDelay: '0.6s' }} strokeLinecap="round" />
         <g filter="url(#glow)">
             <circle cx="20" cy="80" r="4" fill="#34d399" className="leaf" style={{ animationDelay: '0.8s' }} />
             <circle cx="15" cy="75" r="3" fill="#10b981" className="leaf" style={{ animationDelay: '0.9s' }} />
@@ -38,9 +40,10 @@ const TreeGraphic = ({ grown }: { grown: boolean }) => (
             <circle cx="50" cy="10" r="5" fill="#34d399" className="leaf" style={{ animationDelay: '1.3s' }} />
         </g>
     </svg>
-);
+));
+TreeGraphic.displayName = 'TreeGraphic';
 
-const HouseGraphic = ({ grown }: { grown: boolean }) => (
+const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
             <linearGradient id="houseGradient" x1="0" y1="1" x2="0" y2="0">
@@ -49,26 +52,22 @@ const HouseGraphic = ({ grown }: { grown: boolean }) => (
             </linearGradient>
         </defs>
         
-        {/* Walls - Scale up */}
         <g className="house-base">
             <path d="M25 80 H75 V130 H25 Z" stroke="url(#houseGradient)" strokeWidth="2" fill="#064e3b" className="house-fill" />
         </g>
         
-        {/* Roof - Drop in */}
         <g className="house-roof">
             <path d="M20 80 L50 50 L80 80 Z" stroke="url(#houseGradient)" strokeWidth="2" fill="#10b981" strokeLinejoin="round" className="house-fill" />
         </g>
         
-        {/* Door - Color fill */}
         <rect x="42" y="105" width="16" height="25" rx="1" fill="#042f2e" className="house-fill" style={{ animationDelay: '1s' }} />
-        
-        {/* Window - Color fill */}
         <rect x="35" y="90" width="10" height="10" rx="1" fill="#34d399" className="house-fill" style={{ animationDelay: '1.2s' }} />
         <rect x="55" y="90" width="10" height="10" rx="1" fill="#34d399" className="house-fill" style={{ animationDelay: '1.3s' }} />
     </svg>
-);
+));
+HouseGraphic.displayName = 'HouseGraphic';
 
-const WaterPumpGraphic = ({ grown }: { grown: boolean }) => (
+const WaterPumpGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
             <linearGradient id="metalGradient" x1="0" y1="0" x2="1" y2="1">
@@ -84,63 +83,71 @@ const WaterPumpGraphic = ({ grown }: { grown: boolean }) => (
             </filter>
         </defs>
         
-        {/* Pump Body */}
+        {/* CORRECTION DU TRACÉ DU ROBINET */}
         <g className="pump-body">
-            <path d="M70 140 V 60" stroke="url(#metalGradient)" strokeWidth="6" strokeLinecap="round" />
-            <path d="M60 60 Q 60 40 40 50 L 35 55" fill="none" stroke="url(#metalGradient)" strokeWidth="6" strokeLinecap="round" />
-            <path d="M70 60 L 85 40" stroke="#cbd5e1" strokeWidth="4" strokeLinecap="round" /> {/* Handle */}
+            <path d="M70 140 V 60" stroke="url(#metalGradient)" strokeWidth="6" strokeLinecap="round" fill="none" />
+            <path d="M70 65 Q 70 40 40 50 L 35 55" fill="none" stroke="url(#metalGradient)" strokeWidth="6" strokeLinecap="round" />
+            <path d="M70 60 L 85 40" stroke="#cbd5e1" strokeWidth="4" strokeLinecap="round" />
             <circle cx="85" cy="40" r="3" fill="#ef4444" />
         </g>
         
-        {/* Falling Drop */}
         <g filter="url(#glowBlue)">
             <circle cx="35" cy="60" r="4" fill="#3b82f6" className="water-drop" />
         </g>
         
-        {/* Splashes/Ripples */}
         <ellipse cx="35" cy="125" rx="15" ry="4" stroke="#3b82f6" strokeWidth="1" fill="none" className="water-ripple" style={{ animationDelay: '1s' }} />
         <ellipse cx="35" cy="125" rx="25" ry="6" stroke="#3b82f6" strokeWidth="1" fill="none" className="water-ripple" style={{ animationDelay: '1.4s' }} />
     </svg>
-);
+));
+WaterPumpGraphic.displayName = 'WaterPumpGraphic';
 
 // --- MAIN COMPONENT ---
 
-export default function LivingAdSlot({ pool, initialDelay, cycleDuration = 9000, variantOffset = 0 }: { pool: Ad[], initialDelay: number, cycleDuration?: number, variantOffset?: number }) {
+const LivingAdSlot = ({ pool, initialDelay, cycleDuration = 9000, variantOffset = 0 }: { pool: Ad[], initialDelay: number, cycleDuration?: number, variantOffset?: number }) => {
     const [adIndex, setAdIndex] = useState(0);
     const [phase, setPhase] = useState('waiting');
     
+    // Initialisation
     useEffect(() => {
         setAdIndex(Math.floor(Math.random() * pool.length));
         const startTimeout = setTimeout(() => setPhase('seed'), initialDelay);
         return () => clearTimeout(startTimeout);
-    }, [initialDelay, pool.length]);
+    }, [initialDelay]); // Retiré pool.length pour éviter reset
 
+    // Cycle Loop
     useEffect(() => {
+        if (phase === 'waiting') return;
+
         let timer: NodeJS.Timeout;
+        
         if (phase === 'seed') {
-            timer = setTimeout(() => setPhase('growing'), 1000);
+            timer = setTimeout(() => setPhase('growing'), 100); // Rapide
         } else if (phase === 'growing') {
-            timer = setTimeout(() => setPhase('blooming'), 1500); 
+            timer = setTimeout(() => setPhase('blooming'), 1000); 
         } else if (phase === 'blooming') {
-            timer = setTimeout(() => setPhase('displayed'), 800);
+            timer = setTimeout(() => setPhase('displayed'), 500);
         } else if (phase === 'displayed') {
             timer = setTimeout(() => setPhase('withering'), cycleDuration);
         } else if (phase === 'withering') {
             timer = setTimeout(() => {
                 setAdIndex((prev) => (prev + 1) % pool.length);
-                setPhase('seed');
+                setPhase('reset'); // Nouvelle phase tampon
             }, 600);
+        } else if (phase === 'reset') {
+             // Phase invisible pour forcer le reset des animations CSS
+             timer = setTimeout(() => setPhase('seed'), 100);
         }
+
         return () => clearTimeout(timer);
     }, [phase, cycleDuration, pool.length]);
 
     const currentAd = pool[adIndex];
     if (phase === 'waiting' || !currentAd) return <div className="h-[140px] mb-6"></div>;
 
-    // Logic to select graphic based on ad index + offset to ensure variety
     const GraphicComponent = () => {
         const type = (adIndex + variantOffset) % 3;
-        const isGrown = phase !== 'seed' && phase !== 'waiting';
+        // On garde "grown" à true pendant displayed ET withering pour que l'image reste
+        const isGrown = phase === 'blooming' || phase === 'displayed' || phase === 'withering';
         
         if (type === 0) return <TreeGraphic grown={isGrown} />;
         if (type === 1) return <HouseGraphic grown={isGrown} />;
@@ -152,7 +159,8 @@ export default function LivingAdSlot({ pool, initialDelay, cycleDuration = 9000,
             <div className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-emerald-900/50 to-transparent"></div>
 
             <div className="absolute left-0 bottom-0 w-24 h-[160px] flex flex-col justify-end items-center pointer-events-none z-0">
-                 {phase === 'seed' && (
+                 {/* La graine ne tombe que si on est en phase seed et que ce n'est PAS de l'eau ou maison */}
+                 {phase === 'seed' && (adIndex + variantOffset) % 3 === 0 && (
                      <div className="w-2 h-2 bg-emerald-200 rounded-full glow-dot-green absolute bottom-0 animate-seed-fall"></div>
                  )}
                  <GraphicComponent />
@@ -174,4 +182,6 @@ export default function LivingAdSlot({ pool, initialDelay, cycleDuration = 9000,
             )}
         </div>
     );
-}
+};
+
+export default memo(LivingAdSlot);

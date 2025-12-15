@@ -41,14 +41,8 @@ body {
 .glow-dot-green { box-shadow: 0 0 12px 3px rgba(16, 185, 129, 0.4); }
 
 /* =========================================
-   ANIMATIONS (Keyframes pour fluidité 100%)
+   ANIMATIONS ROBUSTES
    ========================================= */
-
-/* --- GENERAL RESET --- */
-.reset-anim {
-  opacity: 0;
-  transform: scale(0);
-}
 
 /* --- TREE --- */
 .tree-path {
@@ -102,11 +96,11 @@ body {
 }
 
 .water-drop {
-  transform: translateY(-10px) scale(0);
+  transform: translateY(0) scale(0);
   opacity: 0;
 }
 .ad-grown .water-drop {
-  animation: drop-fall 2s infinite ease-in 0.8s;
+  animation: drop-fall 2.5s infinite ease-in 0.8s;
 }
 
 .water-ripple {
@@ -116,7 +110,7 @@ body {
   stroke-width: 2;
 }
 .ad-grown .water-ripple {
-  animation: ripple-spread 2s infinite ease-out 1.2s;
+  animation: ripple-spread 2.5s infinite ease-out 1.4s; /* Synchro avec la goutte */
 }
 
 /* --- KEYFRAMES DEFINITIONS --- */
@@ -130,15 +124,16 @@ body {
 @keyframes drop-fall {
   0% { transform: translateY(0) scale(0); opacity: 0; }
   20% { transform: translateY(5px) scale(1); opacity: 1; }
-  80% { transform: translateY(55px) scale(1); opacity: 1; }
-  90% { transform: translateY(60px) scale(1.5, 0.5); opacity: 1; } /* S'écrase */
-  100% { transform: translateY(62px) scale(2, 0); opacity: 0; }
+  60% { transform: translateY(60px) scale(1); opacity: 1; }
+  70% { transform: translateY(65px) scale(1.5, 0.5); opacity: 1; }
+  80% { transform: translateY(70px) scale(2, 0); opacity: 0; }
+  100% { transform: translateY(70px) scale(0); opacity: 0; }
 }
 
 @keyframes ripple-spread {
   0% { opacity: 0; transform: scale(0.2); stroke-width: 3; }
-  10% { opacity: 1; }
-  100% { opacity: 0; transform: scale(1.8); stroke-width: 0; }
+  10% { opacity: 1; transform: scale(0.5); }
+  100% { opacity: 0; transform: scale(2); stroke-width: 0; }
 }
 
 /* --- UI ANIMATIONS --- */
