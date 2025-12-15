@@ -97,10 +97,11 @@ body {
     transform-origin: center;
 }
 
-/* --- 4. ÉNERGIE (Fix Rotation) --- */
+/* --- 4. ÉNERGIE (Fix Centre de rotation) --- */
 .turbine-spin-fast {
   animation: spin 2s linear infinite;
-  transform-origin: 50px 45px; /* Centre exact pour éviter le "wobble" */
+  transform-origin: 50px 45px; /* CRUCIAL: Point de pivot exact du SVG */
+  transform-box: view-box;
 }
 
 /* --- 5. SANTÉ (ECG Rouge) --- */
@@ -123,41 +124,39 @@ body {
     animation: fade-in-up-small 0.5s ease-out 1.2s forwards, wheat-wave 3s infinite ease-in-out 1.7s; 
 }
 
-/* --- 7. OCÉAN (Coherent WOW) --- */
-@keyframes kelp-sway-continuous {
-    0%, 100% { transform: skewX(-2deg) scaleY(1); }
-    50% { transform: skewX(4deg) scaleY(1.02); }
-}
-.kelp-sway-continuous {
-    transform-origin: bottom center;
-    animation: kelp-sway-continuous 5s infinite ease-in-out;
-}
-
-@keyframes jellyfish-swim {
-    0% { transform: translateY(140px) scale(0.8); opacity: 0; }
-    20% { opacity: 1; }
-    100% { transform: translateY(-20px) scale(1); opacity: 0; }
+/* --- 7. OCÉAN (MÉDUSE ORGANIQUE) --- */
+@keyframes jellyfish-swim-up {
+    0% { transform: translateY(140px); }
+    100% { transform: translateY(-30px); }
 }
 .jellyfish-swim {
-    animation: jellyfish-swim 10s infinite linear;
+    animation: jellyfish-swim-up 10s linear infinite;
 }
 
-@keyframes biolum-pulse {
-    0%, 100% { opacity: 0.5; filter: brightness(1); }
-    50% { opacity: 1; filter: brightness(1.5); }
+/* Contraction de la cloche (Propulsion) */
+@keyframes bell-pulse {
+    0%, 100% { transform: scaleY(1) scaleX(1); }
+    50% { transform: scaleY(0.9) scaleX(1.1); } /* Contraction pour avancer */
 }
-.biolum-pulse {
-    animation: biolum-pulse 4s infinite ease-in-out;
+.jellyfish-bell-pulse {
+    transform-origin: center;
+    animation: bell-pulse 2s ease-in-out infinite;
 }
 
-@keyframes tentacle-wiggle {
-    0%, 100% { transform: skewX(0deg); }
-    50% { transform: skewX(10deg); }
+/* Mouvement des tentacules (Suivent la propulsion) */
+@keyframes tentacle-trail {
+    0%, 100% { transform: scaleY(1); opacity: 0.8; }
+    50% { transform: scaleY(1.2); opacity: 0.5; } /* S'allongent quand la méduse avance */
 }
-.tentacle-wiggle {
-    transform-origin: top center;
-    animation: tentacle-wiggle 3s infinite ease-in-out alternate;
+.jellyfish-tentacles path {
+    transform-origin: top;
+    animation: tentacle-trail 2s ease-in-out infinite;
 }
+/* Décalage pour effet naturel */
+.tentacle-1 { animation-delay: 0s; }
+.tentacle-2 { animation-delay: 0.1s; }
+.tentacle-3 { animation-delay: 0.2s; }
+.tentacle-4 { animation-delay: 0.3s; }
 
 @keyframes light-ray-shimmer {
     0%, 100% { opacity: 0.05; }
@@ -209,13 +208,6 @@ body {
 @keyframes fade-in-up-small {
     from { opacity: 0; transform: translateY(5px) scale(0.8); }
     to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes bubble-rise-fade {
-    0% { transform: translateY(0) scale(0.5); opacity: 0; }
-    20% { opacity: 0.8; }
-    80% { opacity: 0.6; }
-    100% { transform: translateY(-80px) scale(1.2); opacity: 0; }
 }
 
 @keyframes flag-wave { 

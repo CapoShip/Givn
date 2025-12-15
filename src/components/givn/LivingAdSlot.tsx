@@ -48,7 +48,7 @@ const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 HouseGraphic.displayName = 'HouseGraphic';
 
-/* --- ROBINET (Version animée conservée) --- */
+/* --- ROBINET (Inchangé) --- */
 const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
@@ -102,7 +102,7 @@ const SchoolGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 SchoolGraphic.displayName = 'SchoolGraphic';
 
-/* --- OCÉAN (Version WOW Cohérente : Cyan/Émeraude) --- */
+/* --- OCÉAN (MÉDUSE RÉALISTE & ORGANIQUE) --- */
 const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-500 ${grown ? 'opacity-100' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
@@ -111,10 +111,10 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
                 <stop offset="50%" stopColor="#082f49" /> 
                 <stop offset="100%" stopColor="#0c4a6e" /> 
             </linearGradient>
-            {/* Dégradé cohérent avec le site (Teal/Cyan) */}
-            <linearGradient id="jellyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            {/* Dégradé de la méduse - Cyan/Teal lumineux */}
+            <linearGradient id="jellyBody" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#ccfbf1" stopOpacity="0.9"/>
-                <stop offset="100%" stopColor="#14b8a6" stopOpacity="0.4"/>
+                <stop offset="100%" stopColor="#2dd4bf" stopOpacity="0.4"/>
             </linearGradient>
              <filter id="bioGlow">
                 <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -127,26 +127,30 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
 
         <rect x="0" y="0" width="100" height="160" fill="url(#deepSeaGrad)" />
 
+        {/* Rayons de lumière */}
         <g className="ocean-light-rays" opacity="0.3">
             <path d="M-10 -20 L 30 160 L 50 160 L 10 -20 Z" fill="#fff" opacity="0.1" />
             <path d="M20 -20 L 70 160 L 90 160 L 40 -20 Z" fill="#fff" opacity="0.1" style={{animationDelay:'1s'}} />
-             <path d="M60 -20 L 110 160 L 130 160 L 80 -20 Z" fill="#fff" opacity="0.05" style={{animationDelay:'2s'}}/>
         </g>
         
-        <g className="kelp-sway-continuous" filter="url(#bioGlow)" opacity="0.6">
-             <path d="M20 160 Q 10 120 25 80 Q 40 40 30 10" stroke="#2dd4bf" strokeWidth="3" fill="none" strokeLinecap="round" />
-             <path d="M80 160 Q 90 130 75 90 Q 60 50 70 20" stroke="#0d9488" strokeWidth="4" fill="none" strokeLinecap="round" style={{ animationDelay: '-1s' }} />
-        </g>
-        
-        {/* Méduse Cohérente (Teal/Cyan) */}
-        <g className="jellyfish-swim" filter="url(#bioGlow)">
-            <g className="biolum-pulse">
-                <path d="M35 80 Q 50 60 65 80 L 62 85 Q 50 75 38 85 Z" fill="url(#jellyGrad)" stroke="#99f6e4" strokeWidth="0.5" />
-                <path d="M40 85 Q 42 100 38 115" stroke="#99f6e4" strokeWidth="1" fill="none" className="tentacle-wiggle" />
-                <path d="M45 85 Q 48 105 44 125" stroke="#5eead4" strokeWidth="1" fill="none" className="tentacle-wiggle" style={{animationDelay:'0.2s'}} />
-                <path d="M50 85 Q 50 110 50 130" stroke="#99f6e4" strokeWidth="1.5" fill="none" className="tentacle-wiggle" style={{animationDelay:'0.4s'}} />
-                <path d="M55 85 Q 52 105 56 125" stroke="#5eead4" strokeWidth="1" fill="none" className="tentacle-wiggle" style={{animationDelay:'0.6s'}} />
-                 <path d="M60 85 Q 58 100 62 115" stroke="#99f6e4" strokeWidth="1" fill="none" className="tentacle-wiggle" style={{animationDelay:'0.8s'}} />
+        {/* GROUPE MÉDUSE - Animation de nage globale */}
+        <g className="jellyfish-swim">
+            {/* CORPS DE LA MÉDUSE (Cloche) - Animation de contraction */}
+            <g className="jellyfish-bell-pulse">
+                {/* Forme de la cloche en demi-cercle parfait */}
+                <path d="M 30 90 Q 50 60 70 90 L 68 95 Q 50 85 32 95 Z" fill="url(#jellyBody)" filter="url(#bioGlow)" />
+                
+                {/* Organes internes brillants */}
+                <ellipse cx="50" cy="85" rx="10" ry="5" fill="#5eead4" opacity="0.6" filter="url(#bioGlow)" />
+            </g>
+
+            {/* TENTACULES - Animation de traînée fluide */}
+            <g className="jellyfish-tentacles" fill="none" stroke="#5eead4" strokeWidth="1.5" strokeLinecap="round" filter="url(#bioGlow)">
+                {/* 4 Tentacules avec des chemins sinueux */}
+                <path d="M 38 95 Q 35 110 40 125" className="tentacle-1" />
+                <path d="M 46 95 Q 46 115 48 135" className="tentacle-2" />
+                <path d="M 54 95 Q 54 115 52 135" className="tentacle-3" />
+                <path d="M 62 95 Q 65 110 60 125" className="tentacle-4" />
             </g>
         </g>
 
@@ -158,13 +162,13 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 OceanGraphic.displayName = 'OceanGraphic';
 
-/* --- SANTÉ (ROUGE : Alerte & Hologramme Sang) --- */
+/* --- SANTÉ (Rouge) --- */
 const HealthGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
             <linearGradient id="ecgRedGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#ef4444" /> {/* Rouge */}
-                <stop offset="50%" stopColor="#f87171" /> {/* Rouge clair */}
+                <stop offset="0%" stopColor="#ef4444" />
+                <stop offset="50%" stopColor="#f87171" />
                 <stop offset="100%" stopColor="#ef4444" />
             </linearGradient>
              <filter id="ecgRedGlow">
@@ -216,13 +220,16 @@ const FoodGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 FoodGraphic.displayName = 'FoodGraphic';
 
-/* --- ÉNERGIE (RETOUR SIMPLE & ROBUSTE) --- */
+/* --- ÉNERGIE (Fix Centre de rotation 50,45) --- */
 const EnergyGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+        {/* Tour centrée sous le point 50,45 */}
         <rect x="48" y="45" width="4" height="95" fill="#94a3b8" className="house-base" />
-        {/* Cœur jaune */}
+        
+        {/* Cœur */}
         <circle cx="50" cy="45" r="5" fill="#fcd34d" className="house-pop" style={{ animationDelay: '1.2s' }} />
-        {/* Turbine simple rotation (classe CSS corrigée pour le centre) */}
+        
+        {/* Turbine avec centre EXACTEMENT à 50,45 */}
         <g className="turbine-spin-fast">
             <circle cx="50" cy="45" r="3" fill="#64748b" />
             <path d="M50 45 L 50 5 Q 60 5 50 45" fill="#cbd5e1" stroke="#94a3b8" strokeWidth="1" />
