@@ -22,7 +22,7 @@ const RAW_BRANDS = [
     { id: 10, name: 'Nova', category: 'Tech', month: 5000, total: 45000, lastProof: '2025-12-13 08:00Z', status: 'VERIFIED', claim: 'Open source funding', description: "Developer tools for the open web." }
 ];
 
-// Pools diversifiés pour éviter les répétitions
+// Pools diversifiés
 const AD_POOL_LEFT: Ad[] = [
     { title: "Proof Drop", subtitle: "Evidence uploaded → badge updates.", type: 'tree' },
     { title: "EcoTrack", subtitle: "Carbon offset verification.", type: 'energy' }, 
@@ -93,6 +93,9 @@ export default function Home() {
     const [viewFullList, setViewFullList] = useState(false);
     const [mounted, setMounted] = useState(false);
 
+    // VITESSE UNIFIÉE POUR ÉVITER LES COLLISIONS
+    const UNIFIED_CYCLE_DURATION = 15000;
+
     useEffect(() => setMounted(true), []);
 
     const filteredBrands = useMemo(() => {
@@ -144,13 +147,17 @@ export default function Home() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full z-10">
                     
-                    {/* Left Ads (Desktop Only) - AVEC STARTINDEX */}
+                    {/* Left Ads (Desktop Only) */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={12000} startIndex={0} />
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={2500} cycleDuration={16000} startIndex={1} />
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={4000} cycleDuration={14000} startIndex={2} />
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1500} cycleDuration={13000} startIndex={3} />
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={3200} cycleDuration={15000} startIndex={4} />
+                        {/* STARTINDEX = 0, 1, 2... force un décalage.
+                           INITIALDELAY inverse (2000 -> 0) assure que le "bas" change AVANT le "haut", 
+                           évitant que le haut ne "rattrape" le bas visuellement.
+                        */}
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={2000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={0} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={1} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={2} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={3} />
+                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={4} />
                     </div>
 
                     {/* Center Content */}
@@ -303,12 +310,12 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Right Ads (Desktop Only) - AVEC STARTINDEX */}
+                    {/* Right Ads (Desktop Only) */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={14000} startIndex={0} />
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={3500} cycleDuration={17000} startIndex={1} />
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={12000} startIndex={2} />
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2800} cycleDuration={18000} startIndex={3} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={0} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={1} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={2} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={0} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={3} />
                         
                         <div className="glass-panel rounded-xl p-6 mt-4 border border-zinc-800 animate-[pop-in_2s_ease-out] hover:border-emerald-500/30 transition-colors group">
                             <h4 className="text-sm font-bold mb-1 text-white group-hover:text-emerald-400 transition-colors">Advertise</h4>

@@ -10,10 +10,10 @@ export interface Ad {
 }
 
 // ==========================================
-// COMPOSANTS GRAPHIQUES (MIS À JOUR)
+// 1. COMPOSANTS GRAPHIQUES (CORRIGÉS & SOLIDIFIÉS)
 // ==========================================
 
-/* --- 1. ARBRE (Inchangé) --- */
+/* --- ARBRE --- */
 const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-500 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <path d="M50 140 C50 110 45 90 50 60 C52 45 48 30 50 10" stroke="#10b981" strokeWidth="4" fill="none" strokeLinecap="round" className="tree-path" />
@@ -31,7 +31,7 @@ const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 TreeGraphic.displayName = 'TreeGraphic';
 
-/* --- 2. MAISON (Inchangé) --- */
+/* --- MAISON --- */
 const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <g className="house-base">
@@ -48,7 +48,7 @@ const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 HouseGraphic.displayName = 'HouseGraphic';
 
-/* --- 3. ROBINET (Inchangé) --- */
+/* --- ROBINET --- */
 const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <g className="pump-body">
@@ -66,7 +66,7 @@ const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 PumpGraphic.displayName = 'PumpGraphic';
 
-/* --- 4. ÉCOLE (Inchangé) --- */
+/* --- ÉCOLE --- */
 const SchoolGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <g className="house-base">
@@ -89,39 +89,25 @@ const SchoolGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 SchoolGraphic.displayName = 'SchoolGraphic';
 
-/* --- 5. OCÉAN (CORRIGÉ : Couleurs vives, contraste élevé) --- */
+/* --- OCÉAN (FIXÉ : Plus de gradients, couleurs solides) --- */
 const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
-        <defs>
-            <linearGradient id="kelpGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#2dd4bf" /> 
-                <stop offset="100%" stopColor="#0d9488" />
-            </linearGradient>
-            <filter id="glow">
-                <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
-                <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-            </filter>
-        </defs>
-        
-        {/* Algues plus épaisses et lumineuses (Cyan/Teal) */}
-        <g className="kelp-sway" filter="url(#glow)">
-             <path d="M30 140 Q 20 110 35 70" stroke="url(#kelpGrad)" strokeWidth="5" fill="none" strokeLinecap="round" />
-             <path d="M70 140 Q 80 120 65 80" stroke="url(#kelpGrad)" strokeWidth="5" fill="none" strokeLinecap="round" style={{ animationDelay: '0.3s' }} />
+        {/* Algues solides Teal/Cyan */}
+        <g className="kelp-sway">
+             <path d="M30 140 Q 20 110 35 70" stroke="#0d9488" strokeWidth="5" fill="none" strokeLinecap="round" />
+             <path d="M70 140 Q 80 120 65 80" stroke="#2dd4bf" strokeWidth="5" fill="none" strokeLinecap="round" style={{ animationDelay: '0.3s' }} />
              <path d="M50 140 Q 40 100 55 50" stroke="#5eead4" strokeWidth="4" fill="none" strokeLinecap="round" style={{ animationDelay: '0.6s' }} />
         </g>
         
-        {/* Bulles Blanches/Cyan très visibles */}
+        {/* Bulles solides Blanches/Cyan */}
         <circle cx="40" cy="90" r="4" fill="#ccfbf1" className="ocean-bubble-rise" style={{ animationDelay: '0.5s' }} />
         <circle cx="65" cy="70" r="3" fill="#99f6e4" className="ocean-bubble-rise" style={{ animationDelay: '1.2s' }} />
-        <circle cx="55" cy="30" r="5" fill="#fff" className="ocean-bubble-rise" style={{ animationDelay: '2s', opacity: 0.8 }} />
+        <circle cx="55" cy="30" r="5" fill="#fff" className="ocean-bubble-rise" style={{ animationDelay: '2s', opacity: 0.9 }} />
     </svg>
 ));
 OceanGraphic.displayName = 'OceanGraphic';
 
-/* --- 6. SANTÉ (Inchangé) --- */
+/* --- SANTÉ --- */
 const HealthGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <rect x="5" y="40" width="90" height="60" rx="4" fill="#1e293b" stroke="#334155" strokeWidth="2" className="house-base" />
@@ -132,47 +118,40 @@ const HealthGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 HealthGraphic.displayName = 'HealthGraphic';
 
-/* --- 7. NOURRITURE (AMÉLIORÉ : Plus riche, doré, effet de particules) --- */
+/* --- NOURRITURE (FIXÉ : Plus de gradients, Or solide) --- */
 const FoodGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
-        <defs>
-            <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#fef08a" /> {/* Jaune clair */}
-                <stop offset="100%" stopColor="#ca8a04" /> {/* Or foncé */}
-            </linearGradient>
-        </defs>
-
-        {/* Tiges principales */}
+        {/* Tiges solides */}
         <g className="wheat-stem">
-            <path d="M50 140 Q 50 100 50 60" stroke="#854d0e" strokeWidth="3" fill="none" />
+            <path d="M50 140 Q 50 100 50 60" stroke="#a16207" strokeWidth="3" fill="none" />
             <path d="M25 140 Q 30 110 30 70" stroke="#854d0e" strokeWidth="2.5" fill="none" style={{ animationDelay: '0.2s' }} />
             <path d="M75 140 Q 70 110 70 70" stroke="#854d0e" strokeWidth="2.5" fill="none" style={{ animationDelay: '0.4s' }} />
         </g>
         
-        {/* Épis riches et détaillés */}
+        {/* Épis Or solide */}
         <g className="wheat-head" style={{ transformOrigin: '50px 60px' }}>
-            <ellipse cx="50" cy="45" rx="6" ry="18" fill="url(#goldGrad)" />
+            <ellipse cx="50" cy="45" rx="6" ry="18" fill="#eab308" />
             <path d="M50 27 L 50 15 M 46 30 L 42 20 M 54 30 L 58 20" stroke="#fde047" strokeWidth="1" />
         </g>
         
         <g className="wheat-head" style={{ transformOrigin: '30px 70px', animationDelay: '0.2s' }}>
-            <ellipse cx="30" cy="55" rx="5" ry="15" fill="url(#goldGrad)" />
+            <ellipse cx="30" cy="55" rx="5" ry="15" fill="#ca8a04" />
             <path d="M30 40 L 28 30 M 26 45 L 22 35" stroke="#fde047" strokeWidth="1" />
         </g>
         
         <g className="wheat-head" style={{ transformOrigin: '70px 70px', animationDelay: '0.4s' }}>
-            <ellipse cx="70" cy="55" rx="5" ry="15" fill="url(#goldGrad)" />
+            <ellipse cx="70" cy="55" rx="5" ry="15" fill="#ca8a04" />
             <path d="M70 40 L 72 30 M 74 45 L 78 35" stroke="#fde047" strokeWidth="1" />
         </g>
 
-        {/* Particules de pollen/lumière qui flottent */}
+        {/* Particules */}
         <circle cx="40" cy="40" r="1.5" fill="#fff" className="ocean-bubble-rise" style={{ animationDuration: '4s' }} />
         <circle cx="60" cy="30" r="1" fill="#fff" className="ocean-bubble-rise" style={{ animationDuration: '5s', animationDelay: '1s' }} />
     </svg>
 ));
 FoodGraphic.displayName = 'FoodGraphic';
 
-/* --- 8. ÉNERGIE (Inchangé) --- */
+/* --- ÉNERGIE --- */
 const EnergyGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <rect x="48" y="45" width="4" height="95" fill="#94a3b8" className="house-base" />
@@ -189,32 +168,28 @@ EnergyGraphic.displayName = 'EnergyGraphic';
 
 
 // ==========================================
-// 2. COMPOSANT PRINCIPAL (CORRIGÉ POUR L'ÉQUILIBRE)
+// 2. COMPOSANT PRINCIPAL
 // ==========================================
 
 export default function LivingAdSlot({ 
     pool, 
     initialDelay, 
-    cycleDuration = 9000,
-    startIndex = 0 // NOUVEAU PROP POUR FORCER L'ORDRE
+    cycleDuration, 
+    startIndex = 0 
 }: { 
     pool: Ad[], 
     initialDelay: number, 
-    cycleDuration?: number,
+    cycleDuration: number,
     startIndex?: number 
 }) {
-    // Initialisation STRICTE basée sur startIndex
-    // On n'utilise plus Math.random() pour l'état initial
     const [adIndex, setAdIndex] = useState(startIndex % pool.length);
     const [phase, setPhase] = useState('waiting');
     
-    // Démarrage initial
     useEffect(() => {
         const t = setTimeout(() => setPhase('seed'), initialDelay);
         return () => clearTimeout(t);
     }, [initialDelay]);
 
-    // Cycle de vie
     useEffect(() => {
         if (phase === 'waiting') return;
         let timer: NodeJS.Timeout;
@@ -226,8 +201,6 @@ export default function LivingAdSlot({
             case 'displayed': timer = setTimeout(() => setPhase('withering'), cycleDuration); break;
             case 'withering': 
                 timer = setTimeout(() => { 
-                    // Rotation simple : +1. 
-                    // Comme chaque slot a commencé à un index différent, ils resteront toujours décalés.
                     setAdIndex((prev) => (prev + 1) % pool.length);
                     setPhase('reset'); 
                 }, 600); 
