@@ -260,16 +260,10 @@ body {
 .animate-enter { opacity: 0; animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
 /* =========================================================================
-   NOUVELLES ANIMATIONS "WOW" (V2)
+   NOUVELLES ANIMATIONS "WOW" ULTIMES (V3)
    ========================================================================= */
 
 /* --- 1. NATURE & ARBRE --- */
-@keyframes sway-leaf {
-  0%, 100% { transform: rotate(0deg) translateY(0); }
-  50% { transform: rotate(5deg) translateY(-2px); }
-}
-.animate-sway { animation: sway-leaf 3s ease-in-out infinite alternate; transform-origin: bottom center; }
-
 @keyframes firefly-move {
   0% { transform: translate(0, 0); opacity: 0; }
   20% { opacity: 1; }
@@ -277,6 +271,14 @@ body {
   100% { transform: translate(20px, -30px); opacity: 0; }
 }
 .firefly { animation: firefly-move 4s ease-out infinite; }
+
+/* Chute de feuilles */
+@keyframes leaf-fall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    100% { transform: translateY(60px) translateX(20px) rotate(360deg); opacity: 0; }
+}
+.falling-leaf { animation: leaf-fall 6s linear infinite; }
 
 /* Le tronc qui sort du sol */
 .tree-trunk-grow {
@@ -317,7 +319,7 @@ body {
     transform-origin: 50px 100px;
 }
 
-/* --- 2. OCÉAN (Bulles et Poissons) --- */
+/* --- 2. OCÉAN (Bulles, Poissons, Électricité) --- */
 @keyframes bubble-rise {
   0% { transform: translateY(0) scale(0.5); opacity: 0; }
   20% { opacity: 0.6; }
@@ -333,7 +335,13 @@ body {
 }
 .fish-school { animation: fish-swim 8s linear infinite; }
 
-/* --- 3. ÉNERGIE (Nuages et Oiseaux) --- */
+@keyframes bio-pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; filter: drop-shadow(0 0 5px #2dd4bf); }
+}
+.bio-electric { animation: bio-pulse 3s ease-in-out infinite; }
+
+/* --- 3. ÉNERGIE (Nuages, Oiseaux, Flux) --- */
 @keyframes cloud-drift {
   from { transform: translateX(-30px); }
   to { transform: translateX(130px); }
@@ -346,3 +354,9 @@ body {
   100% { transform: translate(120px, -20px) scale(0.8); opacity: 0; }
 }
 .bird { animation: bird-fly 6s linear infinite; }
+
+@keyframes energy-stream {
+    0% { transform: scale(0.5) translate(0,0); opacity: 0.8; }
+    100% { transform: scale(0) translate(20px, -20px); opacity: 0; }
+}
+.energy-particle { animation: energy-stream 1s ease-out infinite; }
