@@ -40,30 +40,99 @@ body {
 .glow-text { text-shadow: 0 0 30px rgba(16, 185, 129, 0.2); }
 .glow-dot-green { box-shadow: 0 0 12px 3px rgba(16, 185, 129, 0.4); }
 
-/* --- TREE ANIMATIONS (CORRECTIF FLUIDITÉ) --- */
+/* --- TREE ANIMATIONS --- */
 .tree-path {
   stroke-dasharray: 300;
   stroke-dashoffset: 300;
-  /* CRUCIAL : Aucune transition au repos pour un reset instantané */
-  transition: none; 
+  transition: none; /* Reset instantané */
 }
 
 .tree-grown .tree-path {
   stroke-dashoffset: 0;
-  /* La transition ne s'active que quand la classe est ajoutée */
   transition: stroke-dashoffset 2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .leaf {
   transform: scale(0);
   transform-origin: center;
-  /* CRUCIAL : Aucune transition au repos */
   transition: none;
 }
 
 .tree-grown .leaf {
   transform: scale(1);
   transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* --- HOUSE ANIMATIONS (Construction + Couleur) --- */
+.house-part {
+  fill-opacity: 0; /* Commence transparent (juste les traits) */
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  transition: none;
+}
+
+.ad-grown .house-part {
+  fill-opacity: 1; /* Se remplit de couleur */
+  stroke-dashoffset: 0; /* Le trait se dessine */
+  transition: stroke-dashoffset 1.5s ease-out, fill-opacity 1s ease-in 0.5s;
+}
+
+.house-base {
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: none;
+}
+
+.ad-grown .house-base {
+  transform: scaleY(1);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.house-roof {
+  transform: translateY(-20px) scale(0.8);
+  opacity: 0;
+  transition: none;
+}
+
+.ad-grown .house-roof {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s;
+}
+
+/* --- WATER FAUCET ANIMATIONS --- */
+.faucet-body {
+  transform: translateX(-20px);
+  opacity: 0;
+  transition: none;
+}
+
+.ad-grown .faucet-body {
+  transform: translateX(0);
+  opacity: 1;
+  transition: all 0.8s ease-out;
+}
+
+.faucet-drop {
+  transform: translateY(0) scale(0);
+  opacity: 0;
+  transition: none;
+}
+
+/* Animation en boucle pour la goutte quand "ad-grown" est actif */
+.ad-grown .faucet-drop {
+  animation: drop-fall 2s infinite ease-in;
+}
+
+.water-splash {
+  transform: scale(0);
+  opacity: 0;
+  transform-origin: center bottom;
+  transition: none;
+}
+
+.ad-grown .water-splash {
+  animation: splash 2s infinite ease-out 0.6s; /* Délai pour matcher la goutte */
 }
 
 /* --- KEYFRAMES --- */
@@ -73,6 +142,20 @@ body {
   80% { transform: translateY(0px) scale(1); opacity: 1; }
   90% { transform: translateY(2px) scale(1.2, 0.8); opacity: 1; }
   100% { transform: translateY(5px) scale(0); opacity: 0; }
+}
+
+@keyframes drop-fall {
+  0% { transform: translateY(0) scale(0); opacity: 0; }
+  20% { transform: translateY(5px) scale(1); opacity: 1; }
+  80% { transform: translateY(60px) scale(1); opacity: 1; }
+  90% { transform: translateY(65px) scale(1.2, 0.8); opacity: 1; }
+  100% { transform: translateY(70px) scale(2, 0); opacity: 0; }
+}
+
+@keyframes splash {
+  0% { transform: scale(0); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
 
 @keyframes ad-grow {
@@ -99,68 +182,3 @@ body {
 .animate-wither { animation: wither 0.6s ease-in forwards; }
 .modal-overlay { animation: fadeIn 0.3s ease-out forwards; }
 .modal-content { animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-/* src/app/globals.css */
-
-/* ... (Garder le code existant pour .tree-path, .leaf, etc.) ... */
-
-/* --- HOUSE ANIMATIONS --- */
-.house-base {
-  transform: scaleY(0);
-  transform-origin: bottom;
-  transition: none; /* Reset instantané */
-}
-
-.ad-grown .house-base {
-  transform: scaleY(1);
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.house-roof {
-  transform: translateY(-20px) scale(0);
-  opacity: 0;
-  transform-origin: center;
-  transition: none;
-}
-
-.ad-grown .house-roof {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.house-detail {
-  opacity: 0;
-  transition: none;
-}
-
-.ad-grown .house-detail {
-  opacity: 1;
-  transition: opacity 0.4s ease-out;
-}
-
-/* --- WATER ANIMATIONS --- */
-.water-drop {
-  transform: translateY(-40px) scale(0);
-  opacity: 0;
-  transition: none;
-}
-
-.ad-grown .water-drop {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.water-ripple {
-  opacity: 0;
-  transform: scale(0.5);
-  transform-origin: center;
-  transition: none;
-}
-
-.ad-grown .water-ripple {
-  opacity: 0.5; /* Finira semi-transparent */
-  transform: scale(1.5);
-  transition: all 1.2s ease-out;
-}
