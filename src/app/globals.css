@@ -97,15 +97,13 @@ body {
     transform-origin: center;
 }
 
-/* --- 4. ÉNERGIE (Nouvelle Turbine Réaliste Lente) --- */
-.turbine-spin-slow {
-  /* Rotation plus lente (6s) avec ease-in-out pour un effet de masse réaliste */
-  animation: spin 6s ease-in-out infinite; 
-  transform-box: fill-box;
-  transform-origin: center;
+/* --- 4. ÉNERGIE (Fix Rotation) --- */
+.turbine-spin-fast {
+  animation: spin 2s linear infinite;
+  transform-origin: 50px 45px; /* Centre exact pour éviter le "wobble" */
 }
 
-/* --- 5. SANTÉ (Holographique Rouge) --- */
+/* --- 5. SANTÉ (ECG Rouge) --- */
 .ecg-line {
   stroke-dasharray: 300;
   stroke-dashoffset: 300;
@@ -113,7 +111,6 @@ body {
 .ad-grown .ecg-line {
   animation: draw-ecg 2.5s linear forwards infinite;
 }
-/* Le point lumineux est géré par animateMotion, mais on garde le fade pour sécurité */
 .ecg-blip { opacity: 0; }
 .ad-grown .ecg-blip { animation: fade-in-out 2.5s linear infinite; }
 
@@ -126,7 +123,7 @@ body {
     animation: fade-in-up-small 0.5s ease-out 1.2s forwards, wheat-wave 3s infinite ease-in-out 1.7s; 
 }
 
-/* --- 7. OCÉAN (Abyssal Cohérent) --- */
+/* --- 7. OCÉAN (Coherent WOW) --- */
 @keyframes kelp-sway-continuous {
     0%, 100% { transform: skewX(-2deg) scaleY(1); }
     50% { transform: skewX(4deg) scaleY(1.02); }
@@ -142,7 +139,6 @@ body {
     100% { transform: translateY(-20px) scale(1); opacity: 0; }
 }
 .jellyfish-swim {
-    /* Plus lent pour être cohérent avec une méduse abyssale */
     animation: jellyfish-swim 10s infinite linear;
 }
 
@@ -156,7 +152,7 @@ body {
 
 @keyframes tentacle-wiggle {
     0%, 100% { transform: skewX(0deg); }
-    50% { transform: skewX(8deg); }
+    50% { transform: skewX(10deg); }
 }
 .tentacle-wiggle {
     transform-origin: top center;
