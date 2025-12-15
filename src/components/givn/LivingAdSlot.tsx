@@ -10,10 +10,10 @@ export interface Ad {
 }
 
 // ==========================================
-// COMPOSANTS GRAPHIQUES "ULTRA WOW"
+// COMPOSANTS GRAPHIQUES "ULTRA WOW" (Restaurés)
 // ==========================================
 
-/* --- ARBRE ANCESTRAL (Majestueux & Organique) --- */
+/* --- ARBRE DE VIE (Feuilles qui tombent, Lueur mystique) --- */
 const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 160" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-700 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
@@ -22,10 +22,12 @@ const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
                 <stop offset="50%" stopColor="#064e3b" />
                 <stop offset="100%" stopColor="#022c22" />
             </linearGradient>
+            
             <linearGradient id="leafGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#10b981" />
                 <stop offset="100%" stopColor="#047857" />
             </linearGradient>
+
             <filter id="innerGlow">
                 <feGaussianBlur stdDeviation="2" result="blur"/>
                 <feComposite in="SourceGraphic" in2="blur" operator="arithmetic" k2="1.2" k3="-0.8" result="edge"/>
@@ -33,32 +35,34 @@ const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
             </filter>
         </defs>
 
-        {/* Tronc avec racines */}
-        <path d="M44 160 L 40 155 Q 35 150 48 110 Q 50 100 52 110 Q 65 150 60 155 L 56 160 Z" fill="url(#trunkGrad)" className="tree-trunk-grow" />
+        {/* 1. Tronc solide */}
+        <path d="M46 160 L 48 110 Q 50 100 52 110 L 54 160 Q 50 165 46 160 Z" fill="url(#trunkGrad)" className="tree-trunk-grow" />
         
-        {/* Canopée qui respire */}
+        {/* Conteneur feuillage animé */}
         <g className="tree-crown-sway">
+             {/* 2. Branches */}
             <g fill="none" stroke="#065f46" strokeWidth="1.5" strokeLinecap="round">
                 <path d="M50 110 Q 40 100 30 105" className="tree-branch" style={{animationDelay: '0.8s'}} />
                 <path d="M50 110 Q 60 100 70 105" className="tree-branch" style={{animationDelay: '0.9s'}} />
                 <path d="M50 110 Q 50 90 50 70" className="tree-branch" style={{animationDelay: '1.0s'}} />
             </g>
 
+            {/* 3. Nuages de feuilles */}
             <g fill="url(#leafGrad)" filter="url(#innerGlow)">
-                 <ellipse cx="30" cy="100" rx="16" ry="13" className="leaf-cloud" style={{animationDelay: '1.2s'}} />
-                 <ellipse cx="70" cy="100" rx="16" ry="13" className="leaf-cloud" style={{animationDelay: '1.4s'}} />
-                 <ellipse cx="50" cy="70" rx="22" ry="19" className="leaf-cloud" style={{animationDelay: '1.6s'}} />
-                 <circle cx="50" cy="50" r="12" className="leaf-cloud" style={{animationDelay: '1.8s'}} />
+                 <ellipse cx="30" cy="100" rx="15" ry="12" className="leaf-cloud" style={{animationDelay: '1.2s'}} />
+                 <ellipse cx="70" cy="100" rx="15" ry="12" className="leaf-cloud" style={{animationDelay: '1.4s'}} />
+                 <ellipse cx="50" cy="70" rx="20" ry="18" className="leaf-cloud" style={{animationDelay: '1.6s'}} />
+                 <circle cx="50" cy="55" r="10" className="leaf-cloud" style={{animationDelay: '1.8s'}} />
             </g>
         </g>
 
-        {/* Feuilles qui tombent */}
+        {/* 4. Feuilles qui tombent */}
         <g className={grown ? 'opacity-100' : 'opacity-0'}>
              <path d="M40 90 Q 45 95 40 100" stroke="#34d399" strokeWidth="1" fill="none" className="falling-leaf" style={{animationDelay: '3s'}} />
              <path d="M60 80 Q 55 85 60 90" stroke="#10b981" strokeWidth="1" fill="none" className="falling-leaf" style={{animationDelay: '5s', animationDuration: '7s'}} />
         </g>
 
-        {/* Lucioles */}
+        {/* 5. Lucioles */}
         <g className={grown ? 'opacity-100' : 'opacity-0'}>
              <circle r="1" fill="#34d399" className="firefly" style={{animationDelay: '2s', cx: '40', cy: '80'}} />
              <circle r="1.5" fill="#10b981" className="firefly" style={{animationDelay: '3s', cx: '60', cy: '60'}} />
@@ -90,8 +94,6 @@ const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
         <g className="pump-body">
             <rect x="42" y="50" width="16" height="90" fill="url(#metalGrad)" rx="2" />
             <path d="M42 65 H 25 Q 15 65 15 80" stroke="url(#metalGrad)" strokeWidth="10" fill="none" strokeLinecap="round" />
-            {/* Reflet brillant sur le métal */}
-            <rect x="42" y="50" width="16" height="90" fill="white" className="shine-effect" style={{mixBlendMode: 'overlay'}} />
             
             {/* Poignée Rouge */}
             <g className="origin-[42px_50px] animate-pump-handle">
