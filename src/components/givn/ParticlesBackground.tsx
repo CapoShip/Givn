@@ -1,6 +1,20 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 export default function ParticlesBackground() {
+    // État pour savoir si on est côté client
+    const [mounted, setMounted] = useState(false);
+
+    // useEffect ne s'exécute que côté client après le premier rendu
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Si on est encore côté serveur (ou avant hydratation), on ne rend rien
+    // Cela évite le mismatch car le serveur rendra un div vide, et le client aussi au début
+    if (!mounted) return <div className="absolute inset-0 overflow-hidden pointer-events-none z-0" />;
+
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
             {[...Array(15)].map((_, i) => (
