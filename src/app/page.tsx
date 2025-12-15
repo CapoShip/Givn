@@ -94,7 +94,7 @@ export default function Home() {
     const [mounted, setMounted] = useState(false);
 
     // VITESSE UNIFIÉE POUR ÉVITER LES COLLISIONS
-    const UNIFIED_CYCLE_DURATION = 15000;
+    const UNIFIED_CYCLE_DURATION = 10000;
 
     useEffect(() => setMounted(true), []);
 
