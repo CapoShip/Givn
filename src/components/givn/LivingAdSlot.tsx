@@ -1,16 +1,20 @@
 "use client";
 import React, { useState, useEffect, memo } from 'react';
 
-interface Ad {
+// On définit les types possibles
+export type AdType = 'tree' | 'house' | 'water' | 'school' | 'ocean';
+
+export interface Ad {
     title: string;
     subtitle: string;
+    type: AdType; // Le type est maintenant obligatoire pour savoir quoi afficher
 }
 
 // ==========================================
-// 1. COMPOSANTS GRAPHIQUES (CORRECTIFS VISUELS)
+// 1. COMPOSANTS GRAPHIQUES
 // ==========================================
 
-/* --- ARBRE (Inchangé) --- */
+/* --- ARBRE (TREE) --- */
 const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-500 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
@@ -42,7 +46,7 @@ const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 TreeGraphic.displayName = 'TreeGraphic';
 
-/* --- MAISON (Design Traditionnel Clean) --- */
+/* --- MAISON (HOUSE) --- */
 const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
@@ -55,33 +59,58 @@ const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
                 <stop offset="100%" stopColor="#1e293b" />
             </linearGradient>
         </defs>
-        
-        {/* Corps de la maison (Carré solide) */}
         <g className="house-base">
             <rect x="25" y="70" width="50" height="50" fill="url(#wallWhite)" stroke="#94a3b8" strokeWidth="1" className="house-fill" />
         </g>
-        
-        {/* Toit (Classique) */}
         <g className="house-roof">
             <path d="M15 70 L50 35 L85 70" fill="url(#roofDark)" stroke="#0f172a" strokeWidth="1" strokeLinejoin="round" />
-            <rect x="65" y="45" width="8" height="15" fill="#475569" className="house-fill" /> {/* Cheminée */}
+            <rect x="65" y="45" width="8" height="15" fill="#475569" className="house-fill" />
         </g>
-        
-        {/* Porte (Bois) */}
         <rect x="43" y="95" width="14" height="25" fill="#78350f" className="house-pop" style={{ animationDelay: '1s' }} />
-        
-        {/* Fenêtres (Bleutées) */}
         <rect x="30" y="80" width="10" height="10" fill="#93c5fd" className="house-pop" style={{ animationDelay: '1.2s' }} />
         <rect x="60" y="80" width="10" height="10" fill="#93c5fd" className="house-pop" style={{ animationDelay: '1.3s' }} />
-        
-        {/* Verdure bas */}
         <path d="M20 120 Q 25 115 30 120 T 40 120" stroke="#16a34a" strokeWidth="2" fill="none" className="house-pop" style={{ animationDelay: '1.5s' }} />
         <path d="M60 120 Q 65 115 70 120 T 80 120" stroke="#16a34a" strokeWidth="2" fill="none" className="house-pop" style={{ animationDelay: '1.6s' }} />
     </svg>
 ));
 HouseGraphic.displayName = 'HouseGraphic';
 
-/* --- ROBINET (Design Corrigé + Goutte alignée) --- */
+/* --- ECOLE (SCHOOL) - Nouveau --- */
+const SchoolGraphic = memo(({ grown }: { grown: boolean }) => (
+    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+        <defs>
+            <linearGradient id="schoolBrick" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#b45309" />
+                <stop offset="100%" stopColor="#d97706" />
+            </linearGradient>
+        </defs>
+        {/* Bâtiment plus large */}
+        <g className="house-base">
+            <rect x="15" y="70" width="70" height="50" fill="url(#schoolBrick)" stroke="#78350f" strokeWidth="1" className="house-fill" />
+            {/* Colonnes entrée */}
+            <rect x="45" y="70" width="10" height="50" fill="#fcd34d" className="house-fill" style={{ opacity: 0.3 }} />
+        </g>
+        {/* Toit avec Cloche */}
+        <g className="house-roof">
+            <path d="M10 70 L50 40 L90 70" fill="#374151" stroke="#1f2937" strokeWidth="1" />
+            {/* Tour */}
+            <rect x="42" y="30" width="16" height="20" fill="#fcd34d" />
+            <path d="M40 30 L50 15 L60 30" fill="#374151" />
+            <circle cx="50" cy="40" r="4" fill="#fff" stroke="#000" strokeWidth="0.5" /> {/* Horloge */}
+        </g>
+        {/* Drapeau */}
+        <g>
+            <line x1="80" y1="70" x2="80" y2="20" stroke="#cbd5e1" strokeWidth="2" className="flag-pole" />
+            <path d="M80 20 L 100 25 L 80 30" fill="#ef4444" className="flag-banner" />
+        </g>
+        {/* Fenêtres */}
+        <rect x="25" y="85" width="12" height="20" fill="#93c5fd" className="house-pop" style={{ animationDelay: '1s' }} />
+        <rect x="63" y="85" width="12" height="20" fill="#93c5fd" className="house-pop" style={{ animationDelay: '1.2s' }} />
+    </svg>
+));
+SchoolGraphic.displayName = 'SchoolGraphic';
+
+/* --- ROBINET (WATER) --- */
 const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
@@ -95,27 +124,15 @@ const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
                 <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
         </defs>
-        
-        {/* Corps Robinet */}
         <g className="pump-body">
-            {/* Tuyau vertical */}
             <rect x="45" y="50" width="10" height="90" fill="url(#metalPipe)" rx="1" />
-            
-            {/* Bec verseur (Sortie exacte à x=25, y=60) */}
             <path d="M45 60 H 30 Q 25 60 25 70" stroke="url(#metalPipe)" strokeWidth="8" fill="none" strokeLinecap="round" />
-            
-            {/* Poignée (Rouge) */}
             <path d="M45 50 L 60 40" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" className="pump-handle" />
             <circle cx="60" cy="40" r="3" fill="#b91c1c" className="pump-handle" />
         </g>
-        
-        {/* Goutte d'eau (Coordonnées exactes sous le bec : x=25, y=70 + marge) */}
         <g filter="url(#glowWater)">
-            {/* Start at cy=75 to be just below the lip */}
             <circle cx="25" cy="75" r="4" fill="#3b82f6" className="water-drop" />
         </g>
-        
-        {/* Ondes (Centrées sur x=25) */}
         <g className="water-ripples">
             <ellipse cx="25" cy="135" rx="12" ry="3" stroke="#3b82f6" strokeWidth="1" fill="none" className="ripple-1" />
             <ellipse cx="25" cy="135" rx="20" ry="5" stroke="#3b82f6" strokeWidth="1" fill="none" className="ripple-2" />
@@ -124,37 +141,56 @@ const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 PumpGraphic.displayName = 'PumpGraphic';
 
+/* --- OCEAN (CORAIL) - Nouveau --- */
+const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
+    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+        <defs>
+            <linearGradient id="coralGradient" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stopColor="#be123c" />
+                <stop offset="100%" stopColor="#fb7185" />
+            </linearGradient>
+        </defs>
+        
+        {/* Branches de corail */}
+        <path d="M50 140 C 50 120 40 110 30 100" stroke="url(#coralGradient)" strokeWidth="4" fill="none" strokeLinecap="round" className="coral-branch" />
+        <path d="M50 130 C 50 110 60 90 70 80" stroke="url(#coralGradient)" strokeWidth="4" fill="none" strokeLinecap="round" className="coral-branch" style={{ animationDelay: '0.2s' }} />
+        <path d="M30 100 C 20 90 25 80 35 70" stroke="url(#coralGradient)" strokeWidth="3" fill="none" strokeLinecap="round" className="coral-branch" style={{ animationDelay: '0.4s' }} />
+        <path d="M70 80 C 80 70 75 60 65 50" stroke="url(#coralGradient)" strokeWidth="3" fill="none" strokeLinecap="round" className="coral-branch" style={{ animationDelay: '0.6s' }} />
+        
+        {/* Bulles */}
+        <circle cx="30" cy="90" r="2" fill="#60a5fa" className="ocean-bubble" style={{ animationDelay: '1s' }} />
+        <circle cx="60" cy="70" r="3" fill="#60a5fa" className="ocean-bubble" style={{ animationDelay: '1.5s' }} />
+        <circle cx="45" cy="50" r="2" fill="#60a5fa" className="ocean-bubble" style={{ animationDelay: '2s' }} />
+    </svg>
+));
+OceanGraphic.displayName = 'OceanGraphic';
+
 
 // ==========================================
-// 2. COMPOSANT PRINCIPAL (LOGIQUE)
+// 2. COMPOSANT PRINCIPAL (LOGIQUE ADAPTÉE)
 // ==========================================
 
 export default function LivingAdSlot({ 
     pool, 
     initialDelay, 
-    cycleDuration = 9000, 
-    forcedType 
+    cycleDuration = 9000
 }: { 
     pool: Ad[], 
     initialDelay: number, 
-    cycleDuration?: number, 
-    forcedType?: number 
+    cycleDuration?: number 
 }) {
     const [adIndex, setAdIndex] = useState(0);
     const [phase, setPhase] = useState('waiting');
     
-    // Initialisation
     useEffect(() => {
         setAdIndex(Math.floor(Math.random() * pool.length));
         const t = setTimeout(() => setPhase('seed'), initialDelay);
         return () => clearTimeout(t);
     }, [initialDelay]);
 
-    // Cycle
     useEffect(() => {
         if (phase === 'waiting') return;
         let timer: NodeJS.Timeout;
-        
         switch (phase) {
             case 'seed': timer = setTimeout(() => setPhase('growing'), 100); break;
             case 'growing': timer = setTimeout(() => setPhase('blooming'), 1200); break;
@@ -174,7 +210,8 @@ export default function LivingAdSlot({
     const currentAd = pool[adIndex];
     if (phase === 'waiting' || !currentAd) return <div className="h-[140px] mb-6"></div>;
 
-    const type = forcedType !== undefined ? forcedType : adIndex % 3;
+    // Utilisation du type défini dans l'objet Ad
+    const type = currentAd.type;
     const isGrown = phase === 'blooming' || phase === 'displayed' || phase === 'withering';
 
     return (
@@ -182,12 +219,16 @@ export default function LivingAdSlot({
             <div className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-emerald-900/50 to-transparent"></div>
 
             <div className="absolute left-0 bottom-0 w-24 h-[160px] flex flex-col justify-end items-center pointer-events-none z-0">
-                 {phase === 'seed' && type === 0 && (
+                 {/* Animation graine uniquement pour l'arbre et la maison/école */}
+                 {phase === 'seed' && (type === 'tree' || type === 'house' || type === 'school') && (
                      <div className="w-2 h-2 bg-emerald-200 rounded-full glow-dot-green absolute bottom-0 animate-seed-fall"></div>
                  )}
-                 {type === 0 && <TreeGraphic grown={isGrown} />}
-                 {type === 1 && <HouseGraphic grown={isGrown} />}
-                 {type === 2 && <PumpGraphic grown={isGrown} />}
+                 
+                 {type === 'tree' && <TreeGraphic grown={isGrown} />}
+                 {type === 'house' && <HouseGraphic grown={isGrown} />}
+                 {type === 'water' && <PumpGraphic grown={isGrown} />}
+                 {type === 'school' && <SchoolGraphic grown={isGrown} />}
+                 {type === 'ocean' && <OceanGraphic grown={isGrown} />}
             </div>
 
             {(phase === 'blooming' || phase === 'displayed' || phase === 'withering') && (

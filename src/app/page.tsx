@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { Search, Plus, ArrowRight, X, Scan, Globe, Building2 } from "lucide-react";
 
 import BrandCard from '@/components/givn/BrandCard';
-import LivingAdSlot from '@/components/givn/LivingAdSlot';
+import LivingAdSlot, { Ad } from '@/components/givn/LivingAdSlot'; // Import type
 import BrandDetailModal from '@/components/givn/BrandDetailModal';
 import Badge from '@/components/givn/Badge';
 
@@ -22,15 +22,16 @@ const RAW_BRANDS = [
     { id: 10, name: 'Nova', category: 'Tech', month: 5000, total: 45000, lastProof: '2025-12-13 08:00Z', status: 'VERIFIED', claim: 'Open source funding', description: "Developer tools for the open web." }
 ];
 
-const AD_POOL_LEFT = [
-    { title: "Proof Drop", subtitle: "Evidence uploaded → badge updates instantly." },
-    { title: "EcoTrack", subtitle: "Carbon offset verification in real-time." },
-    { title: "WaterLife", subtitle: "Clean water projects verified by satellite." },
+const AD_POOL_LEFT: Ad[] = [
+    { title: "Proof Drop", subtitle: "Evidence uploaded → badge updates instantly.", type: 'tree' },
+    { title: "EcoTrack", subtitle: "Carbon offset verification in real-time.", type: 'house' }, // Forcing house to test
+    { title: "WaterLife", subtitle: "Clean water projects verified by satellite.", type: 'water' },
 ];
 
-const AD_POOL_RIGHT = [
-    { title: "Verified Spotlight", subtitle: "One brand. One claim. One proof trail." },
-    { title: "Trust Layer", subtitle: "Building the new standard for giving." },
+const AD_POOL_RIGHT: Ad[] = [
+    { title: "Blue Future", subtitle: "Protecting marine ecosystems.", type: 'ocean' },
+    { title: "Bright Minds", subtitle: "Funding schools in rural areas.", type: 'school' },
+    { title: "Verified Spotlight", subtitle: "One brand. One claim. One proof trail.", type: 'tree' },
 ];
 
 const Modal = ({ isOpen, onClose, children }: { isOpen: boolean, onClose: () => void, children: React.ReactNode }) => {
@@ -110,18 +111,18 @@ export default function Home() {
                 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full">
                     
-                    {/* Left Ads (Desktop Only) - FORCED TYPES ADDED */}
+                    {/* Left Ads (Desktop Only) */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
-                        {/* 1. Arbre */}
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={12000} forcedType={0} />
-                        {/* 2. Maison */}
-                        <LivingAdSlot pool={[AD_POOL_LEFT[1], AD_POOL_LEFT[2]]} initialDelay={2500} cycleDuration={16000} forcedType={1} />
-                        {/* 3. Eau */}
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={4000} cycleDuration={14000} forcedType={2} />
-                        {/* 4. Arbre */}
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1500} cycleDuration={13000} forcedType={0} />
-                        {/* 5. Maison */}
-                        <LivingAdSlot pool={[AD_POOL_RIGHT[0]]} initialDelay={3200} cycleDuration={15000} forcedType={1} />
+                        {/* 1. Arbre (Proof Drop) */}
+                        <LivingAdSlot pool={[AD_POOL_LEFT[0]]} initialDelay={0} cycleDuration={12000} />
+                        {/* 2. Maison (EcoTrack) */}
+                        <LivingAdSlot pool={[AD_POOL_LEFT[1]]} initialDelay={2500} cycleDuration={16000} />
+                        {/* 3. Eau (WaterLife) */}
+                        <LivingAdSlot pool={[AD_POOL_LEFT[2]]} initialDelay={4000} cycleDuration={14000} />
+                        {/* 4. Arbre (Repeat) */}
+                        <LivingAdSlot pool={[AD_POOL_LEFT[0]]} initialDelay={1500} cycleDuration={13000} />
+                        {/* 5. Maison (Repeat) */}
+                        <LivingAdSlot pool={[AD_POOL_LEFT[1]]} initialDelay={3200} cycleDuration={15000} />
                     </div>
 
                     {/* Center Content */}
@@ -168,9 +169,9 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* MOBILE AD 1 (Maison) */}
+                        {/* MOBILE AD 1 */}
                         <div className="w-full lg:hidden mb-16 px-4">
-                             <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={14000} forcedType={1} />
+                             <LivingAdSlot pool={[AD_POOL_LEFT[1]]} initialDelay={1000} cycleDuration={14000} />
                         </div>
 
                         {/* CATEGORIES */}
@@ -193,9 +194,9 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* MOBILE AD 2 (Eau) */}
+                        {/* MOBILE AD 2 */}
                         <div className="w-full lg:hidden mb-16 px-4">
-                             <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={16000} forcedType={2} />
+                             <LivingAdSlot pool={[AD_POOL_RIGHT[0]]} initialDelay={2000} cycleDuration={16000} />
                         </div>
 
                         {/* RECENTLY LISTED */}
@@ -271,17 +272,17 @@ export default function Home() {
 
                     {/* Right Ads (Desktop Only) - FORCED ALTERNATE TYPES */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
-                        {/* 1. Eau (vs Arbre gauche) */}
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1200} cycleDuration={14000} forcedType={2} />
+                        {/* 1. Océan */}
+                        <LivingAdSlot pool={[AD_POOL_RIGHT[0]]} initialDelay={1200} cycleDuration={14000} />
                         
-                        {/* 2. Arbre (vs Maison gauche) */}
-                        <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={3500} cycleDuration={17000} forcedType={0} />
+                        {/* 2. École */}
+                        <LivingAdSlot pool={[AD_POOL_RIGHT[1]]} initialDelay={3500} cycleDuration={17000} />
                         
-                        {/* 3. Maison (vs Eau gauche) */}
-                        <LivingAdSlot pool={[AD_POOL_LEFT[0], AD_POOL_RIGHT[1]]} initialDelay={500} cycleDuration={12000} forcedType={1} />
+                        {/* 3. Arbre */}
+                        <LivingAdSlot pool={[AD_POOL_RIGHT[2]]} initialDelay={500} cycleDuration={12000} />
                         
-                        {/* 4. Eau (vs Arbre gauche) */}
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2800} cycleDuration={18000} forcedType={2} />
+                        {/* 4. Océan (Repeat) */}
+                        <LivingAdSlot pool={[AD_POOL_RIGHT[0]]} initialDelay={2800} cycleDuration={18000} />
 
                         {/* Advertise Block */}
                         <div className="glass-panel rounded-xl p-6 mt-4 border border-zinc-800 animate-[pop-in_2s_ease-out] hover:border-emerald-500/30 transition-colors group">
