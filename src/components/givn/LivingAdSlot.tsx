@@ -13,19 +13,56 @@ export interface Ad {
 // COMPOSANTS GRAPHIQUES
 // ==========================================
 
-/* --- ARBRE (Inchangé) --- */
+/* --- ARBRE "WOW" (Organique & Luxuriant) --- */
 const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-500 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
-        <path d="M50 140 C50 110 45 90 50 60 C52 45 48 30 50 10" stroke="#10b981" strokeWidth="4" fill="none" strokeLinecap="round" className="tree-path" />
-        <path d="M50 100 Q30 90 20 80" stroke="#059669" strokeWidth="3" fill="none" className="tree-path" style={{ animationDelay: '0.2s' }} strokeLinecap="round" />
-        <path d="M50 90 Q70 80 80 70" stroke="#059669" strokeWidth="3" fill="none" className="tree-path" style={{ animationDelay: '0.3s' }} strokeLinecap="round" />
-        <path d="M48 60 Q30 50 25 40" stroke="#34d399" strokeWidth="2.5" fill="none" className="tree-path" style={{ animationDelay: '0.4s' }} strokeLinecap="round" />
-        <path d="M52 50 Q70 40 75 30" stroke="#34d399" strokeWidth="2.5" fill="none" className="tree-path" style={{ animationDelay: '0.5s' }} strokeLinecap="round" />
-        <path d="M50 30 Q40 20 35 10" stroke="#34d399" strokeWidth="2" fill="none" className="tree-path" style={{ animationDelay: '0.6s' }} strokeLinecap="round" />
-        <g>
-            <circle cx="20" cy="80" r="4" fill="#34d399" className="leaf" style={{ animationDelay: '0.8s' }} />
-            <circle cx="80" cy="70" r="4" fill="#34d399" className="leaf" style={{ animationDelay: '0.9s' }} />
-            <circle cx="50" cy="10" r="5" fill="#10b981" className="leaf" style={{ animationDelay: '1.3s' }} />
+    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-700 ${grown ? 'opacity-100' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+        <defs>
+            <linearGradient id="treeTrunk" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0%" stopColor="#064e3b" />
+                <stop offset="50%" stopColor="#065f46" />
+                <stop offset="100%" stopColor="#064e3b" />
+            </linearGradient>
+            <filter id="glowGreen">
+                <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+        </defs>
+
+        {/* Tronc plus réaliste */}
+        <path d="M48 140 L 45 100 Q 42 70 50 50 Q 58 70 55 100 L 52 140 Z" fill="url(#treeTrunk)" className={`origin-bottom transition-transform duration-1000 ${grown ? 'scale-y-100' : 'scale-y-0'}`} />
+        
+        {/* Branches principales */}
+        <g className={grown ? 'opacity-100 transition-opacity delay-300 duration-500' : 'opacity-0'}>
+             <path d="M50 90 Q 30 80 20 60" stroke="#065f46" strokeWidth="2" fill="none" className="tree-path" />
+             <path d="M50 70 Q 70 60 80 40" stroke="#065f46" strokeWidth="2" fill="none" className="tree-path" style={{animationDelay: '0.2s'}} />
+        </g>
+
+        {/* Feuillage dense (Canopy) */}
+        <g className={`origin-center ${grown ? 'animate-sway' : ''}`}>
+            {/* Groupe de feuilles gauche */}
+            <g className={`transition-all duration-700 delay-500 ${grown ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} style={{transformOrigin: '20px 60px'}}>
+                <circle cx="20" cy="60" r="12" fill="#10b981" opacity="0.8" />
+                <circle cx="25" cy="55" r="10" fill="#34d399" opacity="0.6" />
+            </g>
+            {/* Groupe de feuilles droite */}
+            <g className={`transition-all duration-700 delay-700 ${grown ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} style={{transformOrigin: '80px 40px'}}>
+                <circle cx="80" cy="40" r="14" fill="#10b981" opacity="0.8" />
+                <circle cx="75" cy="45" r="10" fill="#059669" opacity="0.6" />
+            </g>
+            {/* Sommet */}
+            <g className={`transition-all duration-700 delay-900 ${grown ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} style={{transformOrigin: '50px 30px'}}>
+                <circle cx="50" cy="30" r="18" fill="#10b981" />
+                <circle cx="50" cy="25" r="12" fill="#34d399" />
+                {/* Fruit/Baie brillante */}
+                <circle cx="55" cy="35" r="3" fill="#fbbf24" filter="url(#glowGreen)" className="animate-pulse" />
+            </g>
+        </g>
+
+        {/* Particules de vie (Pollen/Lucioles) */}
+        <g className={grown ? 'opacity-100' : 'opacity-0'}>
+            <circle r="1" fill="#fff" className="firefly" style={{animationDelay: '1s', cx: '40', cy: '80'}} />
+            <circle r="1" fill="#fff" className="firefly" style={{animationDelay: '2.5s', cx: '60', cy: '70'}} />
+            <circle r="1.5" fill="#34d399" className="firefly" style={{animationDelay: '4s', cx: '50', cy: '50'}} />
         </g>
     </svg>
 ));
@@ -102,7 +139,7 @@ const SchoolGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 SchoolGraphic.displayName = 'SchoolGraphic';
 
-/* --- OCÉAN (MÉDUSE RÉALISTE & ORGANIQUE) --- */
+/* --- OCÉAN "WOW" (Méduse + Vie Marine) --- */
 const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-500 ${grown ? 'opacity-100' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
@@ -111,21 +148,24 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
                 <stop offset="50%" stopColor="#082f49" /> 
                 <stop offset="100%" stopColor="#0c4a6e" /> 
             </linearGradient>
-            {/* Dégradé de la méduse - Cyan/Teal lumineux */}
             <linearGradient id="jellyBody" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#ccfbf1" stopOpacity="0.9"/>
                 <stop offset="100%" stopColor="#2dd4bf" stopOpacity="0.4"/>
             </linearGradient>
              <filter id="bioGlow">
                 <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
+                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
         </defs>
 
         <rect x="0" y="0" width="100" height="160" fill="url(#deepSeaGrad)" />
+
+        {/* --- Ajout: BANC DE POISSONS (Arrière-plan) --- */}
+        <g className="fish-school" opacity="0.3">
+            <path d="M0 0 L5 2 L0 4 Z" fill="#7dd3fc" transform="translate(0, 40)" />
+            <path d="M0 0 L4 1.5 L0 3 Z" fill="#7dd3fc" transform="translate(10, 45)" />
+            <path d="M0 0 L6 2.5 L0 5 Z" fill="#7dd3fc" transform="translate(-5, 35)" />
+        </g>
 
         {/* Rayons de lumière */}
         <g className="ocean-light-rays" opacity="0.3">
@@ -133,20 +173,13 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
             <path d="M20 -20 L 70 160 L 90 160 L 40 -20 Z" fill="#fff" opacity="0.1" style={{animationDelay:'1s'}} />
         </g>
         
-        {/* GROUPE MÉDUSE - Animation de nage globale */}
+        {/* MÉDUSE (Inchangée car déjà top, juste animation ajustée) */}
         <g className="jellyfish-swim">
-            {/* CORPS DE LA MÉDUSE (Cloche) - Animation de contraction */}
             <g className="jellyfish-bell-pulse">
-                {/* Forme de la cloche en demi-cercle parfait */}
                 <path d="M 30 90 Q 50 60 70 90 L 68 95 Q 50 85 32 95 Z" fill="url(#jellyBody)" filter="url(#bioGlow)" />
-                
-                {/* Organes internes brillants */}
                 <ellipse cx="50" cy="85" rx="10" ry="5" fill="#5eead4" opacity="0.6" filter="url(#bioGlow)" />
             </g>
-
-            {/* TENTACULES - Animation de traînée fluide */}
             <g className="jellyfish-tentacles" fill="none" stroke="#5eead4" strokeWidth="1.5" strokeLinecap="round" filter="url(#bioGlow)">
-                {/* 4 Tentacules avec des chemins sinueux */}
                 <path d="M 38 95 Q 35 110 40 125" className="tentacle-1" />
                 <path d="M 46 95 Q 46 115 48 135" className="tentacle-2" />
                 <path d="M 54 95 Q 54 115 52 135" className="tentacle-3" />
@@ -154,9 +187,11 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
             </g>
         </g>
 
-        <g className="ocean-particles">
-            <circle cx="20" cy="40" r="0.5" fill="#fff" opacity="0.4" />
-            <circle cx="80" cy="30" r="0.5" fill="#fff" opacity="0.3" />
+        {/* --- Ajout: BULLES QUI MONTENT (Premier plan) --- */}
+        <g>
+            <circle cx="20" cy="140" r="1.5" fill="#a5f3fc" className="bubble" style={{animationDelay: '0s'}} />
+            <circle cx="60" cy="140" r="1" fill="#a5f3fc" className="bubble" style={{animationDelay: '1.5s'}} />
+            <circle cx="85" cy="140" r="2" fill="#a5f3fc" className="bubble" style={{animationDelay: '2.8s'}} />
         </g>
     </svg>
 ));
@@ -220,22 +255,49 @@ const FoodGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 FoodGraphic.displayName = 'FoodGraphic';
 
-/* --- ÉNERGIE (Fix Centre de rotation 50,45) --- */
+/* --- ÉNERGIE "WOW" (Ciel, Vent, Oiseaux) --- */
 const EnergyGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
-        {/* Tour centrée sous le point 50,45 */}
+        <defs>
+            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#0f172a" stopOpacity="0" />
+                <stop offset="100%" stopColor="#1e293b" stopOpacity="0.8" />
+            </linearGradient>
+        </defs>
+        
+        {/* Fond Ciel léger */}
+        <rect x="0" y="0" width="100" height="140" fill="url(#skyGrad)" />
+
+        {/* --- Ajout: NUAGES --- */}
+        <g className="cloud" style={{opacity: 0.4}}>
+            <path d="M10 20 Q 20 10 30 20 T 50 20 T 60 30 L 10 30 Z" fill="#94a3b8" />
+        </g>
+        <g className="cloud" style={{opacity: 0.3, animationDelay: '-10s', transform: 'scale(0.8) translateY(10px)'}}>
+            <path d="M-20 40 Q -10 30 0 40 T 20 40 L -20 50 Z" fill="#64748b" />
+        </g>
+
+        {/* Tour centrée */}
         <rect x="48" y="45" width="4" height="95" fill="#94a3b8" className="house-base" />
         
-        {/* Cœur */}
+        {/* Cœur énergétique */}
         <circle cx="50" cy="45" r="5" fill="#fcd34d" className="house-pop" style={{ animationDelay: '1.2s' }} />
         
-        {/* Turbine avec centre EXACTEMENT à 50,45 */}
+        {/* Turbine */}
         <g className="turbine-spin-fast">
             <circle cx="50" cy="45" r="3" fill="#64748b" />
             <path d="M50 45 L 50 5 Q 60 5 50 45" fill="#cbd5e1" stroke="#94a3b8" strokeWidth="1" />
             <path d="M50 45 L 85 65 Q 80 75 50 45" fill="#cbd5e1" stroke="#94a3b8" strokeWidth="1" />
             <path d="M50 45 L 15 65 Q 20 75 50 45" fill="#cbd5e1" stroke="#94a3b8" strokeWidth="1" />
         </g>
+
+        {/* --- Ajout: EFFET VENT (Lignes rapides) --- */}
+        <g className="opacity-30">
+            <line x1="0" y1="30" x2="20" y2="30" stroke="#fff" strokeWidth="0.5" className="bird" style={{animationDuration: '1s'}} />
+            <line x1="80" y1="60" x2="100" y2="60" stroke="#fff" strokeWidth="0.5" className="bird" style={{animationDuration: '1.5s', animationDelay: '0.5s'}} />
+        </g>
+
+        {/* --- Ajout: OISEAUX --- */}
+        <path d="M0 0 Q 3 -3 6 0" stroke="#fff" fill="none" strokeWidth="1" className="bird" style={{opacity: 0.8}} />
     </svg>
 ));
 EnergyGraphic.displayName = 'EnergyGraphic';
