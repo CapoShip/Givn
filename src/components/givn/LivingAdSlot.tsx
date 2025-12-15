@@ -6,24 +6,24 @@ interface Ad {
     subtitle: string;
 }
 
-// --- GRAPHICS (Memoized to prevent flickering) ---
+// ==========================================
+// 1. COMPOSANTS GRAPHIQUES (Définis EN DEHORS du composant principal)
+// ==========================================
 
 const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-500 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
             <linearGradient id="treeGradient" x1="0" y1="1" x2="0" y2="0">
                 <stop offset="0%" stopColor="#064e3b" />
-                <stop offset="40%" stopColor="#10b981" />
                 <stop offset="100%" stopColor="#34d399" />
             </linearGradient>
-            <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+            <filter id="glowTree" x="-40%" y="-40%" width="180%" height="180%">
                 <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
+                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
         </defs>
+        
+        {/* TRONC & BRANCHES */}
         <path d="M50 140 C50 110 45 90 50 60 C52 45 48 30 50 10" stroke="url(#treeGradient)" strokeWidth="4" fill="none" strokeLinecap="round" className="tree-path" />
         <path d="M50 100 Q30 90 20 80" stroke="url(#treeGradient)" strokeWidth="3" fill="none" className="tree-path" style={{ animationDelay: '0.2s' }} strokeLinecap="round" />
         <path d="M50 90 Q70 80 80 70" stroke="url(#treeGradient)" strokeWidth="3" fill="none" className="tree-path" style={{ animationDelay: '0.3s' }} strokeLinecap="round" />
@@ -31,7 +31,9 @@ const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
         <path d="M52 50 Q70 40 75 30" stroke="url(#treeGradient)" strokeWidth="2.5" fill="none" className="tree-path" style={{ animationDelay: '0.5s' }} strokeLinecap="round" />
         <path d="M50 30 Q40 20 35 10" stroke="url(#treeGradient)" strokeWidth="2" fill="none" className="tree-path" style={{ animationDelay: '0.6s' }} strokeLinecap="round" />
         <path d="M50 30 Q60 20 65 10" stroke="url(#treeGradient)" strokeWidth="2" fill="none" className="tree-path" style={{ animationDelay: '0.6s' }} strokeLinecap="round" />
-        <g filter="url(#glow)">
+        
+        {/* FEUILLES */}
+        <g filter="url(#glowTree)">
             <circle cx="20" cy="80" r="4" fill="#34d399" className="leaf" style={{ animationDelay: '0.8s' }} />
             <circle cx="15" cy="75" r="3" fill="#10b981" className="leaf" style={{ animationDelay: '0.9s' }} />
             <circle cx="25" cy="40" r="3.5" fill="#059669" className="leaf" style={{ animationDelay: '1s' }} />
@@ -52,90 +54,111 @@ const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
             </linearGradient>
         </defs>
         
+        {/* BASE / MURS */}
         <g className="house-base">
-            <path d="M25 80 H75 V130 H25 Z" stroke="url(#houseGradient)" strokeWidth="2" fill="#064e3b" className="house-fill" />
+            <path d="M25 80 H75 V130 H25 Z" stroke="url(#houseGradient)" strokeWidth="3" fill="#064e3b" className="house-fill" />
         </g>
         
+        {/* TOIT */}
         <g className="house-roof">
-            <path d="M20 80 L50 50 L80 80 Z" stroke="url(#houseGradient)" strokeWidth="2" fill="#10b981" strokeLinejoin="round" className="house-fill" />
+            <path d="M20 80 L50 50 L80 80" stroke="url(#houseGradient)" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M50 50 L50 65" stroke="url(#houseGradient)" strokeWidth="1" className="house-fill" /> {/* Petit détail charpente */}
         </g>
         
-        <rect x="42" y="105" width="16" height="25" rx="1" fill="#042f2e" className="house-fill" style={{ animationDelay: '1s' }} />
-        <rect x="35" y="90" width="10" height="10" rx="1" fill="#34d399" className="house-fill" style={{ animationDelay: '1.2s' }} />
-        <rect x="55" y="90" width="10" height="10" rx="1" fill="#34d399" className="house-fill" style={{ animationDelay: '1.3s' }} />
+        {/* PORTE & FENÊTRES */}
+        <rect x="42" y="105" width="16" height="25" rx="1" fill="#042f2e" className="house-pop" style={{ animationDelay: '1s' }} />
+        <rect x="35" y="90" width="10" height="10" rx="1" fill="#34d399" className="house-pop" style={{ animationDelay: '1.2s' }} />
+        <rect x="55" y="90" width="10" height="10" rx="1" fill="#34d399" className="house-pop" style={{ animationDelay: '1.3s' }} />
     </svg>
 ));
 HouseGraphic.displayName = 'HouseGraphic';
 
-const WaterPumpGraphic = memo(({ grown }: { grown: boolean }) => (
+const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
-            <linearGradient id="metalGradient" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#64748b" />
-                <stop offset="100%" stopColor="#94a3b8" />
+            <linearGradient id="pumpGradient" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#94a3b8" />
+                <stop offset="100%" stopColor="#475569" />
             </linearGradient>
-            <filter id="glowBlue" x="-40%" y="-40%" width="180%" height="180%">
-                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
+            <filter id="glowWater" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
         </defs>
         
-        {/* CORRECTION DU TRACÉ DU ROBINET */}
+        {/* POMPE (CORPS) */}
         <g className="pump-body">
-            <path d="M70 140 V 60" stroke="url(#metalGradient)" strokeWidth="6" strokeLinecap="round" fill="none" />
-            <path d="M70 65 Q 70 40 40 50 L 35 55" fill="none" stroke="url(#metalGradient)" strokeWidth="6" strokeLinecap="round" />
-            <path d="M70 60 L 85 40" stroke="#cbd5e1" strokeWidth="4" strokeLinecap="round" />
-            <circle cx="85" cy="40" r="3" fill="#ef4444" />
+            {/* Tuyau vertical */}
+            <rect x="45" y="60" width="10" height="80" fill="url(#pumpGradient)" />
+            {/* Tête de pompe */}
+            <path d="M40 60 H60 V40 H40 Z" fill="url(#pumpGradient)" />
+            {/* Bec verseur (Courbe vers la gauche) */}
+            <path d="M45 50 H30 Q 20 50 20 70" stroke="url(#pumpGradient)" strokeWidth="8" fill="none" strokeLinecap="round" />
+            {/* Levier (Bras) */}
+            <path d="M50 40 L 75 25" stroke="#cbd5e1" strokeWidth="4" strokeLinecap="round" className="pump-handle" />
+            <circle cx="75" cy="25" r="3" fill="#ef4444" className="pump-handle" />
         </g>
         
-        <g filter="url(#glowBlue)">
-            <circle cx="35" cy="60" r="4" fill="#3b82f6" className="water-drop" />
+        {/* GOUTTE D'EAU */}
+        <g filter="url(#glowWater)">
+            <circle cx="20" cy="75" r="4" fill="#3b82f6" className="water-drop" />
         </g>
         
-        <ellipse cx="35" cy="125" rx="15" ry="4" stroke="#3b82f6" strokeWidth="1" fill="none" className="water-ripple" style={{ animationDelay: '1s' }} />
-        <ellipse cx="35" cy="125" rx="25" ry="6" stroke="#3b82f6" strokeWidth="1" fill="none" className="water-ripple" style={{ animationDelay: '1.4s' }} />
+        {/* ONDULATIONS (Au sol) */}
+        <g className="water-ripples">
+            <ellipse cx="20" cy="130" rx="15" ry="4" stroke="#3b82f6" strokeWidth="1" fill="none" className="ripple-1" />
+            <ellipse cx="20" cy="130" rx="25" ry="6" stroke="#3b82f6" strokeWidth="1" fill="none" className="ripple-2" />
+        </g>
     </svg>
 ));
-WaterPumpGraphic.displayName = 'WaterPumpGraphic';
+PumpGraphic.displayName = 'PumpGraphic';
 
-// --- MAIN COMPONENT ---
 
-const LivingAdSlot = ({ pool, initialDelay, cycleDuration = 9000, variantOffset = 0 }: { pool: Ad[], initialDelay: number, cycleDuration?: number, variantOffset?: number }) => {
+// ==========================================
+// 2. COMPOSANT PRINCIPAL (LOGIQUE STABLE)
+// ==========================================
+
+export default function LivingAdSlot({ pool, initialDelay, cycleDuration = 9000, variantOffset = 0 }: { pool: Ad[], initialDelay: number, cycleDuration?: number, variantOffset?: number }) {
     const [adIndex, setAdIndex] = useState(0);
-    const [phase, setPhase] = useState('waiting');
+    const [phase, setPhase] = useState('waiting'); // waiting -> seed -> growing -> blooming -> displayed -> withering -> reset
     
-    // Initialisation
+    // Initialisation unique
     useEffect(() => {
+        // Aléatoire stable au montage
         setAdIndex(Math.floor(Math.random() * pool.length));
-        const startTimeout = setTimeout(() => setPhase('seed'), initialDelay);
-        return () => clearTimeout(startTimeout);
-    }, [initialDelay]); // Retiré pool.length pour éviter reset
+        const t = setTimeout(() => setPhase('seed'), initialDelay);
+        return () => clearTimeout(t);
+    }, [initialDelay]); // Retrait de pool.length pour éviter reset infini
 
-    // Cycle Loop
+    // Gestion du cycle
     useEffect(() => {
         if (phase === 'waiting') return;
 
         let timer: NodeJS.Timeout;
         
-        if (phase === 'seed') {
-            timer = setTimeout(() => setPhase('growing'), 100); // Rapide
-        } else if (phase === 'growing') {
-            timer = setTimeout(() => setPhase('blooming'), 1000); 
-        } else if (phase === 'blooming') {
-            timer = setTimeout(() => setPhase('displayed'), 500);
-        } else if (phase === 'displayed') {
-            timer = setTimeout(() => setPhase('withering'), cycleDuration);
-        } else if (phase === 'withering') {
-            timer = setTimeout(() => {
-                setAdIndex((prev) => (prev + 1) % pool.length);
-                setPhase('reset'); // Nouvelle phase tampon
-            }, 600);
-        } else if (phase === 'reset') {
-             // Phase invisible pour forcer le reset des animations CSS
-             timer = setTimeout(() => setPhase('seed'), 100);
+        switch (phase) {
+            case 'seed':
+                timer = setTimeout(() => setPhase('growing'), 100);
+                break;
+            case 'growing':
+                timer = setTimeout(() => setPhase('blooming'), 1200); 
+                break;
+            case 'blooming':
+                timer = setTimeout(() => setPhase('displayed'), 600);
+                break;
+            case 'displayed':
+                timer = setTimeout(() => setPhase('withering'), cycleDuration);
+                break;
+            case 'withering':
+                timer = setTimeout(() => {
+                    setAdIndex((prev) => (prev + 1) % pool.length);
+                    setPhase('reset');
+                }, 600);
+                break;
+            case 'reset':
+                // Phase technique invisible pour garantir que le CSS restart
+                timer = setTimeout(() => setPhase('seed'), 50);
+                break;
         }
 
         return () => clearTimeout(timer);
@@ -144,26 +167,24 @@ const LivingAdSlot = ({ pool, initialDelay, cycleDuration = 9000, variantOffset 
     const currentAd = pool[adIndex];
     if (phase === 'waiting' || !currentAd) return <div className="h-[140px] mb-6"></div>;
 
-    const GraphicComponent = () => {
-        const type = (adIndex + variantOffset) % 3;
-        // On garde "grown" à true pendant displayed ET withering pour que l'image reste
-        const isGrown = phase === 'blooming' || phase === 'displayed' || phase === 'withering';
-        
-        if (type === 0) return <TreeGraphic grown={isGrown} />;
-        if (type === 1) return <HouseGraphic grown={isGrown} />;
-        return <WaterPumpGraphic grown={isGrown} />;
-    };
+    // Calcul du type (0=Arbre, 1=Maison, 2=Pompe)
+    const type = (adIndex + variantOffset) % 3;
+    const isGrown = phase === 'blooming' || phase === 'displayed' || phase === 'withering';
 
     return (
         <div className="relative pl-8 mb-8 min-h-[140px] flex items-end">
             <div className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-emerald-900/50 to-transparent"></div>
 
             <div className="absolute left-0 bottom-0 w-24 h-[160px] flex flex-col justify-end items-center pointer-events-none z-0">
-                 {/* La graine ne tombe que si on est en phase seed et que ce n'est PAS de l'eau ou maison */}
-                 {phase === 'seed' && (adIndex + variantOffset) % 3 === 0 && (
+                 {/* La graine ne tombe que pour l'Arbre (type 0) */}
+                 {phase === 'seed' && type === 0 && (
                      <div className="w-2 h-2 bg-emerald-200 rounded-full glow-dot-green absolute bottom-0 animate-seed-fall"></div>
                  )}
-                 <GraphicComponent />
+                 
+                 {/* Rendu Conditionnel Simple et Stable */}
+                 {type === 0 && <TreeGraphic grown={isGrown} />}
+                 {type === 1 && <HouseGraphic grown={isGrown} />}
+                 {type === 2 && <PumpGraphic grown={isGrown} />}
             </div>
 
             {(phase === 'blooming' || phase === 'displayed' || phase === 'withering') && (
@@ -182,6 +203,4 @@ const LivingAdSlot = ({ pool, initialDelay, cycleDuration = 9000, variantOffset 
             )}
         </div>
     );
-};
-
-export default memo(LivingAdSlot);
+}
