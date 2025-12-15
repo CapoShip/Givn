@@ -15,28 +15,15 @@ body {
   overflow-x: hidden;
 }
 
-/* --- Utilities --- */
+/* --- Utilities (Inchangé) --- */
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
-
-.glass-panel {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-}
-
-.glass-panel:hover {
-  background: rgba(16, 185, 129, 0.03);
-  border-color: rgba(16, 185, 129, 0.2);
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.05);
-}
-
+.glass-panel { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); }
+.glass-panel:hover { background: rgba(16, 185, 129, 0.03); border-color: rgba(16, 185, 129, 0.2); box-shadow: 0 0 20px rgba(16, 185, 129, 0.05); }
 .glow-text { text-shadow: 0 0 30px rgba(16, 185, 129, 0.2); }
 .glow-dot-green { box-shadow: 0 0 12px 3px rgba(16, 185, 129, 0.4); }
 
@@ -44,319 +31,105 @@ body {
    ANIMATIONS DES PUBLICITÉS (LivingAdSlot)
    ========================================= */
 
-/* --- 1. ARBRE (Mise à jour Réaliste) --- */
-.tree-path { stroke-dasharray: 300; stroke-dashoffset: 300; }
-.ad-grown .tree-path { animation: draw-line 2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.leaf { transform: scale(0); transform-origin: center; }
-.ad-grown .leaf { animation: pop-scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-
-/* Le tronc qui sort du sol (Plus lent et fluide) */
+/* --- 1. ARBRE REALISTE --- */
 .tree-trunk-grow {
     transform: scaleY(0);
     transform-origin: bottom center;
 }
 .ad-grown .tree-trunk-grow {
-    animation: grow-up 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    animation: grow-up 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
-/* Les branches qui se dessinent */
-.tree-branch {
-    stroke-dasharray: 150;
-    stroke-dashoffset: 150;
+/* Le feuillage apparaît en grossissant */
+.tree-canopy-grow {
+    transform: scale(0);
+    transform-origin: 50px 80px;
     opacity: 0;
 }
-.ad-grown .tree-branch {
-    animation: fade-in 0.1s forwards, draw-line 1.5s ease-out forwards;
+.ad-grown .tree-canopy-grow {
+    animation: pop-scale-bounce 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
 }
 
-/* Les masses de feuilles qui apparaissent */
-.leaf-cloud {
-    transform: scale(0);
-    transform-origin: center;
-    opacity: 0.9;
-}
-.ad-grown .leaf-cloud {
-    animation: pop-scale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-/* Balancement Naturel (Vent Organique) */
-@keyframes tree-sway-slow {
-    0% { transform: rotate(-2deg) skewX(-1deg); }
-    25% { transform: rotate(1deg) skewX(0.5deg); }
-    50% { transform: rotate(-0.5deg) skewX(-0.2deg); }
-    75% { transform: rotate(1.5deg) skewX(0.5deg); }
-    100% { transform: rotate(-2deg) skewX(-1deg); }
+/* Balancement réaliste du vent (toute la masse de feuilles) */
+@keyframes tree-sway-wind {
+    0%, 100% { transform: rotate(-2deg) translateX(-2px); }
+    50% { transform: rotate(3deg) translateX(2px) skewX(1deg); }
 }
 .ad-grown .tree-crown-sway {
-    animation: tree-sway-slow 12s ease-in-out infinite;
-    transform-origin: 50px 100px;
+    animation: tree-sway-wind 6s ease-in-out infinite alternate;
+    transform-origin: 50px 100px; /* Pivot à la base du feuillage */
 }
 
-/* Chute de feuilles */
-@keyframes leaf-fall {
-    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-    10% { opacity: 1; }
-    100% { transform: translateY(60px) translateX(20px) rotate(360deg); opacity: 0; }
+/* Feuilles qui tombent */
+@keyframes leaf-fall-realistic {
+    0% { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translateY(100px) rotate(720deg) translateX(40px); opacity: 0; }
 }
-.falling-leaf { animation: leaf-fall 6s linear infinite; }
-
-/* Lucioles */
-@keyframes firefly-move {
-  0% { transform: translate(0, 0); opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { transform: translate(20px, -30px); opacity: 0; }
-}
-.firefly { animation: firefly-move 4s ease-out infinite; }
+.falling-leaf { animation: leaf-fall-realistic 8s linear infinite; }
 
 
-/* --- 2. MAISON / ÉCOLE --- */
-.house-base { transform: scaleY(0); transform-origin: bottom; }
-.ad-grown .house-base { animation: grow-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.house-roof { transform: translateY(-20px) scale(0); transform-origin: center; opacity: 0; }
-.ad-grown .house-roof { animation: drop-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
-.house-fill { fill-opacity: 0; transition: fill-opacity 1s ease-in; }
-.ad-grown .house-fill { fill-opacity: 1; }
-.house-pop { transform: scale(0); transform-origin: center; }
-.ad-grown .house-pop { animation: pop-scale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-.flag-banner { transform: scaleX(0); transform-origin: left; opacity: 0; }
-.ad-grown .flag-banner { animation: flag-wave 2s infinite ease-in-out 1.5s, slide-right 0.5s ease-out 1.5s forwards; }
-
-/* --- 3. ROBINET (Dynamique & EAU QUI COULE) --- */
-@keyframes pump-handle {
+/* --- 3. ROBINET (EAU VISIBLE ET RAPIDE) --- */
+@keyframes pump-handle-active {
     0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(15deg); }
+    50% { transform: rotate(25deg); }
 }
 .animate-pump-handle {
-    animation: pump-handle 2s ease-in-out infinite;
+    animation: pump-handle-active 1s ease-in-out infinite;
 }
 
-/* NOUVEAU: Flux d'eau réaliste */
-@keyframes water-flow {
-    to { stroke-dashoffset: -20; }
+/* Flux d'eau puissant et rapide */
+@keyframes water-flow-fast {
+    to { stroke-dashoffset: -60; }
 }
-.water-stream {
-    stroke-dasharray: 20;
-    animation: water-flow 0.4s linear infinite;
-    opacity: 0.8;
-}
-
-/* NOUVEAU: Gouttes d'eau */
-@keyframes drop-fall {
-    0% { transform: translateY(0) scale(0.5); opacity: 0.8; }
-    50% { opacity: 1; }
-    100% { transform: translateY(60px) scale(0); opacity: 0; }
-}
-.droplet-particle {
-    animation: drop-fall 1.5s infinite ease-in;
-    transform-origin: center;
+.water-stream-powerful {
+    stroke-dasharray: 30;
+    stroke-width: 8px; /* Très épais pour être visible */
+    animation: water-flow-fast 0.25s linear infinite; /* Très rapide */
+    opacity: 0.9;
+    filter: drop-shadow(0 0 5px #22d3ee); /* Légère lueur pour la visibilité */
 }
 
-@keyframes ripple-expand {
-    0% { transform: scale(0.5); opacity: 0.8; }
-    100% { transform: scale(1.5); opacity: 0; }
+/* Gouttes et éclaboussures */
+@keyframes splash-drop {
+    0% { transform: translateY(0) scale(0.8); opacity: 1; }
+    100% { transform: translateY(80px) scale(0.1); opacity: 0; }
 }
-.animate-ripple {
-    animation: ripple-expand 1.5s infinite ease-out;
-    transform-origin: center;
-}
-
-/* --- 4. ÉNERGIE (Fix Centre de rotation) --- */
-.turbine-spin-fast {
-  animation: spin 2s linear infinite;
-  transform-origin: 50px 45px;
-  transform-box: view-box;
+.splash-particle {
+    animation: splash-drop 0.6s linear infinite;
+    fill: #cffafe;
 }
 
-/* --- 5. SANTÉ (ECG Rouge) --- */
-.ecg-line {
-  stroke-dasharray: 300;
-  stroke-dashoffset: 300;
-}
-.ad-grown .ecg-line {
-  animation: draw-ecg 2.5s linear forwards infinite;
-}
-.ecg-blip { opacity: 0; }
-.ad-grown .ecg-blip { animation: fade-in-out 2.5s linear infinite; }
-
-/* --- 6. NOURRITURE (Blé) --- */
-.wheat-stem { stroke-dasharray: 100; stroke-dashoffset: 100; }
-.ad-grown .wheat-stem { animation: draw-line 1.5s ease-out forwards; }
-
-.wheat-head { opacity: 0; transform-origin: bottom center; }
-.ad-grown .wheat-head { 
-    animation: fade-in-up-small 0.5s ease-out 1.2s forwards, wheat-wave 3s infinite ease-in-out 1.7s; 
-}
-
-/* --- 7. OCÉAN (MÉDUSE ORGANIQUE) --- */
-@keyframes jellyfish-swim-up {
-    0% { transform: translateY(140px); }
-    100% { transform: translateY(-30px); }
-}
-.jellyfish-swim {
-    animation: jellyfish-swim-up 10s linear infinite;
-}
-
-@keyframes bell-pulse {
-    0%, 100% { transform: scaleY(1) scaleX(1); }
-    50% { transform: scaleY(0.9) scaleX(1.1); } 
-}
-.jellyfish-bell-pulse {
-    transform-origin: center;
-    animation: bell-pulse 2s ease-in-out infinite;
-}
-
-@keyframes tentacle-trail {
-    0%, 100% { transform: scaleY(1); opacity: 0.8; }
-    50% { transform: scaleY(1.2); opacity: 0.5; }
-}
-.jellyfish-tentacles path {
-    transform-origin: top;
-    animation: tentacle-trail 2s ease-in-out infinite;
-}
-.tentacle-1 { animation-delay: 0s; }
-.tentacle-2 { animation-delay: 0.1s; }
-.tentacle-3 { animation-delay: 0.2s; }
-.tentacle-4 { animation-delay: 0.3s; }
-
-@keyframes light-ray-shimmer {
-    0%, 100% { opacity: 0.05; }
-    50% { opacity: 0.15; }
-}
-.ocean-light-rays path {
-    animation: light-ray-shimmer 8s infinite ease-in-out alternate;
-}
-
-@keyframes ocean-particle-drift {
-    0%, 100% { transform: translate(0,0); }
-    50% { transform: translate(3px, -5px); }
-}
-.ocean-particles circle {
-    animation: ocean-particle-drift 12s infinite ease-in-out alternate;
-}
-
+/* --- Autres (Inchangés, pour compatibilité) --- */
+.house-base { transform: scaleY(0); transform-origin: bottom; } .ad-grown .house-base { animation: grow-up 0.8s forwards; } .house-roof { transform: translateY(-20px) scale(0); transform-origin: center; opacity: 0; } .ad-grown .house-roof { animation: drop-in 0.8s 0.5s forwards; } .house-fill { fill-opacity: 0; transition: fill-opacity 1s; } .ad-grown .house-fill { fill-opacity: 1; } .house-pop { transform: scale(0); transform-origin: center; } .ad-grown .house-pop { animation: pop-scale 0.5s forwards; } .flag-banner { transform: scaleX(0); transform-origin: left; opacity: 0; } .ad-grown .flag-banner { animation: flag-wave 2s infinite ease-in-out 1.5s, slide-right 0.5s ease-out 1.5s forwards; }
+.turbine-spin-fast { animation: spin 2s linear infinite; transform-origin: 50px 45px; transform-box: view-box; } .ecg-line { stroke-dasharray: 300; stroke-dashoffset: 300; } .ad-grown .ecg-line { animation: draw-ecg 2.5s linear forwards infinite; } .ecg-blip { opacity: 0; } .ad-grown .ecg-blip { animation: fade-in-out 2.5s linear infinite; } .wheat-stem { stroke-dasharray: 100; stroke-dashoffset: 100; } .ad-grown .wheat-stem { animation: draw-line 1.5s ease-out forwards; } .wheat-head { opacity: 0; transform-origin: bottom center; } .ad-grown .wheat-head { animation: fade-in-up-small 0.5s ease-out 1.2s forwards, wheat-wave 3s infinite ease-in-out 1.7s; }
+@keyframes jellyfish-swim-up { 0% { transform: translateY(140px); } 100% { transform: translateY(-30px); } } .jellyfish-swim { animation: jellyfish-swim-up 10s linear infinite; } @keyframes bell-pulse { 0%, 100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(0.9) scaleX(1.1); } } .jellyfish-bell-pulse { transform-origin: center; animation: bell-pulse 2s ease-in-out infinite; } @keyframes tentacle-trail { 0%, 100% { transform: scaleY(1); opacity: 0.8; } 50% { transform: scaleY(1.2); opacity: 0.5; } } .jellyfish-tentacles path { transform-origin: top; animation: tentacle-trail 2s ease-in-out infinite; } .tentacle-1 { animation-delay: 0s; } .tentacle-2 { animation-delay: 0.1s; } .tentacle-3 { animation-delay: 0.2s; } .tentacle-4 { animation-delay: 0.3s; } @keyframes light-ray-shimmer { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.15; } } .ocean-light-rays path { animation: light-ray-shimmer 8s infinite ease-in-out alternate; } @keyframes ocean-particle-drift { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(3px, -5px); } } .ocean-particles circle { animation: ocean-particle-drift 12s infinite ease-in-out alternate; }
 
 /* =========================================
    KEYFRAMES GÉNÉRIQUES
    ========================================= */
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes draw-line { to { stroke-dashoffset: 0; } }
 @keyframes pop-scale { to { transform: scale(1); } }
+@keyframes pop-scale-bounce { 0% { transform: scale(0); opacity:0; } 60% { transform: scale(1.05); opacity: 1;} 100% { transform: scale(1); opacity: 1; } }
 @keyframes grow-up { to { transform: scaleY(1); } }
 @keyframes drop-in { to { transform: translateY(0) scale(1); opacity: 1; } }
 @keyframes slide-right { to { transform: scaleX(1); opacity: 1; } }
 @keyframes fade-in { to { opacity: 1; } }
+@keyframes draw-ecg { 0% { stroke-dashoffset: 300; } 100% { stroke-dashoffset: 0; } }
+@keyframes fade-in-out { 0%, 100% { opacity: 0; } 10%, 90% { opacity: 1; } }
+@keyframes wheat-wave { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(8deg); } }
+@keyframes fade-in-up-small { from { opacity: 0; transform: translateY(5px) scale(0.8); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes flag-wave { 0%, 100% { transform: scaleX(1) skewY(0deg); } 50% { transform: scaleX(0.95) skewY(5deg); } }
 
-@keyframes draw-ecg {
-  0% { stroke-dashoffset: 300; }
-  100% { stroke-dashoffset: 0; }
-}
-
-@keyframes fade-in-out {
-    0%, 100% { opacity: 0; }
-    10%, 90% { opacity: 1; }
-}
-
-@keyframes wheat-wave {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(8deg); }
-}
-@keyframes fade-in-up-small {
-    from { opacity: 0; transform: translateY(5px) scale(0.8); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes flag-wave { 
-    0%, 100% { transform: scaleX(1) skewY(0deg); } 
-    50% { transform: scaleX(0.95) skewY(5deg); } 
-}
-
-/* --- UI (Scan, Apparitions) --- */
-@keyframes seed-fall { 
-    0% { transform: translateY(-140px) scale(0); opacity: 0; } 
-    20% { opacity: 1; transform: translateY(-120px) scale(1); } 
-    80% { transform: translateY(0px) scale(1); opacity: 1; } 
-    90% { transform: translateY(2px) scale(1.2, 0.8); opacity: 1; } 
-    100% { transform: translateY(5px) scale(0); opacity: 0; } 
-}
-@keyframes ad-grow { 
-    0% { transform: scale(0) translateX(-20px) rotate(-10deg); opacity: 0; } 
-    60% { transform: scale(1.05) translateX(0) rotate(2deg); opacity: 1; } 
-    100% { transform: scale(1) translateX(0) rotate(0); opacity: 1; } 
-}
-@keyframes wither { 
-    0% { opacity: 1; transform: scale(1); filter: blur(0); } 
-    100% { opacity: 0; transform: scale(0.9) translateY(10px); filter: blur(4px); } 
-}
-@keyframes pop-in { 0% { opacity: 0; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
-@keyframes scaleUp { from { transform: scale(0.95) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-
+/* UI Keyframes */
+@keyframes seed-fall { 0% { transform: translateY(-140px) scale(0); opacity: 0; } 20% { opacity: 1; transform: translateY(-120px) scale(1); } 80% { transform: translateY(0px) scale(1); opacity: 1; } 90% { transform: translateY(2px) scale(1.2, 0.8); opacity: 1; } 100% { transform: translateY(5px) scale(0); opacity: 0; } }
+@keyframes ad-grow { 0% { transform: scale(0) translateX(-20px) rotate(-10deg); opacity: 0; } 60% { transform: scale(1.05) translateX(0) rotate(2deg); opacity: 1; } 100% { transform: scale(1) translateX(0) rotate(0); opacity: 1; } }
+@keyframes wither { 0% { opacity: 1; transform: scale(1); filter: blur(0); } 100% { opacity: 0; transform: scale(0.9) translateY(10px); filter: blur(4px); } }
+@keyframes scan-line { 0% { transform: translateY(-100%); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(300%); opacity: 0; } }
 .animate-seed-fall { animation: seed-fall 1s linear forwards; }
 .animate-ad-grow { animation: ad-grow 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 .animate-wither { animation: wither 0.6s ease-in forwards; }
-.modal-overlay { animation: fade-in 0.3s ease-out forwards; }
-.modal-content { animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-/* Particles & Scan */
-@keyframes float-particle {
-  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.2; }
-  50% { transform: translateY(-20px) translateX(10px); opacity: 0.5; }
-}
-.animate-float { animation: float-particle 10s infinite ease-in-out; }
-
-@keyframes scan-line {
-  0% { transform: translateY(-100%); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(300%); opacity: 0; }
-}
 .group:hover .animate-scan { animation: scan-line 1.5s ease-in-out infinite; }
-
-@keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-.animate-enter { opacity: 0; animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-/* Autres animations "WOW" */
-@keyframes bubble-rise {
-  0% { transform: translateY(0) scale(0.5); opacity: 0; }
-  20% { opacity: 0.6; }
-  100% { transform: translateY(-60px) scale(1.2); opacity: 0; }
-}
-.bubble { animation: bubble-rise 4s linear infinite; }
-
-@keyframes fish-swim {
-  0% { transform: translateX(-20px) rotate(5deg); opacity: 0; }
-  10% { opacity: 0.8; }
-  90% { opacity: 0.8; }
-  100% { transform: translateX(120px) rotate(-5deg); opacity: 0; }
-}
-.fish-school { animation: fish-swim 8s linear infinite; }
-
-@keyframes bio-pulse {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 1; filter: drop-shadow(0 0 5px #2dd4bf); }
-}
-.bio-electric { animation: bio-pulse 3s ease-in-out infinite; }
-
-@keyframes cloud-drift {
-  from { transform: translateX(-30px); }
-  to { transform: translateX(130px); }
-}
-.cloud { animation: cloud-drift 20s linear infinite; }
-
-@keyframes bird-fly {
-  0% { transform: translate(-10px, 10px) scale(0.5); opacity: 0; }
-  10% { opacity: 1; }
-  100% { transform: translate(120px, -20px) scale(0.8); opacity: 0; }
-}
-.bird { animation: bird-fly 6s linear infinite; }
-
-@keyframes energy-stream {
-    0% { transform: scale(0.5) translate(0,0); opacity: 0.8; }
-    100% { transform: scale(0) translate(20px, -20px); opacity: 0; }
-}
-.energy-particle { animation: energy-stream 1s ease-out infinite; }
+/* Autres (bubbles, birds etc) */
+@keyframes bubble-rise { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translateY(-60px) scale(1.2); opacity: 0; } } .bubble { animation: bubble-rise 4s linear infinite; } @keyframes fish-swim { 0% { transform: translateX(-20px) rotate(5deg); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { transform: translateX(120px) rotate(-5deg); opacity: 0; } } .fish-school { animation: fish-swim 8s linear infinite; } @keyframes bio-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; filter: drop-shadow(0 0 5px #2dd4bf); } } .bio-electric { animation: bio-pulse 3s ease-in-out infinite; } @keyframes cloud-drift { from { transform: translateX(-30px); } to { transform: translateX(130px); } } .cloud { animation: cloud-drift 20s linear infinite; } @keyframes bird-fly { 0% { transform: translate(-10px, 10px) scale(0.5); opacity: 0; } 10% { opacity: 1; } 100% { transform: translate(120px, -20px) scale(0.8); opacity: 0; } } .bird { animation: bird-fly 6s linear infinite; } @keyframes energy-stream { 0% { transform: scale(0.5) translate(0,0); opacity: 0.8; } 100% { transform: scale(0) translate(20px, -20px); opacity: 0; } } .energy-particle { animation: energy-stream 1s ease-out infinite; }

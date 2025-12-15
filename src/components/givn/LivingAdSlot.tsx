@@ -10,120 +10,110 @@ export interface Ad {
 }
 
 // ==========================================
-// COMPOSANTS GRAPHIQUES (MIS À JOUR)
+// COMPOSANTS GRAPHIQUES (REFONTE TOTALE)
 // ==========================================
 
-/* --- ARBRE REALISTE & VENT --- */
+/* --- ARBRE REALISTE (Fini les ronds, place au feuillage dentelé) --- */
 const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg viewBox="0 0 100 160" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-1000 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+    // Viewbox augmentée pour que l'arbre ait de la place
+    <svg viewBox="0 0 100 170" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-all duration-1000 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
-            {/* NOUVEAU : Dégradé Tronc Brun Réaliste */}
-            <linearGradient id="trunkRealGrad" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0%" stopColor="#3f2e12" /> {/* Brun foncé ombre */}
-                <stop offset="50%" stopColor="#785c32" /> {/* Brun moyen lumière */}
-                <stop offset="100%" stopColor="#2d210d" /> {/* Brun très foncé */}
+            {/* Vrai marron pour le tronc */}
+            <linearGradient id="realTrunkGrad" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0%" stopColor="#432818" />
+                <stop offset="50%" stopColor="#7f5539" />
+                <stop offset="100%" stopColor="#2c1a0f" />
             </linearGradient>
             
-            {/* Dégradé Feuillage */}
-            <linearGradient id="canopyGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#4ade80" />   {/* Cime lumineuse */}
-                <stop offset="100%" stopColor="#166534" /> {/* Base sombre */}
-            </linearGradient>
-
-            <filter id="leafShadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="2" stdDeviation="1" floodColor="#000" floodOpacity="0.3"/>
-            </filter>
+            {/* Dégradé feuillage réaliste */}
+            <radialGradient id="realLeafGrad" cx="50%" cy="40%" r="70%">
+                <stop offset="0%" stopColor="#4ade80" /> {/* Coeur lumineux */}
+                <stop offset="80%" stopColor="#15803d" /> {/* Bords sombres */}
+                <stop offset="100%" stopColor="#14532d" />
+            </radialGradient>
         </defs>
 
-        {/* Tronc Organique Brun */}
+        {/* Tronc Marron Texturé */}
         <path 
-            d="M44 160 Q 40 150 42 140 Q 38 120 45 100 Q 48 90 46 80 L 54 80 Q 52 90 55 100 Q 62 120 58 140 Q 60 150 56 160 Z" 
-            fill="url(#trunkRealGrad)" 
+            d="M46 170 Q 42 160 44 145 Q 40 120 47 100 Q 49 90 48 85 L 52 85 Q 51 90 53 100 Q 60 120 56 145 Q 58 160 54 170 Z" 
+            fill="url(#realTrunkGrad)" 
             className="tree-trunk-grow" 
         />
         
-        {/* Conteneur du feuillage qui bouge avec le VENT */}
-        <g className="tree-crown-sway">
-             {/* Branches */}
-            <g fill="none" stroke="#4a3728" strokeWidth="0.8" strokeLinecap="round">
-                <path d="M50 100 Q 35 90 25 95" className="tree-branch" style={{animationDelay: '0.8s'}} />
-                <path d="M50 95 Q 65 85 75 90" className="tree-branch" style={{animationDelay: '0.9s'}} />
-                <path d="M50 110 Q 70 105 80 115" className="tree-branch" style={{animationDelay: '1.0s'}} />
-                <path d="M50 90 L 50 60" className="tree-branch" style={{animationDelay: '1.1s'}} />
-            </g>
-
-            {/* Masses de feuillage (Arrière-plan) */}
-            <g fill="#14532d" opacity="0.9" filter="url(#leafShadow)">
-                 <circle cx="30" cy="95" r="14" className="leaf-cloud" style={{animationDelay: '1.1s', transformOrigin: '30px 95px'}} />
-                 <circle cx="70" cy="95" r="14" className="leaf-cloud" style={{animationDelay: '1.2s', transformOrigin: '70px 95px'}} />
-            </g>
-
-            {/* Masses de feuillage (Plan médian) */}
-            <g fill="url(#canopyGrad)" filter="url(#leafShadow)">
-                 <circle cx="20" cy="90" r="12" className="leaf-cloud" style={{animationDelay: '1.3s', transformOrigin: '20px 90px'}} />
-                 <circle cx="80" cy="90" r="12" className="leaf-cloud" style={{animationDelay: '1.4s', transformOrigin: '80px 90px'}} />
-                 <circle cx="50" cy="70" r="18" className="leaf-cloud" style={{animationDelay: '1.5s', transformOrigin: '50px 70px'}} />
-            </g>
-
-            {/* Masses de feuillage (Premier plan lumineux) */}
-            <g fill="#86efac" opacity="0.7">
-                 <circle cx="45" cy="65" r="8" className="leaf-cloud" style={{animationDelay: '1.6s', transformOrigin: '45px 65px'}} />
-                 <circle cx="55" cy="75" r="6" className="leaf-cloud" style={{animationDelay: '1.7s', transformOrigin: '55px 75px'}} />
-            </g>
+        {/* Le Houppier (Feuillage) : Une forme complexe, pas des ronds */}
+        <g className="tree-crown-sway tree-canopy-grow">
+            {/* Ombre du feuillage (couche arrière) */}
+            <path 
+                d="M30 100 Q 10 90 15 70 Q 5 50 25 35 Q 50 10 75 35 Q 95 50 85 70 Q 90 90 70 100 Q 50 115 30 100 Z"
+                fill="#064e3b" opacity="0.5" transform="translate(2, 5)"
+            />
+            
+            {/* Feuillage principal dentelé */}
+            <path 
+                d="M50 105 C 30 110, 10 95, 15 75 C 5 55, 25 25, 50 30 C 75 25, 95 55, 85 75 C 90 95, 70 110, 50 105 Z"
+                fill="url(#realLeafGrad)"
+                // Petites bosses pour l'effet "feuilles"
+                stroke="#22c55e" strokeWidth="2" strokeLinejoin="round" strokeDasharray="5 3" 
+            />
+            
+             {/* Quelques détails de branches internes */}
+            <path d="M50 85 L 35 65 M 50 85 L 65 65 M 50 95 L 50 70" stroke="#432818" strokeWidth="1" opacity="0.5" fill="none" />
         </g>
 
-        {/* Feuilles qui tombent */}
+        {/* Feuilles réalistes qui tombent */}
         <g className={grown ? 'opacity-100' : 'opacity-0'}>
-             <path d="M40 80 Q 35 90 20 120" stroke="#4ade80" strokeWidth="0.5" fill="none" className="falling-leaf" style={{animationDelay: '4s'}} />
-             <path d="M60 80 Q 65 90 80 120" stroke="#22c55e" strokeWidth="0.5" fill="none" className="falling-leaf" style={{animationDelay: '6s', animationDuration: '8s'}} />
+             <path d="M50 80 Q 45 85 50 90 Q 55 85 50 80" fill="#4ade80" className="falling-leaf" style={{animationDelay: '2s', transformOrigin:'center'}} />
+             <path d="M60 70 Q 55 75 60 80 Q 65 75 60 70" fill="#22c55e" className="falling-leaf" style={{animationDelay: '5s', animationDuration: '9s', transformOrigin:'center'}} />
         </g>
     </svg>
 ));
 TreeGraphic.displayName = 'TreeGraphic';
 
-/* --- ROBINET (EAU VISIBLE) --- */
+/* --- ROBINET (EAU BLANCHE/CYAN VIVE ET PUISSANTE) --- */
 const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg viewBox="0 0 100 140" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
+    // Viewbox augmentée en hauteur pour que l'eau coule loin
+    <svg viewBox="0 0 100 180" className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} preserveAspectRatio="xMidYBottom slice">
         <defs>
-            <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#334155" />
-                <stop offset="50%" stopColor="#94a3b8" />
-                <stop offset="100%" stopColor="#334155" />
-            </linearGradient>
-            
-            {/* NOUVEAU : Dégradé d'eau beaucoup plus CLAIR et BRILLANT */}
-            <linearGradient id="waterFlowBright" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#a5f3fc" /> {/* Bleu très clair */}
-                <stop offset="50%" stopColor="#ffffff" /> {/* Blanc au milieu */}
-                <stop offset="100%" stopColor="#a5f3fc" /> {/* Bleu clair */}
+            <linearGradient id="metalGradNew" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#475569" />
+                <stop offset="50%" stopColor="#cbd5e1" />
+                <stop offset="100%" stopColor="#475569" />
             </linearGradient>
         </defs>
 
-        {/* Corps du robinet */}
-        <g className="pump-body">
-            <rect x="42" y="50" width="16" height="90" fill="url(#metalGrad)" rx="2" />
-            <path d="M42 65 H 25 Q 15 65 15 80" stroke="url(#metalGrad)" strokeWidth="10" fill="none" strokeLinecap="round" />
-            
+        {/* Corps du robinet (Position remontée) */}
+        <g className="pump-body" transform="translate(0, -30)">
+            <rect x="44" y="50" width="12" height="80" fill="url(#metalGradNew)" rx="2" />
+            <path d="M44 65 H 30 Q 20 65 20 85" stroke="url(#metalGradNew)" strokeWidth="8" fill="none" strokeLinecap="round" />
             {/* Poignée */}
-            <g className="origin-[42px_50px] animate-pump-handle">
-                <path d="M42 50 L 65 35" stroke="#ef4444" strokeWidth="5" strokeLinecap="round" />
-                <circle cx="65" cy="35" r="4" fill="#b91c1c" />
+            <g className="origin-[44px_50px] animate-pump-handle">
+                <path d="M44 50 L 70 30" stroke="#b91c1c" strokeWidth="4" strokeLinecap="round" />
+                <circle cx="70" cy="30" r="3" fill="#ef4444" />
             </g>
         </g>
 
-        {/* L'EAU QUI COULE (Visible maintenant) */}
-        <g className={grown ? 'opacity-100 transition-opacity delay-300' : 'opacity-0'}>
-            {/* Flux principal brillant */}
-            <line x1="15" y1="80" x2="15" y2="140" stroke="url(#waterFlowBright)" strokeWidth="5" className="water-stream" strokeLinecap="round" />
+        {/* L'EAU (VISIBLE MAINTENANT !) */}
+        <g className={grown ? 'opacity-100 transition-opacity delay-200' : 'opacity-0'}>
+            {/* Le flux principal : Épais, blanc et cyan */}
+            <line 
+                x1="20" y1="55" x2="20" y2="160" 
+                stroke="#cffafe" /* Couleur très claire */
+                className="water-stream-powerful" 
+                strokeLinecap="round"
+            />
             
-            {/* Gouttelettes brillantes qui tombent */}
-            <circle cx="15" cy="85" r="2.5" fill="#ffffff" className="droplet-particle" style={{animationDelay: '0s'}} />
-            <circle cx="15" cy="85" r="2" fill="#a5f3fc" className="droplet-particle" style={{animationDelay: '0.25s'}} />
-            <circle cx="15" cy="85" r="2.5" fill="#ffffff" className="droplet-particle" style={{animationDelay: '0.5s'}} />
+            {/* Flaque et éclaboussures à la base */}
+            <g transform="translate(20, 165)">
+                 <ellipse cx="0" cy="0" rx="15" ry="4" fill="#22d3ee" opacity="0.5" /> {/* Flaque */}
+                 <circle r="3" className="splash-particle" style={{animationDelay: '0s'}} />
+                 <circle r="2" className="splash-particle" style={{animationDelay: '0.2s', transform: 'translateX(-5px)'}} />
+                 <circle r="2.5" className="splash-particle" style={{animationDelay: '0.4s', transform: 'translateX(5px)'}} />
+            </g>
         </g>
     </svg>
 ));
 PumpGraphic.displayName = 'PumpGraphic';
+
 
 /* --- AUTRES GRAPHIQUES (Inchangés pour l'instant) --- */
 const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
@@ -181,20 +171,16 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
                 <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
         </defs>
-
         <rect x="0" y="0" width="100" height="160" fill="url(#deepSeaGrad)" />
-
         <g className="fish-school" opacity="0.3">
             <path d="M0 0 L5 2 L0 4 Z" fill="#7dd3fc" transform="translate(0, 40)" />
             <path d="M0 0 L4 1.5 L0 3 Z" fill="#7dd3fc" transform="translate(10, 45)" />
             <path d="M0 0 L6 2.5 L0 5 Z" fill="#7dd3fc" transform="translate(-5, 35)" />
         </g>
-
         <g className="ocean-light-rays" opacity="0.3">
             <path d="M-10 -20 L 30 160 L 50 160 L 10 -20 Z" fill="#fff" opacity="0.1" />
             <path d="M20 -20 L 70 160 L 90 160 L 40 -20 Z" fill="#fff" opacity="0.1" style={{animationDelay:'1s'}} />
         </g>
-        
         <g className="jellyfish-swim">
             <g className="jellyfish-bell-pulse">
                 <path d="M 30 90 Q 50 60 70 90 L 68 95 Q 50 85 32 95 Z" fill="url(#jellyBody)" filter="url(#bioGlow)" />
@@ -207,7 +193,6 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
                 <path d="M 62 95 Q 65 110 60 125" className="tentacle-4" />
             </g>
         </g>
-
         <g>
             <circle cx="20" cy="140" r="1.5" fill="#a5f3fc" className="bubble" style={{animationDelay: '0s'}} />
             <circle cx="60" cy="140" r="1" fill="#a5f3fc" className="bubble" style={{animationDelay: '1.5s'}} />
@@ -363,7 +348,8 @@ export default function LivingAdSlot({
         <div className="relative pl-8 mb-8 min-h-[140px] flex items-end">
             <div className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-emerald-900/50 to-transparent"></div>
 
-            <div className="absolute left-0 bottom-0 w-24 h-[160px] flex flex-col justify-end items-center pointer-events-none z-0">
+            {/* MODIFICATION ICI : Augmentation de la hauteur du conteneur SVG pour l'arbre et le robinet */}
+            <div className="absolute left-0 bottom-0 w-24 h-[170px] flex flex-col justify-end items-center pointer-events-none z-0 overflow-visible">
                  {phase === 'seed' && isGrowType && (
                      <div className="w-2 h-2 bg-emerald-200 rounded-full glow-dot-green absolute bottom-0 animate-seed-fall"></div>
                  )}
