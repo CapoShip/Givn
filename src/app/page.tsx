@@ -1,18 +1,18 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Plus, ArrowRight, X, Scan, Globe, Building2, ShieldCheck, Filter } from "lucide-react";
+import { Search, Plus, ArrowRight, X, Scan, ShieldCheck, Filter } from "lucide-react";
 
 // Components imports
 import BrandCard from '@/components/givn/BrandCard';
 import LivingAdSlot, { Ad } from '@/components/givn/LivingAdSlot';
 import BrandDetailModal from '@/components/givn/BrandDetailModal';
 import Badge from '@/components/givn/Badge';
-import ProofModal from '@/components/givn/ProofModal'; // Nouveau
-import SubmitBrandForm from '@/components/givn/SubmitBrandForm'; // Nouveau
+import ProofModal from '@/components/givn/ProofModal';
+import SubmitBrandForm from '@/components/givn/SubmitBrandForm';
 
 // Data imports
-import { BRANDS_DATA } from '@/data/brands'; // Nouveau (remplace RAW_BRANDS)
+import { BRANDS_DATA } from '@/data/brands';
 
 // --- DATA CONSTANTS (ADS) ---
 const AD_POOL_LEFT: Ad[] = [
@@ -81,16 +81,16 @@ export default function Home() {
     // États de filtrage et recherche
     const [activeCategory, setActiveCategory] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
-    const [verifiedOnly, setVerifiedOnly] = useState(false); // Nouveau filtre
+    const [verifiedOnly, setVerifiedOnly] = useState(false);
 
     // États des modales
     const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
     const [isAdModalOpen, setIsAdModalOpen] = useState(false);
-    const [isBrandModalOpen, setIsBrandModalOpen] = useState(false); // Pour "Add Brand"
+    const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
     
     // États de sélection
     const [selectedBrand, setSelectedBrand] = useState<any>(null);
-    const [proofBrand, setProofBrand] = useState<string | null>(null); // Pour ProofModal
+    const [proofBrand, setProofBrand] = useState<string | null>(null);
 
     // États UI
     const [viewFullList, setViewFullList] = useState(false);
@@ -124,37 +124,21 @@ export default function Home() {
     return (
         <div className="min-h-screen flex flex-col relative">
             
-            {/* NAVBAR */}
-            <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-                <div className="w-full px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-8">
-                        <div className="flex items-center gap-2 cursor-pointer group" onClick={() => {setActiveCategory('All'); window.scrollTo({top: 0, behavior: 'smooth'})}}>
-                            <div className="w-5 h-5 rounded-full border border-white flex items-center justify-center group-hover:scale-110 transition-transform bg-white/5 group-hover:bg-emerald-500/20 group-hover:border-emerald-500">
-                                <div className="w-2.5 h-2.5 bg-white rounded-full group-hover:bg-emerald-400"></div>    
-                            </div>
-                            <span className="font-bold text-lg tracking-tight group-hover:text-white transition-colors">Givn</span>
-                        </div>
-                        <div className="hidden md:flex items-center gap-6">
-                            <button onClick={() => scrollToSection('database')} className="text-sm text-zinc-400 hover:text-white">Database</button>
-                            <button onClick={() => scrollToSection('leaderboard')} className="text-sm text-zinc-400 hover:text-white">Leaderboard</button>
-                        </div>
-                    </div>
-                    <button onClick={() => setIsAccessModalOpen(true)} className="bg-white text-black px-5 py-2 rounded-full text-xs font-bold tracking-wide hover:bg-emerald-400 hover:scale-105 transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:shadow-[0_0_20px_rgba(52,211,153,0.4)]">
-                        Request access →
-                    </button>
-                </div>
-            </nav>
+            {/* Note: La Navbar est gérée par layout.tsx désormais, mais on peut garder des contrôles ici si besoin */}
+            {/* Si vous avez déplacé la navbar dans layout, cette section peut être supprimée ou adaptée pour des contrôles spécifiques à la page home */}
+            
+            <div className="fixed top-0 w-full z-40 pointer-events-none h-24 bg-gradient-to-b from-black/50 to-transparent lg:hidden"></div>
 
             {/* MAIN CONTENT */}
-            <main className="flex-1 pt-24 w-full px-4 relative">
+            <main className="flex-1 pt-10 md:pt-24 w-full px-4 relative">
                 
                 {/* BACKGROUND PARTICLES */}
                 {mounted && <ParticlesBackground />}
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full z-10">
                     
-                    {/* Left Ads (Desktop Only) */}
-                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
+                    {/* --- GAUCHE : PUBLICITÉS (5 SLOTS) --- */}
+                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-0 h-fit space-y-8">
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={2000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={0} />
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={1} />
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={2} />
@@ -162,7 +146,7 @@ export default function Home() {
                         <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={0} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={4} />
                     </div>
 
-                    {/* Center Content */}
+                    {/* --- CENTRE : CONTENU PRINCIPAL --- */}
                     <div className="col-span-1 lg:col-span-8 flex flex-col items-center text-center pt-10 min-h-screen">
                         
                         {/* HERO */}
@@ -192,7 +176,6 @@ export default function Home() {
                                     />
                                 </div>
                                 
-                                {/* Bouton Add Brand */}
                                 <button 
                                     onClick={() => setIsBrandModalOpen(true)} 
                                     className="relative group overflow-hidden rounded-xl p-[2px] transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_40px_rgba(16,185,129,0.5)]"
@@ -213,7 +196,6 @@ export default function Home() {
 
                         {/* CATEGORIES & FILTER */}
                         <div id="categories" className="flex flex-col items-center mb-16 scroll-mt-24 w-full">
-                            {/* Filtre Verified Only */}
                             <div className="flex items-center gap-2 mb-6">
                                 <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Filter by trust</p>
                                 <div className="h-4 w-[1px] bg-zinc-800 mx-2"></div>
@@ -324,16 +306,14 @@ export default function Home() {
                         </div>
                     </div>
 
-                  {/* Right Ads (Desktop Only) */}
-                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-20 pt-0 h-fit space-y-8">
-                        {/* Ajout du 5ème slot et ajustement des délais pour être identique à gauche (2000 -> 0) */}
+                    {/* --- DROITE : PUBLICITÉS (5 SLOTS ÉGAUX À GAUCHE) --- */}
+                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-0 h-fit space-y-8">
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={0} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={1} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={2} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={3} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={0} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={4} />
                         
-                        {/* Carte statique "Advertise" conservée en bas */}
                         <div className="glass-panel rounded-xl p-6 mt-4 border border-zinc-800 animate-[pop-in_2s_ease-out] hover:border-emerald-500/30 transition-colors group">
                             <h4 className="text-sm font-bold mb-1 text-white group-hover:text-emerald-400 transition-colors">Advertise</h4>
                             <p className="text-xs text-zinc-500 mb-4 leading-relaxed">Want a placement? Your proof must be real.</p>
@@ -377,24 +357,20 @@ export default function Home() {
 
             {/* --- MODALS --- */}
 
-            {/* Brand Detail Modal (Détails + Bouton Preuve) */}
             <BrandDetailModal 
                 brand={selectedBrand} 
                 onClose={() => setSelectedBrand(null)} 
                 onOpenProof={() => {
                     setProofBrand(selectedBrand.name);
-                    // On ne ferme pas selectedBrand pour permettre le retour
                 }}
             />
             
-            {/* Proof Modal (Visualisation de la preuve) */}
             <ProofModal 
                 isOpen={!!proofBrand} 
                 onClose={() => setProofBrand(null)} 
                 brandName={proofBrand || ''} 
             />
             
-            {/* Submit Brand Modal (Avec Formulaire Validé) */}
              <Modal isOpen={isBrandModalOpen} onClose={() => setIsBrandModalOpen(false)}>
                 <div className="flex flex-col items-center">
                     <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 relative">
@@ -404,7 +380,6 @@ export default function Home() {
                     <h2 className="text-2xl font-bold mb-1 tracking-tight text-white">INITIATE VERIFICATION</h2>
                     <p className="text-xs text-zinc-500 mb-8 uppercase tracking-widest">Submit candidate for blockchain audit</p>
                     
-                    {/* Intégration du composant de formulaire validé */}
                     <SubmitBrandForm onSuccess={() => { 
                         setIsBrandModalOpen(false); 
                         alert('Audit Request Queued. Check your email.'); 
@@ -412,7 +387,6 @@ export default function Home() {
                 </div>
             </Modal>
             
-            {/* Access Request Modal */}
             <Modal isOpen={isAccessModalOpen} onClose={() => setIsAccessModalOpen(false)}>
                  <div className="flex flex-col gap-8">
                     <h2 className="text-3xl font-bold">Request Access</h2>
@@ -423,7 +397,6 @@ export default function Home() {
                  </div>
             </Modal>
 
-            {/* Ad Info Modal */}
             <Modal isOpen={isAdModalOpen} onClose={() => setIsAdModalOpen(false)}>
                 <div className="text-center py-10">
                     <h2 className="text-2xl font-bold mb-4">Advertise on Givn</h2>
