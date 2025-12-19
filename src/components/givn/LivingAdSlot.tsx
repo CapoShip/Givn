@@ -141,7 +141,7 @@ const SchoolGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 SchoolGraphic.displayName = 'SchoolGraphic';
 
-/* --- OCÉAN (MÉDUSE RALENTIE) --- */
+/* --- OCÉAN (MÉDUSE 15 SEC) --- */
 const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg 
         role="img" 
@@ -175,8 +175,8 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
             <path d="M-10 -20 L 30 160 L 50 160 L 10 -20 Z" fill="#fff" opacity="0.1" />
             <path d="M20 -20 L 70 160 L 90 160 L 40 -20 Z" fill="#fff" opacity="0.1" style={{animationDelay:'1s'}} />
         </g>
-        {/* CHANGEMENT ICI : Vitesse ralentie de 10s à 25s */}
-        <g className="jellyfish-swim" style={{ animationDuration: '25s' }}>
+        {/* CHANGEMENT ICI : Vitesse ajustée à 15s */}
+        <g className="jellyfish-swim" style={{ animationDuration: '15s' }}>
             <g className="jellyfish-bell-pulse">
                 <path d="M 30 90 Q 50 60 70 90 L 68 95 Q 50 85 32 95 Z" fill="url(#jellyBody)" filter="url(#bioGlow)" />
                 <ellipse cx="50" cy="85" rx="10" ry="5" fill="#5eead4" opacity="0.6" filter="url(#bioGlow)" className="bio-electric" />
@@ -197,11 +197,18 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 OceanGraphic.displayName = 'OceanGraphic';
 
-/* --- SANTÉ (ECG SYNCHRONISÉ ET FLUIDE) --- */
+/* --- SANTÉ (CORRIGÉ & RECADRÉ) --- */
 const HealthGraphic = memo(({ grown }: { grown: boolean }) => {
-    const ecgPath = "M0 70 H 20 L 25 50 L 35 90 L 40 70 H 60 L 65 60 L 75 80 L 80 70 H 100";
-    // Durée synchronisée pour le tracé et le point
+    // CHANGEMENT ICI : Coordonnées strictes entre x=12 et x=88 (strictement dans le rect x=5..95)
+    // Cela empêche le trait de sortir du cadre blanc.
+    const ecgPath = "M 12 70 H 25 L 30 50 L 40 90 L 45 70 H 65 L 70 60 L 80 80 L 85 70 H 88";
+    
+    // Durée synchronisée
     const animDuration = "3s"; 
+    
+    // Dasharray calibré pour éviter le "bug" de recharge (la ligne fait environ 100px)
+    // 120 (trait visible) + 300 (espace vide) assure une boucle propre
+    const dashArray = "120 300"; 
 
     return (
     <svg 
@@ -228,18 +235,39 @@ const HealthGraphic = memo(({ grown }: { grown: boolean }) => {
                 <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#ef4444" strokeWidth="0.5" opacity="0.2"/>
             </pattern>
         </defs>
+        
+        {/* Écran (Rectangle x=5 y=40 width=90) */}
         <rect x="5" y="40" width="90" height="60" rx="4" fill="url(#gridRed)" className="house-base" opacity="0.5" />
         <rect x="5" y="40" width="90" height="60" rx="4" stroke="url(#ecgRedGrad)" strokeWidth="1" fill="none" opacity="0.3" />
         
         {/* Ligne ECG qui se dessine */}
         <g filter="url(#ecgRedGlow)">
-             {/* CHANGEMENTS ICI : Nouveau tracé, dasharray ajusté à 150, durée synchro à 3s */}
-             <path d={ecgPath} stroke="url(#ecgRedGrad)" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" className="ecg-line" style={{ strokeDasharray: 150, strokeDashoffset: 150, animationDuration: animDuration }} />
+             <path 
+                d={ecgPath} 
+                stroke="url(#ecgRedGrad)" 
+                strokeWidth="2.5" 
+                fill="none" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className="ecg-line" 
+                // OVERRIDE de l'animation CSS globale pour fixer le "bug" de recharge
+                style={{ 
+                    strokeDasharray: dashArray, 
+                    strokeDashoffset: 420, // Start offset (doit être > à la longueur visible + gap)
+                    animation: `draw-custom ${animDuration} linear infinite` 
+                }} 
+            />
+            {/* Définition locale de l'animation pour être sûr des valeurs */}
+            <style jsx>{`
+                @keyframes draw-custom {
+                    0% { stroke-dashoffset: 420; }
+                    100% { stroke-dashoffset: 0; }
+                }
+            `}</style>
         </g>
         
         {/* Point (blip) qui suit la ligne */}
         <circle r="3" fill="#fda4af" className="ecg-blip" filter="url(#ecgRedGlow)" opacity="0.8">
-             {/* CHANGEMENTS ICI : Le point suit exactement le même chemin avec la même durée */}
              <animateMotion dur={animDuration} repeatCount="indefinite" path={ecgPath} />
         </circle>
     </svg>
