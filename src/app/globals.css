@@ -122,3 +122,11 @@ body {
 .animate-float {
     animation: float 20s ease-in-out infinite;
 }
+/* ... (Animations précédentes: pop-in, enter, float, etc.) */
+
+/* Ajout pour l'effet brillant du badge */
+@keyframes shimmer {
+    0% { transform: translateX(-150%) skewX(-20deg); }
+    50% { transform: translateX(150%) skewX(-20deg); }
+    100% { transform: translateX(150%) skewX(-20deg); }
+}
