@@ -307,23 +307,25 @@ export default function Home() {
                     {/* --- DROITE : PUBLICITÉS + BOUTON FIXE VISIBLE --- */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-0 h-fit space-y-6">
                         
-                        {/* 💥 BOUTON ADVERTISE HERE : Placé tout en haut du bloc Sticky pour être visible sans scroll 💥 */}
-                        <div className="flex items-center gap-3 cursor-pointer group mb-2 opacity-70 hover:opacity-100 transition-all" onClick={() => setIsAdModalOpen(true)}>
-                             <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                             </span>
-                             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-hover:text-emerald-400 transition-colors">
-                                Advertise Here
-                             </span>
-                        </div>
-
                         {/* Les 5 publicités de droite */}
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={0} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={1} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={2} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={3} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={0} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={4} />
+
+                         {/* 💥 BOUTON ADVERTISE HERE : Placé en bas de colonne 💥 */}
+                         <div className="flex justify-end pt-4 border-t border-white/5">
+                            <div className="flex items-center gap-3 cursor-pointer group opacity-70 hover:opacity-100 transition-all" onClick={() => setIsAdModalOpen(true)}>
+                                 <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-hover:text-emerald-400 transition-colors text-right">
+                                    Advertise<br/>Here
+                                 </span>
+                                 <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                 </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

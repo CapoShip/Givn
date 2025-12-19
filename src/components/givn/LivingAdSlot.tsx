@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useId } from 'react';
 
 export type AdType = 'tree' | 'house' | 'water' | 'school' | 'ocean' | 'health' | 'food' | 'energy';
 
@@ -43,50 +43,57 @@ const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 TreeGraphic.displayName = 'TreeGraphic';
 
-/* --- ROBINET (FLUIDITÉ PARFAITE) --- */
-const PumpGraphic = memo(({ grown }: { grown: boolean }) => (
-    <svg 
-        role="img" 
-        aria-label="Une pompe distribuant de l'eau potable"
-        viewBox="0 0 100 160" 
-        className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} 
-        preserveAspectRatio="xMidYBottom slice"
-    >
-        <defs>
-            <linearGradient id="chromeGrad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#94a3b8" />
-                <stop offset="50%" stopColor="#e2e8f0" />
-                <stop offset="100%" stopColor="#64748b" />
-            </linearGradient>
-            <radialGradient id="waterDropGrad" cx="30%" cy="30%" r="70%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
-                <stop offset="20%" stopColor="#60a5fa" />
-                <stop offset="100%" stopColor="#2563eb" />
-            </radialGradient>
-        </defs>
+/* --- ROBINET (AVEC FIX SVG ID) --- */
+const PumpGraphic = memo(({ grown }: { grown: boolean }) => {
+    // Génère des IDs uniques pour chaque instance de la pompe
+    const id = useId();
+    const chromeGradId = `chromeGrad-${id}`;
+    const waterDropGradId = `waterDropGrad-${id}`;
 
-        <g transform="translate(0, -20)">
-            <rect x="42" y="50" width="16" height="100" fill="url(#chromeGrad)" rx="2" />
-            <path d="M42 70 H 25 Q 15 70 15 85" stroke="url(#chromeGrad)" strokeWidth="10" fill="none" strokeLinecap="round" />
-            <g className="origin-[42px_50px] animate-pump-handle">
-                <path d="M42 50 L 70 35" stroke="#ef4444" strokeWidth="5" strokeLinecap="round" />
-                <circle cx="70" cy="35" r="4" fill="#b91c1c" />
+    return (
+        <svg 
+            role="img" 
+            aria-label="Une pompe distribuant de l'eau potable"
+            viewBox="0 0 100 160" 
+            className={`w-full h-full absolute bottom-0 left-0 pointer-events-none transition-opacity duration-300 ${grown ? 'opacity-100 ad-grown' : 'opacity-0'}`} 
+            preserveAspectRatio="xMidYBottom slice"
+        >
+            <defs>
+                <linearGradient id={chromeGradId} x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#94a3b8" />
+                    <stop offset="50%" stopColor="#e2e8f0" />
+                    <stop offset="100%" stopColor="#64748b" />
+                </linearGradient>
+                <radialGradient id={waterDropGradId} cx="30%" cy="30%" r="70%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
+                    <stop offset="20%" stopColor="#60a5fa" />
+                    <stop offset="100%" stopColor="#2563eb" />
+                </radialGradient>
+            </defs>
+
+            <g transform="translate(0, -20)">
+                <rect x="42" y="50" width="16" height="100" fill={`url(#${chromeGradId})`} rx="2" />
+                <path d="M42 70 H 25 Q 15 70 15 85" stroke={`url(#${chromeGradId})`} strokeWidth="10" fill="none" strokeLinecap="round" />
+                <g className="origin-[42px_50px] animate-pump-handle">
+                    <path d="M42 50 L 70 35" stroke="#ef4444" strokeWidth="5" strokeLinecap="round" />
+                    <circle cx="70" cy="35" r="4" fill="#b91c1c" />
+                </g>
             </g>
-        </g>
 
-        {/* EAU */}
-        <g className={grown ? 'opacity-100 transition-opacity delay-200' : 'opacity-0'}>
-            <circle cx="15" cy="65" r="3.5" fill="url(#waterDropGrad)" className="water-drop" style={{animationDelay: '0s'}} />
-            <circle cx="15" cy="65" r="3.5" fill="url(#waterDropGrad)" className="water-drop" style={{animationDelay: '0.3s'}} />
-            <circle cx="15" cy="65" r="3.5" fill="url(#waterDropGrad)" className="water-drop" style={{animationDelay: '0.6s'}} />
-            
-            <ellipse cx="15" cy="160" rx="12" ry="3" fill="#3b82f6" opacity="0.5" />
-            
-            <circle cx="10" cy="160" r="1.5" fill="url(#waterDropGrad)" className="splash-particle" style={{animationDelay: '0.8s'}} />
-            <circle cx="20" cy="160" r="1" fill="url(#waterDropGrad)" className="splash-particle" style={{animationDelay: '1.1s'}} />
-        </g>
-    </svg>
-));
+            {/* EAU */}
+            <g className={grown ? 'opacity-100 transition-opacity delay-200' : 'opacity-0'}>
+                <circle cx="15" cy="65" r="3.5" fill={`url(#${waterDropGradId})`} className="water-drop" style={{animationDelay: '0s'}} />
+                <circle cx="15" cy="65" r="3.5" fill={`url(#${waterDropGradId})`} className="water-drop" style={{animationDelay: '0.3s'}} />
+                <circle cx="15" cy="65" r="3.5" fill={`url(#${waterDropGradId})`} className="water-drop" style={{animationDelay: '0.6s'}} />
+                
+                <ellipse cx="15" cy="160" rx="12" ry="3" fill="#3b82f6" opacity="0.5" />
+                
+                <circle cx="10" cy="160" r="1.5" fill={`url(#${waterDropGradId})`} className="splash-particle" style={{animationDelay: '0.8s'}} />
+                <circle cx="20" cy="160" r="1" fill={`url(#${waterDropGradId})`} className="splash-particle" style={{animationDelay: '1.1s'}} />
+            </g>
+        </svg>
+    );
+});
 PumpGraphic.displayName = 'PumpGraphic';
 
 
@@ -311,7 +318,7 @@ EnergyGraphic.displayName = 'EnergyGraphic';
 
 
 // ==========================================
-// 2. COMPOSANT PRINCIPAL
+// COMPOSANT PRINCIPAL (LAYOUT AJUSTÉ)
 // ==========================================
 
 export default function LivingAdSlot({ 
@@ -336,7 +343,6 @@ export default function LivingAdSlot({
     useEffect(() => {
         if (phase === 'waiting') return;
         let timer: NodeJS.Timeout;
-        
         switch (phase) {
             case 'seed': timer = setTimeout(() => setPhase('growing'), 100); break;
             case 'growing': timer = setTimeout(() => setPhase('blooming'), 1200); break;
@@ -361,9 +367,10 @@ export default function LivingAdSlot({
     const isGrowType = ['tree','house','school','food','energy','health','ocean'].includes(graphicType);
 
     return (
-        <div className="relative pl-8 mb-8 min-h-[140px] flex items-end">
+        <div className="relative pl-0 mb-6 min-h-[140px] flex items-end">
             <div className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-emerald-900/50 to-transparent"></div>
 
+            {/* Le graphique (largeur fixe 96px = w-24) */}
             <div className="absolute left-0 bottom-0 w-24 h-[160px] flex flex-col justify-end items-center pointer-events-none z-0">
                  {phase === 'seed' && isGrowType && (
                      <div className="w-2 h-2 bg-emerald-200 rounded-full glow-dot-green absolute bottom-0 animate-seed-fall"></div>
@@ -379,13 +386,14 @@ export default function LivingAdSlot({
                  {graphicType === 'energy' && <EnergyGraphic grown={isGrown} />}
             </div>
 
+            {/* La boîte de texte ajustée */}
             {(phase === 'blooming' || phase === 'displayed' || phase === 'withering') && (
-                <div className={`glass-panel rounded-xl p-4 relative overflow-hidden group hover:bg-emerald-500/5 transition-all cursor-pointer w-full ml-10 z-10 origin-bottom-left ${phase === 'blooming' ? 'animate-ad-grow' : ''} ${phase === 'withering' ? 'animate-wither' : ''}`}>
-                    <div className="flex justify-between items-start mb-2">
+                <div className={`glass-panel rounded-xl p-3 relative overflow-hidden group hover:bg-emerald-500/5 transition-all cursor-pointer flex-1 ml-24 z-10 origin-bottom-left ${phase === 'blooming' ? 'animate-ad-grow' : ''} ${phase === 'withering' ? 'animate-wither' : ''}`}>
+                    <div className="flex justify-between items-start mb-1.5">
                         <div className="flex items-center gap-2 text-white"><span className="text-xs font-semibold tracking-wide text-emerald-50">{currentAd.title}</span></div>
-                        <span className="text-[9px] text-emerald-500/50 uppercase tracking-widest border border-emerald-500/20 px-1.5 py-0.5 rounded">Ad</span>
+                        <span className="text-[8px] text-emerald-500/50 uppercase tracking-widest border border-emerald-500/20 px-1 py-0.5 rounded">Ad</span>
                     </div>
-                    <p className="text-xs text-zinc-300 leading-relaxed font-light">{currentAd.subtitle}</p>
+                    <p className="text-[11px] text-zinc-300 leading-relaxed font-light">{currentAd.subtitle}</p>
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700 animate-scan"></div>
                 </div>
