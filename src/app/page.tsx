@@ -314,11 +314,11 @@ export default function Home() {
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={3} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={0} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={4} />
 
-                         {/* 💥 BOUTON ADVERTISE HERE : Placé en bas de colonne 💥 */}
+                         {/* 💥 BOUTON ADVERTISE HERE : Single Line & Dot After 💥 */}
                          <div className="flex justify-end pt-4 border-t border-white/5">
-                            <div className="flex items-center gap-3 cursor-pointer group opacity-70 hover:opacity-100 transition-all" onClick={() => setIsAdModalOpen(true)}>
-                                 <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-hover:text-emerald-400 transition-colors text-right">
-                                    Advertise<br/>Here
+                            <div className="flex items-center gap-2 cursor-pointer group opacity-70 hover:opacity-100 transition-all" onClick={() => setIsAdModalOpen(true)}>
+                                 <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-hover:text-emerald-400 transition-colors text-right whitespace-nowrap">
+                                    Advertise Here
                                  </span>
                                  <span className="relative flex h-2 w-2">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
