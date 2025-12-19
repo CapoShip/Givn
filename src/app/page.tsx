@@ -249,51 +249,7 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* ======================================================= */}
-                        {/* 💥 BANNIÈRE "WOW" PREMIUM : LE FACTEUR IMPRESSIONNANT 💥 */}
-                        {/* ======================================================= */}
-                        <div className="w-full mb-32 relative group cursor-pointer" onClick={() => setIsAdModalOpen(true)}>
-                            {/* Fond animé */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/40 via-black to-zinc-900 rounded-3xl opacity-80 group-hover:opacity-100 transition-all duration-700"></div>
-                            
-                            {/* Glow effect arrière */}
-                            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-emerald-400/10 to-emerald-500/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-
-                            {/* Contenu de la carte */}
-                            <div className="relative p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-10 border border-white/10 rounded-3xl bg-black/40 backdrop-blur-sm group-hover:border-emerald-500/40 transition-all overflow-hidden">
-                                
-                                {/* Particules décoratives */}
-                                <div className="absolute top-0 right-0 p-10 opacity-20 group-hover:opacity-50 transition-opacity">
-                                    <Sparkles size={100} className="text-emerald-400 animate-pulse" />
-                                </div>
-
-                                <div className="text-center md:text-left space-y-4 z-10">
-                                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-2">
-                                        <span className="relative flex h-2 w-2">
-                                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                        </span>
-                                        Limited Availability
-                                    </div>
-                                    <h3 className="text-4xl md:text-5xl font-bold text-white tracking-tighter group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-emerald-200 transition-all">
-                                        Advertise with <br/> <span className="text-emerald-500 font-serif italic">Integrity.</span>
-                                    </h3>
-                                    <p className="text-zinc-400 max-w-lg text-lg leading-relaxed">
-                                        Turn your verified impact into visibility. <br/>
-                                        The first ad network where <span className="text-white font-semibold">truth is the currency.</span>
-                                    </p>
-                                </div>
-
-                                <div className="relative z-10">
-                                    <button className="relative px-8 py-4 bg-white text-black rounded-full font-bold text-base tracking-wide hover:bg-emerald-400 hover:scale-105 transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_50px_rgba(16,185,129,0.4)] flex items-center gap-3">
-                                        Claim Your Spot <ArrowRight size={20} />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        {/* ======================================================= */}
-
-                        {/* LEADERBOARD */}
+                        {/* LEADERBOARD (Bannière supprimée ici) */}
                         <div id="leaderboard" className="mb-32 scroll-mt-24 w-full text-left">
                             <div className="flex justify-between items-center mb-8">
                                 <div>
@@ -343,13 +299,35 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* --- DROITE : PUBLICITÉS (5 SLOTS ÉGAUX À GAUCHE) --- */}
+                    {/* --- DROITE : PUBLICITÉS + MINI BANNIÈRE VISIBLE --- */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-0 h-fit space-y-8">
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={0} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={1} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={2} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={3} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={0} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={4} />
+                        
+                        {/* 💥 MINI BANNIÈRE PREMIUM VISIBLE & PULSANTE 💥 */}
+                        <div className="mt-8 relative group cursor-pointer w-full transform hover:scale-105 transition-all duration-500" onClick={() => setIsAdModalOpen(true)}>
+                            {/* Halo permanent mais léger + Fort au survol */}
+                            <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                            
+                            <div className="relative bg-zinc-900 border border-emerald-500/30 p-4 rounded-xl flex items-center justify-between shadow-2xl">
+                                <div>
+                                    <h4 className="text-xs font-bold text-white mb-1 flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                        Advertise Here
+                                    </h4>
+                                    <p className="text-[10px] text-zinc-400 group-hover:text-emerald-300 transition-colors">
+                                        Join the verified network.
+                                    </p>
+                                </div>
+                                <div className="bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20 group-hover:bg-emerald-400 group-hover:text-black transition-colors">
+                                    <ArrowRight size={14} className="-rotate-45 group-hover:rotate-0 transition-transform duration-300" />
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
