@@ -197,18 +197,14 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 OceanGraphic.displayName = 'OceanGraphic';
 
-/* --- SANTÉ (CORRIGÉ & RECADRÉ) --- */
+
+/* --- SANTÉ (VITESSE 5S & SYNCHRO PARFAITE) --- */
 const HealthGraphic = memo(({ grown }: { grown: boolean }) => {
-    // CHANGEMENT ICI : Coordonnées strictes entre x=12 et x=88 (strictement dans le rect x=5..95)
-    // Cela empêche le trait de sortir du cadre blanc.
+    // Tracé recadré (reste dans le rectangle)
     const ecgPath = "M 12 70 H 25 L 30 50 L 40 90 L 45 70 H 65 L 70 60 L 80 80 L 85 70 H 88";
     
-    // Durée synchronisée
-    const animDuration = "3s"; 
-    
-    // Dasharray calibré pour éviter le "bug" de recharge (la ligne fait environ 100px)
-    // 120 (trait visible) + 300 (espace vide) assure une boucle propre
-    const dashArray = "120 300"; 
+    // VITESSE RALENTIE ICI (5s)
+    const animDuration = "5s"; 
 
     return (
     <svg 
@@ -236,12 +232,15 @@ const HealthGraphic = memo(({ grown }: { grown: boolean }) => {
             </pattern>
         </defs>
         
-        {/* Écran (Rectangle x=5 y=40 width=90) */}
+        {/* Écran */}
         <rect x="5" y="40" width="90" height="60" rx="4" fill="url(#gridRed)" className="house-base" opacity="0.5" />
         <rect x="5" y="40" width="90" height="60" rx="4" stroke="url(#ecgRedGrad)" strokeWidth="1" fill="none" opacity="0.3" />
         
-        {/* Ligne ECG qui se dessine */}
+        {/* Ligne ECG */}
         <g filter="url(#ecgRedGlow)">
+             {/* ASTUCE PRO : pathLength="1" force le navigateur à considérer que la ligne fait 1 unité de long.
+                Cela permet de synchroniser parfaitement avec l'animation CSS sans deviner les pixels.
+             */}
              <path 
                 d={ecgPath} 
                 stroke="url(#ecgRedGrad)" 
@@ -249,31 +248,41 @@ const HealthGraphic = memo(({ grown }: { grown: boolean }) => {
                 fill="none" 
                 strokeLinecap="round" 
                 strokeLinejoin="round" 
+                pathLength="1"
                 className="ecg-line" 
-                // OVERRIDE de l'animation CSS globale pour fixer le "bug" de recharge
                 style={{ 
-                    strokeDasharray: dashArray, 
-                    strokeDashoffset: 420, // Start offset (doit être > à la longueur visible + gap)
-                    animation: `draw-custom ${animDuration} linear infinite` 
+                    strokeDasharray: "1 1", // 1 unité de plein, 1 unité de vide
+                    strokeDashoffset: 1,    // Commence caché (décalé de 1)
+                    animation: `draw-exact ${animDuration} linear infinite` 
                 }} 
             />
-            {/* Définition locale de l'animation pour être sûr des valeurs */}
             <style jsx>{`
-                @keyframes draw-custom {
-                    0% { stroke-dashoffset: 420; }
-                    100% { stroke-dashoffset: 0; }
+                @keyframes draw-exact {
+                    0% { stroke-dashoffset: 1; } /* Ligne cachée */
+                    100% { stroke-dashoffset: 0; } /* Ligne entièrement dessinée */
                 }
             `}</style>
         </g>
         
-        {/* Point (blip) qui suit la ligne */}
-        <circle r="3" fill="#fda4af" className="ecg-blip" filter="url(#ecgRedGlow)" opacity="0.8">
-             <animateMotion dur={animDuration} repeatCount="indefinite" path={ecgPath} />
+        {/* Point (blip) */}
+        <circle r="3" fill="#fda4af" className="ecg-blip" filter="url(#ecgRedGlow)" opacity="1">
+             {/* Le point suit le chemin. keyPoints="0;1" assure qu'il va du début (0) à la fin (1) linéairement */}
+             <animateMotion 
+                dur={animDuration} 
+                repeatCount="indefinite" 
+                path={ecgPath} 
+                calcMode="linear"
+                keyPoints="0;1"
+                keyTimes="0;1"
+             />
+             {/* Petit effet de clignotement pour le rendre vivant */}
+             <animate attributeName="opacity" values="0.8;1;0.8" dur="1s" repeatCount="indefinite" />
         </circle>
     </svg>
     );
 });
 HealthGraphic.displayName = 'HealthGraphic';
+
 
 /* --- NOURRITURE (Inchangé) --- */
 const FoodGraphic = memo(({ grown }: { grown: boolean }) => (
