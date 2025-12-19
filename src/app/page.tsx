@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Plus, ArrowRight, X, Scan, ShieldCheck, Filter } from "lucide-react";
+import { Search, Plus, ArrowRight, X, Scan, ShieldCheck, Filter, Sparkles } from "lucide-react";
 
 // Components imports
 import BrandCard from '@/components/givn/BrandCard';
@@ -124,9 +124,7 @@ export default function Home() {
     return (
         <div className="min-h-screen flex flex-col relative">
             
-            {/* Note: La Navbar est gérée par layout.tsx désormais, mais on peut garder des contrôles ici si besoin */}
-            {/* Si vous avez déplacé la navbar dans layout, cette section peut être supprimée ou adaptée pour des contrôles spécifiques à la page home */}
-            
+            {/* Dégradé supérieur pour masquer la transition avec le header fixe */}
             <div className="fixed top-0 w-full z-40 pointer-events-none h-24 bg-gradient-to-b from-black/50 to-transparent lg:hidden"></div>
 
             {/* MAIN CONTENT */}
@@ -248,13 +246,52 @@ export default function Home() {
                                         <BrandCard brand={brand} onClick={setSelectedBrand} />
                                     </div>
                                 ))}
-                                {displayedBrandsList.length === 0 && (
-                                    <div className="col-span-full text-center py-20 border border-dashed border-zinc-800 rounded-xl bg-white/5">
-                                        <p className="text-zinc-500 font-medium">No verified brands found matching criteria.</p>
-                                    </div>
-                                )}
                             </div>
                         </div>
+
+                        {/* ======================================================= */}
+                        {/* 💥 BANNIÈRE "WOW" PREMIUM : LE FACTEUR IMPRESSIONNANT 💥 */}
+                        {/* ======================================================= */}
+                        <div className="w-full mb-32 relative group cursor-pointer" onClick={() => setIsAdModalOpen(true)}>
+                            {/* Fond animé */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/40 via-black to-zinc-900 rounded-3xl opacity-80 group-hover:opacity-100 transition-all duration-700"></div>
+                            
+                            {/* Glow effect arrière */}
+                            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-emerald-400/10 to-emerald-500/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+                            {/* Contenu de la carte */}
+                            <div className="relative p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-10 border border-white/10 rounded-3xl bg-black/40 backdrop-blur-sm group-hover:border-emerald-500/40 transition-all overflow-hidden">
+                                
+                                {/* Particules décoratives */}
+                                <div className="absolute top-0 right-0 p-10 opacity-20 group-hover:opacity-50 transition-opacity">
+                                    <Sparkles size={100} className="text-emerald-400 animate-pulse" />
+                                </div>
+
+                                <div className="text-center md:text-left space-y-4 z-10">
+                                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-2">
+                                        <span className="relative flex h-2 w-2">
+                                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                        </span>
+                                        Limited Availability
+                                    </div>
+                                    <h3 className="text-4xl md:text-5xl font-bold text-white tracking-tighter group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-emerald-200 transition-all">
+                                        Advertise with <br/> <span className="text-emerald-500 font-serif italic">Integrity.</span>
+                                    </h3>
+                                    <p className="text-zinc-400 max-w-lg text-lg leading-relaxed">
+                                        Turn your verified impact into visibility. <br/>
+                                        The first ad network where <span className="text-white font-semibold">truth is the currency.</span>
+                                    </p>
+                                </div>
+
+                                <div className="relative z-10">
+                                    <button className="relative px-8 py-4 bg-white text-black rounded-full font-bold text-base tracking-wide hover:bg-emerald-400 hover:scale-105 transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_50px_rgba(16,185,129,0.4)] flex items-center gap-3">
+                                        Claim Your Spot <ArrowRight size={20} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {/* ======================================================= */}
 
                         {/* LEADERBOARD */}
                         <div id="leaderboard" className="mb-32 scroll-mt-24 w-full text-left">
@@ -313,14 +350,6 @@ export default function Home() {
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={2} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={3} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={0} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={4} />
-                        
-                        <div className="glass-panel rounded-xl p-6 mt-4 border border-zinc-800 animate-[pop-in_2s_ease-out] hover:border-emerald-500/30 transition-colors group">
-                            <h4 className="text-sm font-bold mb-1 text-white group-hover:text-emerald-400 transition-colors">Advertise</h4>
-                            <p className="text-xs text-zinc-500 mb-4 leading-relaxed">Want a placement? Your proof must be real.</p>
-                            <button onClick={() => setIsAdModalOpen(true)} className="text-xs flex items-center gap-1 hover:text-white transition-colors text-zinc-400 bg-transparent border-0 p-0 cursor-pointer font-bold uppercase tracking-wider group-hover:text-emerald-400">
-                                Apply for spot <ArrowRight size={12} />
-                            </button>
-                        </div>
                     </div>
                 </div>
 
