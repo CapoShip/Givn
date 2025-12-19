@@ -299,35 +299,33 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* --- DROITE : PUBLICITÉS + MINI BANNIÈRE VISIBLE --- */}
+                    {/* --- DROITE : PUBLICITÉS + BARRE ADVERTISE VISIBLE --- */}
                     <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-0 h-fit space-y-8">
+                        {/* Les 5 publicités */}
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={0} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={1} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={2} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={3} />
                         <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={0} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={4} />
                         
-                        {/* 💥 MINI BANNIÈRE PREMIUM VISIBLE & PULSANTE 💥 */}
-                        <div className="mt-8 relative group cursor-pointer w-full transform hover:scale-105 transition-all duration-500" onClick={() => setIsAdModalOpen(true)}>
-                            {/* Halo permanent mais léger + Fort au survol */}
-                            <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
-                            
-                            <div className="relative bg-zinc-900 border border-emerald-500/30 p-4 rounded-xl flex items-center justify-between shadow-2xl">
-                                <div>
-                                    <h4 className="text-xs font-bold text-white mb-1 flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                                        Advertise Here
-                                    </h4>
-                                    <p className="text-[10px] text-zinc-400 group-hover:text-emerald-300 transition-colors">
-                                        Join the verified network.
-                                    </p>
+                        {/* 💥 LA BARRE "ADVERTISE HERE" (En 1 ligne, clignotante, juste en dessous) 💥 */}
+                        <div className="mt-6 group cursor-pointer" onClick={() => setIsAdModalOpen(true)}>
+                             <div className="relative overflow-hidden rounded-xl bg-zinc-900 border border-zinc-800 p-4 hover:border-emerald-500/50 transition-all duration-300 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+                                <div className="flex items-center justify-between">
+                                   <div className="flex items-center gap-3">
+                                      {/* Le point qui clignote (Ping) */}
+                                      <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                      </span>
+                                      {/* Texte */}
+                                      <span className="font-bold text-xs text-zinc-300 group-hover:text-white uppercase tracking-wider transition-colors">Advertise Here</span>
+                                   </div>
+                                   {/* Flèche qui bouge au survol */}
+                                   <ArrowRight size={14} className="text-zinc-600 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
                                 </div>
-                                <div className="bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20 group-hover:bg-emerald-400 group-hover:text-black transition-colors">
-                                    <ArrowRight size={14} className="-rotate-45 group-hover:rotate-0 transition-transform duration-300" />
-                                </div>
-                            </div>
+                             </div>
                         </div>
-
                     </div>
                 </div>
 
