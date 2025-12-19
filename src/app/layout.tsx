@@ -3,7 +3,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
-import Header from '@/components/Header'; // <-- On importe le header ici
+import Header from '@/components/givn/Header'; // <-- On importe le header ici
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
