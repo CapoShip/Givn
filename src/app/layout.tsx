@@ -24,9 +24,8 @@ export default function RootLayout({
       <html lang="fr" className="dark">
         <body className={`${inter.variable} ${mono.variable} font-sans antialiased bg-background text-white min-h-screen selection:bg-emerald-500 selection:text-black`}>
           
-          {/* --- DÉBUT DE LA NAVIGATION --- */}
+          {/* --- BARRE DE NAVIGATION (Si ce bloc est ici, la barre DOIT s'afficher) --- */}
           <nav className="flex justify-between items-center p-6 border-b border-white/10 bg-black/20 backdrop-blur-md sticky top-0 z-50">
-            {/* Logo / Titre */}
             <Link href="/" className="text-2xl font-bold tracking-tighter hover:text-emerald-400 transition font-mono">
               Givn.
             </Link>
@@ -36,16 +35,13 @@ export default function RootLayout({
                 Méthodologie
               </Link>
 
-              {/* Visible uniquement si connecté (Admin) */}
               <SignedIn>
                 <Link href="/admin" className="text-sm font-medium text-emerald-400 hover:text-emerald-300 transition border border-emerald-500/30 px-3 py-1 rounded-full bg-emerald-500/10">
                   Dashboard Admin
                 </Link>
-                {/* Le bouton profil gère la déconnexion automatiquement */}
                 <UserButton afterSignOutUrl="/" />
               </SignedIn>
 
-              {/* Visible uniquement si déconnecté (Visiteur) */}
               <SignedOut>
                 <SignInButton mode="modal">
                   <button className="text-sm px-4 py-2 bg-white text-black rounded-full font-medium hover:bg-zinc-200 transition">
@@ -55,7 +51,6 @@ export default function RootLayout({
               </SignedOut>
             </div>
           </nav>
-          {/* --- FIN DE LA NAVIGATION --- */}
 
           <main className="flex-1">
             {children}
