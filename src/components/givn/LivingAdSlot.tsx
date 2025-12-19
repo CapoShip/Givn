@@ -175,8 +175,8 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
             <path d="M-10 -20 L 30 160 L 50 160 L 10 -20 Z" fill="#fff" opacity="0.1" />
             <path d="M20 -20 L 70 160 L 90 160 L 40 -20 Z" fill="#fff" opacity="0.1" style={{animationDelay:'1s'}} />
         </g>
-        {/* CHANGEMENT ICI : Vitesse ajustée à 12s */}
-        <g className="jellyfish-swim" style={{ animationDuration: '12s' }}>
+        {/* CHANGEMENT ICI : Vitesse ajustée à 13s */}
+        <g className="jellyfish-swim" style={{ animationDuration: '13s' }}>
             <g className="jellyfish-bell-pulse">
                 <path d="M 30 90 Q 50 60 70 90 L 68 95 Q 50 85 32 95 Z" fill="url(#jellyBody)" filter="url(#bioGlow)" />
                 <ellipse cx="50" cy="85" rx="10" ry="5" fill="#5eead4" opacity="0.6" filter="url(#bioGlow)" className="bio-electric" />
