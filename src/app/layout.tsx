@@ -24,27 +24,33 @@ export default function RootLayout({
       <html lang="fr" className="dark">
         <body className={`${inter.variable} ${mono.variable} font-sans antialiased bg-background text-white min-h-screen selection:bg-emerald-500 selection:text-black`}>
           
-          {/* --- BARRE DE NAVIGATION (Si ce bloc est ici, la barre DOIT s'afficher) --- */}
-          <nav className="flex justify-between items-center p-6 border-b border-white/10 bg-black/20 backdrop-blur-md sticky top-0 z-50">
-            <Link href="/" className="text-2xl font-bold tracking-tighter hover:text-emerald-400 transition font-mono">
+          {/* --- MODIFICATION ICI : Fond plus opaque (zinc-900) et bordure plus visible --- */}
+          <nav className="flex justify-between items-center px-6 py-4 border-b border-white/20 bg-zinc-900 sticky top-0 z-50 shadow-lg">
+            
+            {/* Logo */}
+            <Link href="/" className="text-2xl font-bold tracking-tighter hover:text-emerald-400 transition font-mono text-white">
               Givn.
             </Link>
 
             <div className="flex items-center gap-6">
-              <Link href="/methodology" className="text-sm text-zinc-400 hover:text-white transition">
+              <Link href="/methodology" className="text-sm font-medium text-zinc-300 hover:text-white transition">
                 Méthodologie
               </Link>
 
+              {/* Admin (Connecté) */}
               <SignedIn>
                 <Link href="/admin" className="text-sm font-medium text-emerald-400 hover:text-emerald-300 transition border border-emerald-500/30 px-3 py-1 rounded-full bg-emerald-500/10">
                   Dashboard Admin
                 </Link>
-                <UserButton afterSignOutUrl="/" />
+                <div className="ml-2">
+                  <UserButton afterSignOutUrl="/" />
+                </div>
               </SignedIn>
 
+              {/* Visiteur (Déconnecté) */}
               <SignedOut>
                 <SignInButton mode="modal">
-                  <button className="text-sm px-4 py-2 bg-white text-black rounded-full font-medium hover:bg-zinc-200 transition">
+                  <button className="text-sm px-4 py-2 bg-white text-black rounded-full font-bold hover:bg-zinc-200 transition">
                     Connexion
                   </button>
                 </SignInButton>
