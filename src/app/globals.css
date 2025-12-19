@@ -93,3 +93,32 @@ body {
 .turbine-spin-fast { animation: spin 2s linear infinite; transform-origin: 50px 45px; transform-box: view-box; } .ecg-line { stroke-dasharray: 300; stroke-dashoffset: 300; } .ad-grown .ecg-line { animation: draw-ecg 2.5s linear forwards infinite; } .ecg-blip { opacity: 0; } .ad-grown .ecg-blip { animation: fade-in-out 2.5s linear infinite; } .wheat-stem { stroke-dasharray: 100; stroke-dashoffset: 100; } .ad-grown .wheat-stem { animation: draw-line 1.5s ease-out forwards; } .wheat-head { opacity: 0; transform-origin: bottom center; } .ad-grown .wheat-head { animation: fade-in-up-small 0.5s ease-out 1.2s forwards, wheat-wave 3s infinite ease-in-out 1.7s; }
 @keyframes jellyfish-swim-up { 0% { transform: translateY(140px); } 100% { transform: translateY(-30px); } } .jellyfish-swim { animation: jellyfish-swim-up 10s linear infinite; } @keyframes bell-pulse { 0%, 100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(0.9) scaleX(1.1); } } .jellyfish-bell-pulse { transform-origin: center; animation: bell-pulse 2s ease-in-out infinite; } @keyframes tentacle-trail { 0%, 100% { transform: scaleY(1); opacity: 0.8; } 50% { transform: scaleY(1.2); opacity: 0.5; } } .jellyfish-tentacles path { transform-origin: top; animation: tentacle-trail 2s ease-in-out infinite; } .tentacle-1 { animation-delay: 0s; } .tentacle-2 { animation-delay: 0.1s; } .tentacle-3 { animation-delay: 0.2s; } .tentacle-4 { animation-delay: 0.3s; } @keyframes light-ray-shimmer { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.15; } } .ocean-light-rays path { animation: light-ray-shimmer 8s infinite ease-in-out alternate; } @keyframes ocean-particle-drift { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(3px, -5px); } } .ocean-particles circle { animation: ocean-particle-drift 12s infinite ease-in-out alternate; }
 @keyframes bubble-rise { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translateY(-60px) scale(1.2); opacity: 0; } } .bubble { animation: bubble-rise 4s linear infinite; } @keyframes fish-swim { 0% { transform: translateX(-20px) rotate(5deg); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { transform: translateX(120px) rotate(-5deg); opacity: 0; } } .fish-school { animation: fish-swim 8s linear infinite; } @keyframes bio-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; filter: drop-shadow(0 0 5px #2dd4bf); } } .bio-electric { animation: bio-pulse 3s ease-in-out infinite; } @keyframes cloud-drift { from { transform: translateX(-30px); } to { transform: translateX(130px); } } .cloud { animation: cloud-drift 20s linear infinite; } @keyframes bird-fly { 0% { transform: translate(-10px, 10px) scale(0.5); opacity: 0; } 10% { opacity: 1; } 100% { transform: translate(120px, -20px) scale(0.8); opacity: 0; } } .bird { animation: bird-fly 6s linear infinite; } @keyframes energy-stream { 0% { transform: scale(0.5) translate(0,0); opacity: 0.8; } 100% { transform: scale(0) translate(20px, -20px); opacity: 0; } } .energy-particle { animation: energy-stream 1s ease-out infinite; }
+
+/* =========================================
+   ANIMATIONS D'INTERFACE (Manquantes)
+   ========================================= */
+
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.95) translateY(10px); filter: blur(4px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+@keyframes enter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-enter {
+  opacity: 0; /* Cache l'élément avant que l'animation commence */
+  animation: enter 0.6s cubic-bezier(0.21, 0.68, 0.35, 1) forwards;
+}
+
+/* Petit fix pour l'animation float des particules */
+@keyframes float {
+    0%, 100% { transform: translateY(0px) translateX(0px); }
+    33% { transform: translateY(-20px) translateX(10px); }
+    66% { transform: translateY(10px) translateX(-5px); }
+}
+.animate-float {
+    animation: float 20s ease-in-out infinite;
+}

@@ -223,6 +223,20 @@ export default function Home() {
                             </div>
                         </div>
 
+                        {/* 🆕 BOUTON MOBILE ADVERTISE (Visible uniquement sur mobile) */}
+                        <div className="lg:hidden w-full flex justify-center mb-12 -mt-8">
+                            <button 
+                                onClick={() => setIsAdModalOpen(true)}
+                                className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 flex items-center gap-2 border border-white/5 bg-white/5 px-4 py-2 rounded-full hover:bg-white/10 transition-colors"
+                            >
+                                <span>Advertise Here</span>
+                                <span className="relative flex h-1.5 w-1.5">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                                </span>
+                            </button>
+                        </div>
+
                         {/* MOBILE AD 2 */}
                         <div className="w-full lg:hidden mb-16 px-4">
                              <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={16000} startIndex={1} />
