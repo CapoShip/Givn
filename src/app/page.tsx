@@ -124,7 +124,7 @@ export default function Home() {
     return (
         <div className="min-h-screen flex flex-col relative">
             
-            {/* Dégradé supérieur pour masquer la transition avec le header fixe */}
+            {/* Dégradé supérieur pour masquer la transition avec le header fixe (mobile) */}
             <div className="fixed top-0 w-full z-40 pointer-events-none h-24 bg-gradient-to-b from-black/50 to-transparent lg:hidden"></div>
 
             {/* MAIN CONTENT */}
@@ -246,6 +246,11 @@ export default function Home() {
                                         <BrandCard brand={brand} onClick={setSelectedBrand} />
                                     </div>
                                 ))}
+                                {displayedBrandsList.length === 0 && (
+                                    <div className="col-span-full text-center py-20 border border-dashed border-zinc-800 rounded-xl bg-white/5">
+                                        <p className="text-zinc-500 font-medium">No verified brands found matching criteria.</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -299,17 +304,11 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* --- DROITE : PUBLICITÉS + OPTION "ADVERTISE" MINIMALISTE --- */}
-                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-0 h-fit space-y-8">
-                        {/* Les 5 publicités */}
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={0} />
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={1} />
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={2} />
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={3} />
-                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={0} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={4} />
+                    {/* --- DROITE : PUBLICITÉS + BOUTON FIXE VISIBLE --- */}
+                    <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-0 h-fit space-y-6">
                         
-                        {/* 💥 SIMPLEST VERSION : JUSTE LE POINT ET LE TEXTE 💥 */}
-                        <div className="mt-4 flex items-center gap-3 cursor-pointer group opacity-70 hover:opacity-100 transition-opacity" onClick={() => setIsAdModalOpen(true)}>
+                        {/* 💥 BOUTON ADVERTISE HERE : Placé tout en haut du bloc Sticky pour être visible sans scroll 💥 */}
+                        <div className="flex items-center gap-3 cursor-pointer group mb-2 opacity-70 hover:opacity-100 transition-all" onClick={() => setIsAdModalOpen(true)}>
                              <span className="relative flex h-2 w-2">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -318,6 +317,13 @@ export default function Home() {
                                 Advertise Here
                              </span>
                         </div>
+
+                        {/* Les 5 publicités de droite */}
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={0} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={1} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={1000} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={2} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={500} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={3} />
+                        <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={0} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={4} />
                     </div>
                 </div>
 
