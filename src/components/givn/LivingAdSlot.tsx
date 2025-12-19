@@ -13,7 +13,7 @@ export interface Ad {
 // COMPOSANTS GRAPHIQUES (FINAUX & ACCESSIBLES)
 // ==========================================
 
-/* --- ARBRE SIMPLE --- */
+/* --- ARBRE SIMPLE (Inchangé) --- */
 const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg 
         role="img" 
@@ -25,15 +25,12 @@ const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
         <path d="M48 160 L48 100 Q48 90 45 80" stroke="#8B4513" strokeWidth="4" fill="none" strokeLinecap="round" className="tree-trunk-simple" />
         <path d="M48 160 L48 100" stroke="#8B4513" strokeWidth="4" className="tree-trunk-simple" />
         <g className="swaying-branch" style={{ transformOrigin: '48px 100px' }}>
-            {/* Gauche */}
             <path d="M48 110 Q 30 100 20 90" stroke="#8B4513" strokeWidth="2" fill="none" className="branch-grow" />
             <circle cx="20" cy="90" r="5" fill="#22c55e" className="leaf-pop" style={{animationDelay: '1s'}} />
             <circle cx="30" cy="100" r="4" fill="#4ade80" className="leaf-pop" style={{animationDelay: '1.1s'}} />
-            {/* Droite */}
             <path d="M48 120 Q 70 110 80 100" stroke="#8B4513" strokeWidth="2" fill="none" className="branch-grow" style={{animationDelay: '0.6s'}} />
             <circle cx="80" cy="100" r="5" fill="#22c55e" className="leaf-pop" style={{animationDelay: '1.2s'}} />
             <circle cx="65" cy="110" r="4" fill="#4ade80" className="leaf-pop" style={{animationDelay: '1.3s'}} />
-            {/* Haut */}
             <path d="M48 100 L 48 60" stroke="#8B4513" strokeWidth="2" fill="none" className="branch-grow" style={{animationDelay: '0.7s'}} />
             <circle cx="48" cy="60" r="6" fill="#16a34a" className="leaf-pop" style={{animationDelay: '1.4s'}} />
             <circle cx="35" cy="70" r="4" fill="#4ade80" className="leaf-pop" style={{animationDelay: '1.5s'}} />
@@ -43,9 +40,8 @@ const TreeGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 TreeGraphic.displayName = 'TreeGraphic';
 
-/* --- ROBINET (AVEC FIX SVG ID) --- */
+/* --- ROBINET (Inchangé) --- */
 const PumpGraphic = memo(({ grown }: { grown: boolean }) => {
-    // Génère des IDs uniques pour chaque instance de la pompe
     const id = useId();
     const chromeGradId = `chromeGrad-${id}`;
     const waterDropGradId = `waterDropGrad-${id}`;
@@ -79,15 +75,11 @@ const PumpGraphic = memo(({ grown }: { grown: boolean }) => {
                     <circle cx="70" cy="35" r="4" fill="#b91c1c" />
                 </g>
             </g>
-
-            {/* EAU */}
             <g className={grown ? 'opacity-100 transition-opacity delay-200' : 'opacity-0'}>
                 <circle cx="15" cy="65" r="3.5" fill={`url(#${waterDropGradId})`} className="water-drop" style={{animationDelay: '0s'}} />
                 <circle cx="15" cy="65" r="3.5" fill={`url(#${waterDropGradId})`} className="water-drop" style={{animationDelay: '0.3s'}} />
                 <circle cx="15" cy="65" r="3.5" fill={`url(#${waterDropGradId})`} className="water-drop" style={{animationDelay: '0.6s'}} />
-                
                 <ellipse cx="15" cy="160" rx="12" ry="3" fill="#3b82f6" opacity="0.5" />
-                
                 <circle cx="10" cy="160" r="1.5" fill={`url(#${waterDropGradId})`} className="splash-particle" style={{animationDelay: '0.8s'}} />
                 <circle cx="20" cy="160" r="1" fill={`url(#${waterDropGradId})`} className="splash-particle" style={{animationDelay: '1.1s'}} />
             </g>
@@ -97,7 +89,7 @@ const PumpGraphic = memo(({ grown }: { grown: boolean }) => {
 PumpGraphic.displayName = 'PumpGraphic';
 
 
-/* --- MAISON --- */
+/* --- MAISON (Inchangé) --- */
 const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg 
         role="img" 
@@ -120,7 +112,7 @@ const HouseGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 HouseGraphic.displayName = 'HouseGraphic';
 
-/* --- ÉCOLE --- */
+/* --- ÉCOLE (Inchangé) --- */
 const SchoolGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg 
         role="img" 
@@ -149,7 +141,7 @@ const SchoolGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 SchoolGraphic.displayName = 'SchoolGraphic';
 
-/* --- OCÉAN --- */
+/* --- OCÉAN (MÉDUSE RALENTIE) --- */
 const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg 
         role="img" 
@@ -183,7 +175,8 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
             <path d="M-10 -20 L 30 160 L 50 160 L 10 -20 Z" fill="#fff" opacity="0.1" />
             <path d="M20 -20 L 70 160 L 90 160 L 40 -20 Z" fill="#fff" opacity="0.1" style={{animationDelay:'1s'}} />
         </g>
-        <g className="jellyfish-swim">
+        {/* CHANGEMENT ICI : Vitesse ralentie de 10s à 25s */}
+        <g className="jellyfish-swim" style={{ animationDuration: '25s' }}>
             <g className="jellyfish-bell-pulse">
                 <path d="M 30 90 Q 50 60 70 90 L 68 95 Q 50 85 32 95 Z" fill="url(#jellyBody)" filter="url(#bioGlow)" />
                 <ellipse cx="50" cy="85" rx="10" ry="5" fill="#5eead4" opacity="0.6" filter="url(#bioGlow)" className="bio-electric" />
@@ -204,8 +197,13 @@ const OceanGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 OceanGraphic.displayName = 'OceanGraphic';
 
-/* --- SANTÉ --- */
-const HealthGraphic = memo(({ grown }: { grown: boolean }) => (
+/* --- SANTÉ (ECG SYNCHRONISÉ ET FLUIDE) --- */
+const HealthGraphic = memo(({ grown }: { grown: boolean }) => {
+    const ecgPath = "M0 70 H 20 L 25 50 L 35 90 L 40 70 H 60 L 65 60 L 75 80 L 80 70 H 100";
+    // Durée synchronisée pour le tracé et le point
+    const animDuration = "3s"; 
+
+    return (
     <svg 
         role="img" 
         aria-label="Rythme cardiaque sur moniteur symbolisant l'aide médicale"
@@ -232,17 +230,24 @@ const HealthGraphic = memo(({ grown }: { grown: boolean }) => (
         </defs>
         <rect x="5" y="40" width="90" height="60" rx="4" fill="url(#gridRed)" className="house-base" opacity="0.5" />
         <rect x="5" y="40" width="90" height="60" rx="4" stroke="url(#ecgRedGrad)" strokeWidth="1" fill="none" opacity="0.3" />
+        
+        {/* Ligne ECG qui se dessine */}
         <g filter="url(#ecgRedGlow)">
-             <path d="M10 70 H 30 L 35 50 L 45 90 L 50 70 H 70 L 75 60 L 85 80 L 90 70 H 100" stroke="url(#ecgRedGrad)" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" className="ecg-line" />
+             {/* CHANGEMENTS ICI : Nouveau tracé, dasharray ajusté à 150, durée synchro à 3s */}
+             <path d={ecgPath} stroke="url(#ecgRedGrad)" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" className="ecg-line" style={{ strokeDasharray: 150, strokeDashoffset: 150, animationDuration: animDuration }} />
         </g>
-        <circle r="3" fill="#fda4af" className="ecg-blip" filter="url(#ecgRedGlow)">
-             <animateMotion dur="2s" repeatCount="indefinite" path="M10 70 H 30 L 35 50 L 45 90 L 50 70 H 70 L 75 60 L 85 80 L 90 70 H 100" />
+        
+        {/* Point (blip) qui suit la ligne */}
+        <circle r="3" fill="#fda4af" className="ecg-blip" filter="url(#ecgRedGlow)" opacity="0.8">
+             {/* CHANGEMENTS ICI : Le point suit exactement le même chemin avec la même durée */}
+             <animateMotion dur={animDuration} repeatCount="indefinite" path={ecgPath} />
         </circle>
     </svg>
-));
+    );
+});
 HealthGraphic.displayName = 'HealthGraphic';
 
-/* --- NOURRITURE --- */
+/* --- NOURRITURE (Inchangé) --- */
 const FoodGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg 
         role="img" 
@@ -272,7 +277,7 @@ const FoodGraphic = memo(({ grown }: { grown: boolean }) => (
 ));
 FoodGraphic.displayName = 'FoodGraphic';
 
-/* --- ÉNERGIE --- */
+/* --- ÉNERGIE (Inchangé) --- */
 const EnergyGraphic = memo(({ grown }: { grown: boolean }) => (
     <svg 
         role="img" 
@@ -318,7 +323,7 @@ EnergyGraphic.displayName = 'EnergyGraphic';
 
 
 // ==========================================
-// COMPOSANT PRINCIPAL (LAYOUT AJUSTÉ)
+// COMPOSANT PRINCIPAL (Inchangé)
 // ==========================================
 
 export default function LivingAdSlot({ 
