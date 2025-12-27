@@ -86,7 +86,7 @@ export async function updateBrandStatus(id: string, status: 'PENDING' | 'APPROVE
     return { success: false, message: "Échec de la mise à jour du statut." };
   }
 }
-"use server";
+
 
 import { supabaseClerkServer } from "@/lib/supabase/clerk-server";
 
