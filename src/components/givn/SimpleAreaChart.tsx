@@ -43,3 +43,4 @@ export default function SimpleAreaChart({ data, color = "#34d399" }: { data: Cha
         </div>
     );
 }
+

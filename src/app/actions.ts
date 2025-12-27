@@ -2,46 +2,49 @@
 
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
-
-import { db } from "@/lib/db.js";
+import { db } from "@/lib/db";
 import { supabaseClerkServer } from "@/lib/supabase/clerk-server";
 
-// ---------------------------
-// Types
-// ---------------------------
-type ActionState = {
+/* ---------------------------------
+   TYPES
+---------------------------------- */
+
+export type ActionState = {
   success: boolean;
   message: string;
 };
 
-// ---------------------------
-// Prisma: Brands (Admin)
-// ---------------------------
+export type BrandTier = "PENDING" | "VERIFIED" | "REJECTED";
 
-// 1) Récupérer toutes les marques depuis la DB
+/* ---------------------------------
+   BRANDS
+---------------------------------- */
+
+// Lire toutes les marques
 export async function getBrands() {
   try {
-    const brands = await db.brand.findMany({
-      orderBy: { createdAt: "desc" },
+    return await db.brand.findMany({
+      orderBy: { created_at: "desc" },
     });
-    return brands;
-  } catch (error) {
-    console.error("Erreur database lors de la lecture:", error);
+  } catch (e) {
+    console.error("[getBrands]", e);
     return [];
   }
 }
 
-// 2) Ajouter une nouvelle marque
+// Ajouter une marque (form public)
 export async function addBrand(
   prevState: ActionState,
   formData: FormData
 ): Promise<ActionState> {
-  const name = formData.get("name") as string;
-  const website = formData.get("website") as string;
-  const email = formData.get("email") as string;
+  const name = String(formData.get("name") ?? "").trim();
+  const website = String(formData.get("website") ?? "").trim();
 
-  if (!name || !website || !email) {
-    return { success: false, message: "Veuillez remplir tous les champs" };
+  if (!name || !website) {
+    return {
+      success: false,
+      message: "Tous les champs sont requis",
+    };
   }
 
   try {
@@ -49,82 +52,81 @@ export async function addBrand(
       data: {
         name,
         website,
-        email,
-        status: "PENDING",
+        credibility_tier: "PENDING",
       },
     });
 
-    revalidatePath("/admin");
-    return { success: true, message: "Marque ajoutée avec succès !" };
-  } catch (error) {
-    console.error("Erreur création dans la DB:", error);
-    return { success: false, message: "Erreur lors de l'ajout (Base de données)" };
+    revalidatePath("/");
+    return {
+      success: true,
+      message: "Marque soumise avec succès",
+    };
+  } catch (e: any) {
+    console.error("[addBrand]", e);
+    return {
+      success: false,
+      message: e?.message ?? "Erreur lors de la soumission",
+    };
   }
 }
 
-// 3) Supprimer une marque
-export async function deleteBrand(id: string) {
-  try {
-    await db.brand.delete({ where: { id } });
-    revalidatePath("/admin");
-    return { success: true, message: `Marque ${id} supprimée.` };
-  } catch (error) {
-    console.error("Erreur suppression dans la DB:", error);
-    return { success: false, message: "Échec de la suppression." };
-  }
-}
-
-// 4) Mettre à jour le statut d'une marque
-export async function updateBrandStatus(
+// Approve / Reject (admin)
+export async function updateBrandTier(
   id: string,
-  status: "PENDING" | "APPROVED" | "REJECTED"
-) {
+  tier: BrandTier
+): Promise<ActionState> {
   try {
     await db.brand.update({
       where: { id },
-      data: { status },
+      data: { credibility_tier: tier },
     });
 
     revalidatePath("/admin");
-    return { success: true, message: `Statut de la marque ${id} mis à jour.` };
-  } catch (error) {
-    console.error("Erreur mise à jour du statut dans la DB:", error);
-    return { success: false, message: "Échec de la mise à jour du statut." };
+
+    return {
+      success: true,
+      message: `Tier mis à jour → ${tier}`,
+    };
+  } catch (e: any) {
+    console.error("[updateBrandTier]", e);
+    return {
+      success: false,
+      message: e?.message ?? "Erreur mise à jour",
+    };
   }
 }
 
-// ---------------------------
-// Clerk x Supabase: Proof of Identity
-// ---------------------------
+/* ---------------------------------
+   CLERK / SUPABASE
+---------------------------------- */
 
 export async function debugClerkToken() {
   const { userId, getToken } = await auth();
+
+  if (!userId) {
+    return { hasToken: false, userId: null };
+  }
+
   const token = await getToken({ template: "supabase" });
 
   return {
-    userId,
     hasToken: Boolean(token),
-    tokenPreview: token ? `${token.slice(0, 24)}...${token.slice(-12)}` : null,
+    userId,
+    tokenPreview: token ? token.slice(0, 30) + "..." : null,
   };
 }
 
 export async function whoAmI() {
-  const sb = await supabaseClerkServer();
-  const { data, error } = await sb.rpc("givn_whoami");
+  try {
+    const sb = await supabaseClerkServer();
+    const { data, error } = await sb.rpc("givn_whoami");
 
-  if (error) {
-    return {
-      supabaseUserId: null as string | null,
-      ok: false,
-      error: error.message,
-      raw: null as any,
-    };
+    if (error) {
+      return { ok: false, error: error.message };
+    }
+
+    return { ok: true, uid: data?.uid ?? null };
+  } catch (e: any) {
+    return { ok: false, error: e?.message ?? "Unknown error" };
   }
-
-  return {
-    supabaseUserId: (data?.uid as string | null) ?? null,
-    ok: true,
-    error: null as string | null,
-    raw: data,
-  };
 }
