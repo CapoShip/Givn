@@ -11,7 +11,7 @@ import Badge from "@/components/givn/Badge";
 import ProofModal from "@/components/givn/ProofModal";
 import SubmitBrandForm from "@/components/givn/SubmitBrandForm";
 
-// ✅ Living data
+// ✅ Living data (Server Action)
 import { getLivingBrands } from "@/app/actions/brands";
 import type { BrandTrustRow } from "@/lib/types/givn";
 
@@ -64,11 +64,6 @@ const Modal = ({
   );
 };
 
-const formatMoney = (amount: number) => {
-  if (!amount || amount === 0) return "—";
-  return amount >= 1000 ? `$${(amount / 1000).toFixed(1)}k` : `$${amount}`;
-};
-
 // --- COMPOSANT PARTICULES ---
 const ParticlesBackground = () => {
   return (
@@ -92,11 +87,12 @@ const ParticlesBackground = () => {
 };
 
 /**
- * Ton UI existant attend des champs "category / month / claim / status VERFIED".
- * On les dérive à partir de brand_trust sans mentir :
- * - verified = proof_count > 0
- * - month = trust_score (proxy temporaire) OU proofs_total_amount_usd si tu l'ajoutes à la view plus tard
- * - category/claim = placeholders neutres (pas marketing)
+ * Ton UI "legacy" (cards + leaderboard) attend:
+ * category / claim / status VERIFIED/PENDING et month (sort).
+ * On dérive ça proprement de BrandTrustRow sans inventer de marketing :
+ * - VERIFIED = status DB === "APPROVED"
+ * - PENDING = sinon
+ * - month = trust_score (proxy de ranking)
  */
 type BrandUI = {
   id: string;
@@ -105,20 +101,20 @@ type BrandUI = {
   logo_url: string | null;
   website: string | null;
 
-  // UI legacy fields
   category: string;
   claim: string;
-  month: number; // used for sorting + display in leaderboard
+  month: number;
   status: "VERIFIED" | "PENDING";
 
-  // living fields
   trust_score: number;
   proof_count: number;
   last_proof_at: string | null;
 };
 
 function mapTrustToUI(b: BrandTrustRow): BrandUI {
-  const isVerified = (b.proof_count ?? 0) > 0;
+  // ✅ Source of truth: DB status (check constraint)
+  // Allowed values on your table: PENDING / APPROVED / REJECTED
+  const isVerified = b.status === "APPROVED";
 
   return {
     id: b.id,
@@ -128,9 +124,13 @@ function mapTrustToUI(b: BrandTrustRow): BrandUI {
     website: b.website,
 
     category: "Public Database",
-    claim: isVerified ? "Proof available. Click to inspect." : "No public proof. Negative signal.",
-    month: b.trust_score ?? 0,
+    claim: isVerified
+      ? "Approved. Click to inspect proof trail."
+      : b.status === "REJECTED"
+      ? "Rejected. Proof insufficient or invalid."
+      : "Pending review. No approved proof yet.",
 
+    month: b.trust_score ?? 0,
     status: isVerified ? "VERIFIED" : "PENDING",
 
     trust_score: b.trust_score ?? 0,
@@ -204,8 +204,8 @@ export default function Home() {
         brand.name.toLowerCase().includes(q) ||
         (brand.claim ?? "").toLowerCase().includes(q);
 
-      // ✅ VerifiedOnly = preuves réelles
-      const matchesVerified = verifiedOnly ? brand.proof_count > 0 : true;
+      // ✅ VerifiedOnly = APPROVED -> mapped to "VERIFIED"
+      const matchesVerified = verifiedOnly ? brand.status === "VERIFIED" : true;
 
       return matchesCategory && matchesSearch && matchesVerified;
     });
@@ -278,12 +278,8 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* ✅ loading state (minimal, not SaaS-looking) */}
-              {loadingBrands && (
-                <div className="mt-3 text-xs text-zinc-500">
-                  Syncing living database…
-                </div>
-              )}
+              {/* ✅ loading state */}
+              {loadingBrands && <div className="mt-3 text-xs text-zinc-500">Syncing living database…</div>}
             </div>
 
             {/* MOBILE AD 1 */}
@@ -357,8 +353,7 @@ export default function Home() {
                     className={`animate-enter ${viewFullList ? "" : "min-w-[300px]"}`}
                     style={{ animationDelay: `${i * 100}ms` }}
                   >
-                    {/* BrandCard doit accepter { brand, onClick } comme avant */}
-                    <BrandCard brand={brand} onClick={setSelectedBrand} />
+                    <BrandCard brand={brand as any} onClick={() => setSelectedBrand(brand)} />
                   </div>
                 ))}
 
@@ -408,7 +403,12 @@ export default function Home() {
                         <td className="p-4 text-zinc-400 hidden sm:table-cell">
                           <span className="bg-white/5 px-2 py-1 rounded text-xs border border-white/5">{brand.category}</span>
                         </td>
-                        <td className="p-4 text-right font-mono text-white font-medium">{formatMoney(brand.trust_score)}</td>
+
+                        {/* ✅ Trust score is a score, not money */}
+                        <td className="p-4 text-right font-mono text-white font-medium">
+                          {brand.trust_score}/100
+                        </td>
+
                         <td className="p-4 flex justify-end items-center h-full">
                           <Badge status={brand.status} />
                         </td>

@@ -13,7 +13,14 @@ type BrandCardProps = {
 };
 
 export function BrandCard({ brand, onClick }: BrandCardProps) {
-  const risk = brand.proof_count === 0 || brand.trust_score < 25;
+  // ✅ Normalize status coming from DB
+  // DB allowed: PENDING | APPROVED | REJECTED
+  const isApproved = brand.status === "APPROVED";
+  const displayStatus = isApproved ? "VERIFIED" : brand.status;
+
+  // ✅ Risk heuristic: not approved OR no proof OR low trust => risk
+  const risk = !isApproved || brand.proof_count === 0 || brand.trust_score < 25;
+
   const clickable = typeof onClick === "function";
 
   return (
@@ -49,7 +56,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="text-xs uppercase tracking-[0.25em] text-white/50">
-            {brand.status}
+            {displayStatus}
           </div>
 
           <h3 className="mt-1 truncate text-lg font-semibold text-white">
@@ -60,7 +67,9 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
             <NoProofBadge brand={brand} />
             <div className="text-xs text-white/50">
               Last proof:{" "}
-              <span className="text-white/70">{formatDate(brand.last_proof_at)}</span>
+              <span className="text-white/70">
+                {formatDate(brand.last_proof_at)}
+              </span>
             </div>
           </div>
         </div>
@@ -92,7 +101,6 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
             target="_blank"
             rel="noreferrer"
             className="text-cyan-200 hover:text-cyan-100"
-            // IMPORTANT: prevent card click when clicking the link
             onClick={(e) => e.stopPropagation()}
           >
             Verify site →
