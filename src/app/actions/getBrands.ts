@@ -1,29 +1,41 @@
 "use server";
 
 import { supabaseServer } from "@/lib/supabase/server";
+import type { BrandTrustRow } from "@/lib/types";
 
-export async function getBrands() {
+export async function getBrands(params?: { verifiedOnly?: boolean }) {
   const supabase = await supabaseServer();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("brand_trust_live")
-    .select(`
+    .select(
+      `
       brand_id,
-      name,
       slug,
+      name,
       website,
       logo_url,
-      trust_score,
-      proofs_count,
-      total_usd,
-      latest_status
-    `)
+      category,
+      proofs_total,
+      verified_count,
+      rejected_count,
+      disputed_count,
+      last_event_type,
+      last_event_at,
+      trust_score
+    `
+    )
     .order("trust_score", { ascending: false });
 
-  if (error) {
-    console.error("[getBrands]", error);
-    return [];
+  if (params?.verifiedOnly) {
+    query = query.gt("verified_count", 0);
   }
 
-  return data ?? [];
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(`[getBrands] ${error.message}`);
+  }
+
+  return (data ?? []) as BrandTrustRow[];
 }

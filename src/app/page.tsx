@@ -13,7 +13,7 @@ import SubmitBrandForm from "@/components/givn/SubmitBrandForm";
 
 // ✅ Living data (Server Action)
 import { getLivingBrands } from "@/app/actions/brands";
-import type { BrandTrustRow } from "@/lib/types/givn";
+import type { BrandTrustRow } from "@/app/actions/brands";
 
 // --- DATA CONSTANTS (ADS) ---
 const AD_POOL_LEFT: Ad[] = [
@@ -89,10 +89,7 @@ const ParticlesBackground = () => {
 /**
  * Ton UI "legacy" (cards + leaderboard) attend:
  * category / claim / status VERIFIED/PENDING et month (sort).
- * On dérive ça proprement de BrandTrustRow sans inventer de marketing :
- * - VERIFIED = status DB === "APPROVED"
- * - PENDING = sinon
- * - month = trust_score (proxy de ranking)
+ * On dérive ça proprement de la view living (BrandTrustRow renvoyée par getLivingBrands).
  */
 type BrandUI = {
   id: string;
@@ -112,30 +109,34 @@ type BrandUI = {
 };
 
 function mapTrustToUI(b: BrandTrustRow): BrandUI {
-  // ✅ Source of truth: DB status (check constraint)
-  // Allowed values on your table: PENDING / APPROVED / REJECTED
-  const isVerified = b.status === "APPROVED";
+  const verified = (b.verified_count ?? 0) > 0;
+  const status: "VERIFIED" | "PENDING" = verified ? "VERIFIED" : "PENDING";
+
+  const claim = verified
+    ? "Verified proof on record. Click to inspect the trail."
+    : (b.proofs_total ?? 0) > 0
+    ? "Proof submitted. Awaiting verification."
+    : "No proof yet. Silence is a signal.";
+
+  const trust = Math.round(b.trust_score ?? 0);
 
   return {
-    id: b.id,
+    id: b.brand_id,
     name: b.name,
     slug: b.slug,
     logo_url: b.logo_url,
     website: b.website,
 
-    category: "Public Database",
-    claim: isVerified
-      ? "Approved. Click to inspect proof trail."
-      : b.status === "REJECTED"
-      ? "Rejected. Proof insufficient or invalid."
-      : "Pending review. No approved proof yet.",
+    category: b.category ?? "Public Database",
+    claim,
 
-    month: b.trust_score ?? 0,
-    status: isVerified ? "VERIFIED" : "PENDING",
+    // month est utilisé comme proxy de tri existant → trust score
+    month: trust,
 
-    trust_score: b.trust_score ?? 0,
-    proof_count: b.proof_count ?? 0,
-    last_proof_at: b.last_proof_at,
+    status,
+    trust_score: trust,
+    proof_count: b.proofs_total ?? 0,
+    last_proof_at: b.last_event_at ?? null,
   };
 }
 
@@ -177,7 +178,7 @@ export default function Home() {
         setLoadingBrands(true);
         const rows = await getLivingBrands();
         if (!alive) return;
-        setBrands(rows.map(mapTrustToUI));
+        setBrands((rows ?? []).map(mapTrustToUI));
       } catch (e) {
         console.error(e);
         if (!alive) return;
@@ -204,7 +205,7 @@ export default function Home() {
         brand.name.toLowerCase().includes(q) ||
         (brand.claim ?? "").toLowerCase().includes(q);
 
-      // ✅ VerifiedOnly = APPROVED -> mapped to "VERIFIED"
+      // ✅ VerifiedOnly = verified_count > 0 -> mapped to "VERIFIED"
       const matchesVerified = verifiedOnly ? brand.status === "VERIFIED" : true;
 
       return matchesCategory && matchesSearch && matchesVerified;
@@ -541,8 +542,16 @@ export default function Home() {
               setIsAccessModalOpen(false);
             }}
           >
-            <input type="email" required placeholder="Email" className="w-full bg-black border border-white/20 p-4 rounded-lg text-white" />
-            <button type="submit" className="w-full bg-white text-black py-4 rounded-lg font-bold hover:bg-emerald-400 transition-colors">
+            <input
+              type="email"
+              required
+              placeholder="Email"
+              className="w-full bg-black border border-white/20 p-4 rounded-lg text-white"
+            />
+            <button
+              type="submit"
+              className="w-full bg-white text-black py-4 rounded-lg font-bold hover:bg-emerald-400 transition-colors"
+            >
               Submit
             </button>
           </form>
