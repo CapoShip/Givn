@@ -1,10 +1,11 @@
+export const dynamic = "force-dynamic";
 import { Shield, AlertTriangle } from "lucide-react";
-import type { Brand } from "@prisma/client";
+import type { BrandRow } from "@/app/actions/brands";
 import { getBrands } from "@/app/actions";
 import { ActionsCell } from "./ActionsCell";
 
 export default async function AdminPage() {
-  const brands: Brand[] = await getBrands();
+ const brands: BrandRow[] = await getBrands();
   const pending = brands.filter((b) => b.status === "PENDING");
 
   return (

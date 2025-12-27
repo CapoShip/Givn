@@ -1,107 +1,36 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/lib/db";
 import { supabaseClerkServer } from "@/lib/supabase/clerk-server";
 
-/* ---------------------------------
-   TYPES
----------------------------------- */
+// ✅ Import des vraies Server Actions (Supabase-first)
+import {
+  getBrands as getBrandsImpl,
+  addBrand as addBrandImpl,
+  updateBrandTier as updateBrandTierImpl,
+} from "@/app/actions/brands";
 
-export type ActionState = {
-  success: boolean;
-  message: string;
-};
+/**
+ * IMPORTANT (Next.js 16 + Turbopack):
+ * In a "use server" file, only async functions may be exported.
+ * So we expose wrappers instead of re-exporting.
+ */
 
-export type BrandTier = "PENDING" | "VERIFIED" | "REJECTED";
+// ----- BRANDS (Supabase source of truth) -----
 
-/* ---------------------------------
-   BRANDS
----------------------------------- */
-
-// Lire toutes les marques
-import type { Brand } from "@prisma/client";
-
-export async function getBrands(): Promise<Brand[]> {
-  try {
-    return await db.brand.findMany({
-      orderBy: { created_at: "desc" }, // ou createdAt selon ton schema Prisma
-    });
-  } catch (error) {
-    console.error("[getBrands]", error);
-    return [];
-  }
+export async function getBrands() {
+  return await getBrandsImpl();
 }
 
-
-// Ajouter une marque (form public)
-export async function addBrand(
-  prevState: ActionState,
-  formData: FormData
-): Promise<ActionState> {
-  const name = String(formData.get("name") ?? "").trim();
-  const website = String(formData.get("website") ?? "").trim();
-
-  if (!name || !website) {
-    return {
-      success: false,
-      message: "Tous les champs sont requis",
-    };
-  }
-
-  try {
-    await db.brand.create({
-      data: {
-        name,
-        website,
-        credibility_tier: "PENDING",
-      },
-    });
-
-    revalidatePath("/");
-    return {
-      success: true,
-      message: "Marque soumise avec succès",
-    };
-  } catch (e: any) {
-    console.error("[addBrand]", e);
-    return {
-      success: false,
-      message: e?.message ?? "Erreur lors de la soumission",
-    };
-  }
+export async function addBrand(prevState: unknown, formData: FormData) {
+  return await addBrandImpl(prevState, formData);
 }
 
-// Approve / Reject (admin)
-export async function updateBrandTier(
-  id: string,
-  tier: BrandTier
-): Promise<ActionState> {
-  try {
-    await db.brand.update({
-      where: { id },
-      data: { credibility_tier: tier },
-    });
-
-    revalidatePath("/admin");
-
-    return {
-      success: true,
-      message: `Tier mis à jour → ${tier}`,
-    };
-  } catch (e: any) {
-    console.error("[updateBrandTier]", e);
-    return {
-      success: false,
-      message: e?.message ?? "Erreur mise à jour",
-    };
-  }
+export async function updateBrandTier(id: string, status: string) {
+  return await updateBrandTierImpl(id, status);
 }
 
-/* ---------------------------------
-   CLERK / SUPABASE
----------------------------------- */
+// ----- CLERK / SUPABASE (keep) -----
 
 export async function debugClerkToken() {
   const { userId, getToken } = await auth();
@@ -123,11 +52,7 @@ export async function whoAmI() {
   try {
     const sb = await supabaseClerkServer();
     const { data, error } = await sb.rpc("givn_whoami");
-
-    if (error) {
-      return { ok: false, error: error.message };
-    }
-
+    if (error) return { ok: false, error: error.message };
     return { ok: true, uid: data?.uid ?? null };
   } catch (e: any) {
     return { ok: false, error: e?.message ?? "Unknown error" };
