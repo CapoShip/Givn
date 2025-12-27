@@ -86,3 +86,14 @@ export async function updateBrandStatus(id: string, status: 'PENDING' | 'APPROVE
     return { success: false, message: "Échec de la mise à jour du statut." };
   }
 }
+"use server";
+
+import { supabaseClerkServer } from "@/lib/supabase/clerk-server";
+
+export async function whoAmI() {
+  const sb = await supabaseClerkServer();
+  const { data, error } = await sb.auth.getUser();
+  if (error) throw new Error(error.message);
+
+  return { supabaseUserId: data.user?.id ?? null };
+}
