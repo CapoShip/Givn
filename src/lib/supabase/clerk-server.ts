@@ -22,7 +22,8 @@ export async function supabaseClerkServer() {
   const { getToken } = await auth();
   const token = await getToken({ template: "supabase" });
 
-  const cookieStore = cookies();
+  // ✅ Next.js 16: cookies() is async
+  const cookieStore = await cookies();
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -31,6 +32,9 @@ export async function supabaseClerkServer() {
   if (!supabaseAnonKey) throw new Error("Missing env: NEXT_PUBLIC_SUPABASE_ANON_KEY");
 
   return createServerClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    },
     cookies: {
       getAll() {
         return (cookieStore as any).getAll();
@@ -40,11 +44,10 @@ export async function supabaseClerkServer() {
           cookiesToSet.forEach(({ name, value, options }) => {
             (cookieStore as any).set(name, value, options);
           });
-        } catch {}
+        } catch {
+          // In some contexts cookies can be read-only
+        }
       },
-    },
-    global: {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
     },
   });
 }
