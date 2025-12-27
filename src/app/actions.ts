@@ -21,16 +21,19 @@ export type BrandTier = "PENDING" | "VERIFIED" | "REJECTED";
 ---------------------------------- */
 
 // Lire toutes les marques
-export async function getBrands() {
+import type { Brand } from "@prisma/client";
+
+export async function getBrands(): Promise<Brand[]> {
   try {
     return await db.brand.findMany({
-      orderBy: { created_at: "desc" },
+      orderBy: { created_at: "desc" }, // ou createdAt selon ton schema Prisma
     });
-  } catch (e) {
-    console.error("[getBrands]", e);
+  } catch (error) {
+    console.error("[getBrands]", error);
     return [];
   }
 }
+
 
 // Ajouter une marque (form public)
 export async function addBrand(

@@ -4,18 +4,13 @@ import { getBrands } from "@/app/actions";
 import { ActionsCell } from "./ActionsCell";
 
 export default async function AdminPage() {
-  const brands = (await getBrands()) as Brand[];
-
-
-  const pending = brands.filter(
-    (b) => b.status === "PENDING"
-  );
+  const brands: Brand[] = await getBrands();
+  const pending = brands.filter((b) => b.status === "PENDING");
 
   return (
     <div className="min-h-screen bg-black text-white p-8 md:p-20">
       <div className="max-w-5xl mx-auto">
 
-        {/* HEADER */}
         <div className="flex items-center justify-between mb-12">
           <h1 className="text-3xl font-bold flex items-center gap-3">
             <Shield className="text-emerald-500" />
@@ -26,7 +21,6 @@ export default async function AdminPage() {
           </span>
         </div>
 
-        {/* TABLE */}
         <div className="bg-[#0A0A0A] border border-white/10 rounded-2xl overflow-hidden">
           <div className="p-6 border-b border-white/5 flex justify-between items-center">
             <h3 className="font-bold">Pending Submissions</h3>
@@ -50,20 +44,26 @@ export default async function AdminPage() {
               {pending.map((brand) => (
                 <tr key={brand.id} className="hover:bg-white/[0.02]">
                   <td className="p-4 font-bold">{brand.name}</td>
-                  <td className="p-4 font-bold">{brand.name}</td>
-
                   <td className="p-4 text-zinc-400 font-mono text-xs">
-                    {brand.website}
+                    {brand.website ?? "—"}
                   </td>
-
                   <td className="p-4 text-right">
+                    <ActionsCell brandId={brand.id} />
                   </td>
                 </tr>
               ))}
-            </tbody>
 
+              {pending.length === 0 && (
+                <tr>
+                  <td colSpan={3} className="p-8 text-center text-zinc-500">
+                    No pending submissions.
+                  </td>
+                </tr>
+              )}
+            </tbody>
           </table>
         </div>
+
       </div>
     </div>
   );
