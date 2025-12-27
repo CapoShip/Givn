@@ -6,8 +6,9 @@ import { ActionsCell } from "./ActionsCell";
 export default async function AdminPage() {
   const brands = (await getBrands()) as Brand[];
 
+
   const pending = brands.filter(
-    (b) => b.credibility_tier === "PENDING"
+    (b) => b.status === "PENDING"
   );
 
   return (
@@ -41,7 +42,6 @@ export default async function AdminPage() {
               <tr>
                 <th className="p-4">Brand</th>
                 <th className="p-4">Website</th>
-                <th className="p-4">Slug</th>
                 <th className="p-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -50,17 +50,13 @@ export default async function AdminPage() {
               {pending.map((brand) => (
                 <tr key={brand.id} className="hover:bg-white/[0.02]">
                   <td className="p-4 font-bold">{brand.name}</td>
+                  <td className="p-4 font-bold">{brand.name}</td>
 
                   <td className="p-4 text-zinc-400 font-mono text-xs">
                     {brand.website}
                   </td>
 
-                  <td className="p-4 text-zinc-400 font-mono text-xs">
-                    {brand.slug}
-                  </td>
-
                   <td className="p-4 text-right">
-                    <ActionsCell brandId={brand.id} />
                   </td>
                 </tr>
               ))}
