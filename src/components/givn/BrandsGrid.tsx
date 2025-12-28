@@ -10,11 +10,11 @@ export default function BrandsGrid({ brands }: { brands: BrandTrustRow[] }) {
 
   return (
     <>
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
         {brands.map((b) => (
           <BrandCard 
             key={b.id} 
-            // 🛡️ MAPPING DE SÉCURITÉ (On adapte les données pour la carte)
+            // 🛡️ MAPPING DE SÉCURITÉ
             brand={{
               id: b.id,
               name: b.name,
@@ -27,7 +27,11 @@ export default function BrandsGrid({ brands }: { brands: BrandTrustRow[] }) {
               trust_score: b.trust_score || 0,
               
               // 3. On traduit le status SQL (verified/draft) en status UI (VERIFIED/PENDING)
-              status: b.latest_status === "verified" ? "VERIFIED" : "PENDING"
+              status: b.latest_status === "verified" ? "VERIFIED" : "PENDING",
+
+              // ✅ 4. CHAMPS SUPPLÉMENTAIRES POUR LA CARTE 3D
+              claim: b.claim,
+              proof_count: b.proof_count || 0
             }} 
             onClick={() => setSelectedBrand(b)} 
           />
