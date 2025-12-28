@@ -130,3 +130,25 @@ body {
     50% { transform: translateX(150%) skewX(-20deg); }
     100% { transform: translateX(150%) skewX(-20deg); }
 }
+
+/* =========================
+   3D Cards (anti-blur)
+   ========================= */
+
+.perspective-card {
+  perspective: 1400px;
+  perspective-origin: center;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* Aide Chrome à garder le texte plus net pendant les transforms 3D */
+.perspective-card,
+.preserve-3d {
+  -webkit-font-smoothing: subpixel-antialiased;
+  text-rendering: geometricPrecision;
+}
