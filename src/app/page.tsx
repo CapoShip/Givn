@@ -3,7 +3,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Search, Plus, ArrowRight, X, Scan, ShieldCheck, Filter } from "lucide-react";
 
-// Components imports
 import { BrandCard } from "@/components/givn/BrandCard";
 import LivingAdSlot, { Ad } from "@/components/givn/LivingAdSlot";
 import BrandDetailModal from "@/components/givn/BrandDetailModal";
@@ -13,7 +12,11 @@ import SubmitBrandForm from "@/components/givn/SubmitBrandForm";
 
 // ✅ Living data (Server Action)
 import { getLivingBrands } from "@/app/actions/brands";
-import type { BrandTrustRow } from "@/app/actions/brands";
+import type { BrandTrustRow } from "@/lib/types/givn";
+
+
+// ... le reste de ton fichier inchangé
+
 
 // --- DATA CONSTANTS (ADS) ---
 const AD_POOL_LEFT: Ad[] = [
@@ -109,36 +112,35 @@ type BrandUI = {
 };
 
 function mapTrustToUI(b: BrandTrustRow): BrandUI {
-  const verified = (b.verified_count ?? 0) > 0;
-  const status: "VERIFIED" | "PENDING" = verified ? "VERIFIED" : "PENDING";
-
-  const claim = verified
-    ? "Verified proof on record. Click to inspect the trail."
-    : (b.proofs_total ?? 0) > 0
-    ? "Proof submitted. Awaiting verification."
-    : "No proof yet. Silence is a signal.";
-
-  const trust = Math.round(b.trust_score ?? 0);
+  const isVerified = b.latest_status === "verified";
 
   return {
-    id: b.brand_id,
+    id: b.id,
     name: b.name,
     slug: b.slug,
     logo_url: b.logo_url,
     website: b.website,
 
-    category: b.category ?? "Public Database",
-    claim,
+    category: "Public Database",
+    claim: isVerified
+      ? "Verified on-chain. Click to inspect proof trail."
+      : b.latest_status === "rejected"
+      ? "Rejected. Proof insufficient or invalid."
+      : b.latest_status === "under_review"
+      ? "Under review. Verification in progress."
+      : b.latest_status === "submitted"
+      ? "Submitted. Awaiting review."
+      : "Draft or no active proof yet.",
 
-    // month est utilisé comme proxy de tri existant → trust score
-    month: trust,
+    month: b.trust_score ?? 0,
+    status: isVerified ? "VERIFIED" : "PENDING",
 
-    status,
-    trust_score: trust,
-    proof_count: b.proofs_total ?? 0,
-    last_proof_at: b.last_event_at ?? null,
+    trust_score: b.trust_score ?? 0,
+    proof_count: b.proof_count ?? 0,
+    last_proof_at: b.last_proof_at,
   };
 }
+
 
 // --- PAGE PRINCIPALE ---
 export default function Home() {

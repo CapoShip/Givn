@@ -1,121 +1,101 @@
+"use client";
+
+import React from "react";
+import Badge from "@/components/givn/Badge";
+
+// IMPORTANT: ce type vient de src/lib/types/givn.ts
 import type { BrandTrustRow } from "@/lib/types/givn";
-import { NoProofBadge } from "./NoProofBadge";
 
-function formatDate(value: string | null) {
-  if (!value) return "—";
-  const d = new Date(value);
-  return Number.isNaN(d.getTime()) ? value : d.toLocaleDateString();
-}
-
-type BrandCardProps = {
-  brand: BrandTrustRow;
-  onClick?: (brand: BrandTrustRow) => void;
+type Props = {
+  brand: any; // ton Home cast déjà en any, on reste compatible
+  onClick?: () => void;
 };
 
-export function BrandCard({ brand, onClick }: BrandCardProps) {
-  // ✅ Normalize status coming from DB
-  // DB allowed: PENDING | APPROVED | REJECTED
-  const isApproved = brand.status === "APPROVED";
-  const displayStatus = isApproved ? "VERIFIED" : brand.status;
+function normalizeUiStatusFromLatest(latest: BrandTrustRow["latest_status"]): "VERIFIED" | "PENDING" | "REJECTED" {
+  if (latest === "verified") return "VERIFIED";
+  if (latest === "rejected") return "REJECTED";
+  // draft / submitted / under_review / null => pending côté UI
+  return "PENDING";
+}
 
-  // ✅ Risk heuristic: not approved OR no proof OR low trust => risk
-  const risk = !isApproved || brand.proof_count === 0 || brand.trust_score < 25;
+export function BrandCard({ brand, onClick }: Props) {
+  // On accepte que `brand` vienne soit du mapping UI, soit direct DB.
+  // Priorité:
+  // 1) brand.status déjà "VERIFIED/PENDING/REJECTED" (si tu as mappé)
+  // 2) brand.latest_status (si tu passes BrandTrustRow brut)
+  const uiStatus: "VERIFIED" | "PENDING" | "REJECTED" =
+    brand?.status === "VERIFIED" || brand?.status === "PENDING" || brand?.status === "REJECTED"
+      ? brand.status
+      : normalizeUiStatusFromLatest(brand?.latest_status ?? null);
 
-  const clickable = typeof onClick === "function";
+  const trustScore = Number(brand?.trust_score ?? 0);
+  const proofCount = Number(brand?.proof_count ?? 0);
+
+  // Heuristique “risk” simple: pas verified OU trust faible OU aucun proof
+  const isRisk = uiStatus !== "VERIFIED" || proofCount <= 0 || trustScore < 60;
 
   return (
-    <article
-      role={clickable ? "button" : undefined}
-      tabIndex={clickable ? 0 : -1}
-      onClick={clickable ? () => onClick(brand) : undefined}
-      onKeyDown={
-        clickable
-          ? (e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onClick(brand);
-              }
-            }
-          : undefined
-      }
-      className={[
-        "group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5",
-        "p-5 backdrop-blur-xl transition",
-        "hover:bg-white/7 hover:border-white/15",
-        risk
-          ? "shadow-[0_0_60px_rgba(239,68,68,0.08)]"
-          : "shadow-[0_0_60px_rgba(34,211,238,0.06)]",
-        clickable
-          ? "cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400/30 hover:-translate-y-[1px]"
-          : "",
-      ].join(" ")}
+    <div
+      onClick={onClick}
+      className="group relative rounded-2xl border border-white/10 bg-[#0A0A0A] p-5 shadow-2xl transition-all hover:border-emerald-500/30 hover:bg-white/[0.02] cursor-pointer"
     >
-      {/* top glow line */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
-
       <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="text-xs uppercase tracking-[0.25em] text-white/50">
-            {displayStatus}
-          </div>
+        <div className="flex items-center gap-3 min-w-0">
+          {brand?.logo_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={brand.logo_url}
+              alt={brand?.name ?? "Brand"}
+              className="h-10 w-10 rounded-xl object-cover border border-white/10"
+            />
+          ) : (
+            <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10" />
+          )}
 
-          <h3 className="mt-1 truncate text-lg font-semibold text-white">
-            {brand.name}
-          </h3>
-
-          <div className="mt-2 flex items-center gap-3">
-            <NoProofBadge brand={brand} />
-            <div className="text-xs text-white/50">
-              Last proof:{" "}
-              <span className="text-white/70">
-                {formatDate(brand.last_proof_at)}
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="font-bold text-white truncate">{brand?.name ?? "Unknown"}</p>
+              <span className="shrink-0">
+                <Badge status={uiStatus} />
               </span>
             </div>
+
+            <p className="text-xs text-zinc-500 truncate">
+              {brand?.category ?? "Public Database"}
+            </p>
           </div>
         </div>
 
-        {/* Score block */}
-        <div className="text-right">
-          <div className="text-xs uppercase tracking-[0.25em] text-white/50">
-            Trust
-          </div>
-          <div className="mt-1 flex items-baseline justify-end gap-2">
-            <div
-              className={[
-                "text-3xl font-bold",
-                brand.trust_score === 0 ? "text-red-300" : "text-white",
-              ].join(" ")}
-            >
-              {brand.trust_score}
-            </div>
-            <div className="text-sm text-white/50">/100</div>
-          </div>
+        <div className="text-right shrink-0">
+          <p className="text-xs text-zinc-500">Trust</p>
+          <p className="font-mono text-sm text-white">{Math.round(trustScore)}/100</p>
         </div>
       </div>
 
-      {/* website */}
-      <div className="mt-4 text-sm text-white/70">
-        {brand.website ? (
-          <a
-            href={brand.website}
-            target="_blank"
-            rel="noreferrer"
-            className="text-cyan-200 hover:text-cyan-100"
-            onClick={(e) => e.stopPropagation()}
-          >
-            Verify site →
-          </a>
-        ) : (
-          <span className="text-white/40">No website</span>
-        )}
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <p className="text-xs text-zinc-400 line-clamp-2">
+          {brand?.claim ?? "No claim available."}
+        </p>
+
+        <div
+          className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border ${
+            isRisk
+              ? "bg-red-500/10 border-red-500/30 text-red-300"
+              : "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+          }`}
+        >
+          {isRisk ? "Risk" : "Low risk"}
+        </div>
       </div>
 
-      {/* bottom hint */}
-      {brand.proof_count === 0 && (
-        <div className="mt-4 rounded-xl border border-red-400/15 bg-red-500/10 p-3 text-xs text-red-200">
-          Silence is a signal. This brand has no public proof.
-        </div>
-      )}
-    </article>
+      <div className="mt-4 flex items-center justify-between text-xs text-zinc-500">
+        <span>Proofs: {proofCount}</span>
+        <span>
+          {brand?.last_proof_at ? `Last: ${new Date(brand.last_proof_at).toLocaleDateString()}` : "No proofs yet"}
+        </span>
+      </div>
+    </div>
   );
 }
+
+export default BrandCard;

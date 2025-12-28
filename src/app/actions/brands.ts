@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase/server";
+import type { BrandTrustRow } from "@/lib/types/givn";
 
 export type ActionState = {
   success: boolean;
@@ -14,18 +15,14 @@ export type BrandRow = {
   name: string;
   website: string | null;
   logo_url: string | null;
-  status: string; // "PENDING" | "VERIFIED" etc.
+  status: string;
   created_at: string;
   updated_at: string;
 };
 
-/**
- * Admin / CRUD simple (table: public.brands)
- */
 export async function getBrands(): Promise<BrandRow[]> {
   try {
     const supabase = await supabaseServer();
-
     const { data, error } = await supabase
       .from("brands")
       .select("id, slug, name, website, logo_url, status, created_at, updated_at")
@@ -78,14 +75,12 @@ export async function updateBrandTier(id: string, status: string): Promise<Actio
   try {
     const supabase = await supabaseServer();
 
-    const { error } = await supabase
-      .from("brands")
-      .update({ status })
-      .eq("id", id);
+    const { error } = await supabase.from("brands").update({ status }).eq("id", id);
 
     if (error) throw new Error(error.message);
 
     revalidatePath("/admin");
+    revalidatePath("/");
     return { success: true, message: `Tier mis à jour → ${status}` };
   } catch (error: any) {
     console.error("[updateBrandTier]", error);
@@ -94,61 +89,34 @@ export async function updateBrandTier(id: string, status: string): Promise<Actio
 }
 
 /**
- * Public / "Living" view (view: public.brand_trust_live)
- * => c'est la source de vérité pour ton leaderboard et les cartes publiques.
+ * Homepage: source de vérité = view `brand_trust_live`
+ * Colonnes attendues (d'après tes captures):
+ * brand_id, slug, name, website, logo_url, trust_score, proof_count, last_proof_at, latest_status
  */
-export type BrandTrustRow = {
-  brand_id: string;
-  slug: string;
-  name: string;
-  website: string | null;
-  logo_url: string | null;
-  category: string | null;
-
-  proofs_total: number;
-  verified_count: number;
-  rejected_count: number;
-  disputed_count: number;
-
-  last_event_type: string | null;
-  last_event_at: string | null;
-
-  trust_score: number | null;
-};
-
-export async function getLivingBrands(params?: { verifiedOnly?: boolean }): Promise<BrandTrustRow[]> {
+export async function getLivingBrands(): Promise<BrandTrustRow[]> {
   try {
     const supabase = await supabaseServer();
 
-    let query = supabase
+    const { data, error } = await supabase
       .from("brand_trust_live")
-      .select(
-        `
-        brand_id,
-        slug,
-        name,
-        website,
-        logo_url,
-        category,
-        proofs_total,
-        verified_count,
-        rejected_count,
-        disputed_count,
-        last_event_type,
-        last_event_at,
-        trust_score
-      `
-      )
+      .select("brand_id, slug, name, website, logo_url, trust_score, proof_count, last_proof_at, latest_status")
       .order("trust_score", { ascending: false });
 
-    if (params?.verifiedOnly) {
-      query = query.gt("verified_count", 0);
-    }
-
-    const { data, error } = await query;
-
     if (error) throw new Error(error.message);
-    return (data ?? []) as BrandTrustRow[];
+
+    const rows: BrandTrustRow[] = (data ?? []).map((r: any) => ({
+      id: String(r.brand_id),
+      slug: String(r.slug),
+      name: String(r.name),
+      website: r.website ?? null,
+      logo_url: r.logo_url ?? null,
+      trust_score: r.trust_score ?? null,
+      proof_count: r.proof_count ?? null,
+      last_proof_at: r.last_proof_at ?? null,
+      latest_status: r.latest_status ?? null,
+    }));
+
+    return rows;
   } catch (error: any) {
     console.error("[getLivingBrands]", error);
     return [];
