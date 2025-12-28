@@ -24,8 +24,8 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
   const [isHovering, setIsHovering] = useState(false);
 
   const safeProofCount = brand.proof_count || 0;
-  // Texte tronqué plus court pour le format carré
-  const safeClaim = brand.claim || "Impact verified.";
+  // Texte très court pour éviter le débordement
+  const safeClaim = brand.claim ? brand.claim.substring(0, 40) + (brand.claim.length > 40 ? "..." : "") : "Impact verified.";
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -49,7 +49,6 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
 
   const { text: scoreColor, ring: ringColor, glow: glowColor, bg: bgColor } = getScoreConfig(brand.trust_score);
   
-  // Rayon réduit pour le format compact
   const radius = 14; 
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (brand.trust_score / 100) * circumference;
@@ -61,14 +60,14 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       onClick={onClick}
-      // CHANGEMENT MAJEUR ICI : aspect-square pour forcer un carré, min-h pour la lisibilité
-      className="perspective-card group relative aspect-square min-h-[220px] w-full cursor-pointer select-none"
+      // ✅ ASPECT SQUARE : Force un carré parfait
+      className="perspective-card group relative aspect-square w-full cursor-pointer select-none"
     >
       <div
-        className="preserve-3d relative w-full h-full rounded-2xl bg-[#0c0c0c] transition-transform duration-150 ease-out shadow-lg"
+        className="preserve-3d relative w-full h-full rounded-2xl bg-[#0c0c0c] transition-transform duration-150 ease-out shadow-lg border border-white/5 group-hover:border-white/10"
         style={{
           transform: isHovering 
-            ? `rotateX(${(mousePos.y - 110) / 8}deg) rotateY(${(mousePos.x - 110) / -8}deg) scale3d(1.02, 1.02, 1.02)` 
+            ? `rotateX(${(mousePos.y - 100) / 10}deg) rotateY(${(mousePos.x - 100) / -10}deg) scale3d(1.02, 1.02, 1.02)` 
             : 'rotateX(0) rotateY(0) scale3d(1, 1, 1)',
           boxShadow: isHovering 
             ? `0 15px 30px -5px rgba(0,0,0,0.9), 0 0 20px -5px ${glowColor}`
@@ -78,7 +77,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
         <div 
           className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           style={{
-            background: `radial-gradient(400px circle at ${mousePos.x}px ${mousePos.y}px, ${bgColor}, transparent 50%)`,
+            background: `radial-gradient(300px circle at ${mousePos.x}px ${mousePos.y}px, ${bgColor}, transparent 60%)`,
             zIndex: 1,
             filter: 'blur(2px)'
           }}
@@ -89,7 +88,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
         <div className="absolute inset-[1px] rounded-[15px] bg-gradient-to-br from-[#121212] via-[#090909] to-[#000000] z-[3] overflow-hidden flex flex-col p-4 preserve-3d">
           
           {/* Header Compact */}
-          <div className="flex justify-between items-start mb-3 preserve-3d translate-z-20">
+          <div className="flex justify-between items-start mb-2 preserve-3d translate-z-20">
             <div 
               className="w-10 h-10 rounded-lg bg-[#0f0f0f] flex items-center justify-center border border-white/5 shadow-md group-hover:scale-105 transition-transform duration-300 overflow-hidden"
               style={{ transform: 'translateZ(20px)' }}
@@ -107,11 +106,11 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
           </div>
 
           {/* Info Compacte */}
-          <div className="mb-auto space-y-1 preserve-3d translate-z-20">
+          <div className="mb-auto space-y-0.5 preserve-3d translate-z-20 flex flex-col justify-center">
             <h3 className="text-sm font-black text-white truncate leading-tight group-hover:text-emerald-50 transition-colors" style={{ transform: 'translateZ(15px)' }}>
               {brand.name}
             </h3>
-            <p className="text-[8px] font-bold uppercase tracking-wider text-zinc-600" style={{ transform: 'translateZ(10px)' }}>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-600" style={{ transform: 'translateZ(10px)' }}>
               {brand.category}
             </p>
           </div>
@@ -133,6 +132,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
                   <span className="text-sm font-bold font-mono">{safeProofCount}</span>
                   <Activity size={10} />
                </div>
+               <span className="text-[7px] text-zinc-600 uppercase tracking-widest block">Proofs</span>
             </div>
           </div>
 
