@@ -183,6 +183,7 @@ export default function Home() {
 
   const sortedBrands = [...filteredBrands].sort((a, b) => b.month - a.month);
   
+  // LOGIQUE SIMPLIFIÉE : Si "View full", on montre tout, sinon les 8 premiers (2 lignes de 4)
   const displayedBrandsList = viewFullList ? sortedBrands : sortedBrands.slice(0, 8);
 
   const scrollToSection = (id: string) => {
@@ -211,7 +212,7 @@ export default function Home() {
             
             {/* HERO */}
             <div className="mb-12 md:mb-16 w-full relative">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tighter leading-[0.9] mb-6 animate-[pop-in_0.7s_ease-out] glow-text text-white">
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tighter leading-[0.9] mb-6 animate-[pop-in_0.7s_ease-out] glow-text">
                 They say they donate.
                 <br />
                 <span className="text-zinc-600">Givn shows the proof.</span>
@@ -280,7 +281,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* --- SECTION DATABASE --- */}
+            {/* --- SECTION DATABASE (LA GRILLE CORRIGÉE) --- */}
             <div id="database" className="mb-24 w-full text-left">
               <div className="flex justify-between items-end mb-6 border-b border-white/5 pb-4">
                 <div>
@@ -295,6 +296,7 @@ export default function Home() {
                 </button>
               </div>
 
+              {/* ✅ GRILLE STRICTE : 2 colonnes (mobile) -> 4 colonnes (desktop) */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
                 {displayedBrandsList.map((brand, i) => (
                   <div
@@ -314,7 +316,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* LEADERBOARD */}
+            {/* LEADERBOARD (Version compacte) */}
             <div id="leaderboard" className="mb-32 w-full text-left">
                <div className="flex justify-between items-center mb-6">
                 <div>
