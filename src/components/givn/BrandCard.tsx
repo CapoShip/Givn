@@ -63,9 +63,17 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (brand.trust_score / 100) * circumference;
 
-  // ✅ Tilt plus doux et surtout: PAS de scale3d (source principale du flou)
-  const tiltX = isHovering ? (mousePos.y - 100) / 14 : 0;
-  const tiltY = isHovering ? (mousePos.x - 100) / -14 : 0;
+  // ✅ TILT 2D: zéro rasterisation du texte
+  const centerX = 150;
+  const centerY = 150;
+
+  const dx = isHovering ? (mousePos.x - centerX) / centerX : 0; // [-1..1]
+  const dy = isHovering ? (mousePos.y - centerY) / centerY : 0; // [-1..1]
+
+  // angle léger + lift léger
+  const rotate2D = isHovering ? dx * 2.2 : 0;        // degrés
+  const liftY = isHovering ? -4 : 0;                 // px
+  const scale = isHovering ? 1.01 : 1;
 
   return (
     <div
@@ -74,46 +82,37 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       onClick={onClick}
-      className="perspective-card group relative aspect-square w-full cursor-pointer select-none isolate"
+      className="group relative aspect-square w-full cursor-pointer select-none isolate"
     >
       <div
         className="
-          preserve-3d relative w-full h-full rounded-2xl bg-[#090909]
+          relative w-full h-full rounded-2xl bg-[#090909]
           transition-transform duration-200 ease-out
           shadow-2xl border border-white/5 group-hover:border-white/10
           transform-gpu
           [backface-visibility:hidden]
-          [transform-style:preserve-3d]
+          antialiased
+          [text-rendering:geometricPrecision]
+          [webkit-font-smoothing:antialiased]
+          [moz-osx-font-smoothing:grayscale]
         "
         style={{
-          transform: `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`,
+          transform: `translateY(${liftY}px) rotate(${rotate2D}deg) scale(${scale})`,
         }}
       >
-        {/* ✅ Overlay radial sans blur (le blur contribue au flou du texte via compositing) */}
+        {/* glow radial */}
         <div
           className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
           style={{
-            background: `radial-gradient(300px circle at ${mousePos.x}px ${mousePos.y}px, ${bgColor}, transparent 65%)`,
+            background: `radial-gradient(320px circle at ${mousePos.x}px ${mousePos.y}px, ${bgColor}, transparent 65%)`,
             zIndex: 1,
-            filter: "none",
           }}
         />
 
         <div className="absolute inset-[1.5px] rounded-[15px] bg-[#070707] z-[2]" />
 
-        <div
-          className="
-            absolute inset-[1.5px] rounded-[15px]
-            bg-gradient-to-br from-[#121212] via-[#090909] to-[#030303]
-            z-[3] overflow-hidden flex flex-col p-4 preserve-3d
-            antialiased
-            [text-rendering:geometricPrecision]
-            [webkit-font-smoothing:antialiased]
-            [moz-osx-font-smoothing:grayscale]
-            [backface-visibility:hidden]
-          "
-        >
-          <div className="flex justify-between items-start mb-2 preserve-3d translate-z-40">
+        <div className="absolute inset-[1.5px] rounded-[15px] bg-gradient-to-br from-[#121212] via-[#090909] to-[#030303] z-[3] overflow-hidden flex flex-col p-4">
+          <div className="flex justify-between items-start mb-2">
             <div className="w-10 h-10 rounded-lg bg-[#0f0f0f] flex items-center justify-center border border-white/10 shadow-md group-hover:scale-110 transition-transform duration-500 overflow-hidden">
               {brand.logo_url ? (
                 <img
@@ -126,33 +125,24 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
                 <span className={`text-sm font-black ${scoreColor}`}>{brand.name.charAt(0)}</span>
               )}
             </div>
-            <div className="scale-75 origin-top-right translate-z-30">
+            <div className="scale-75 origin-top-right">
               <Badge status={brand.status as any} />
             </div>
           </div>
 
-          <div className="mb-auto space-y-1.5 preserve-3d translate-z-30">
-            <h3
-              className="text-sm font-black text-white truncate leading-tight group-hover:text-emerald-50 transition-colors antialiased"
-              style={{ transform: "translateZ(20px)" }}
-            >
+          <div className="mb-auto space-y-1.5">
+            <h3 className="text-sm font-black text-white truncate leading-tight group-hover:text-emerald-50 transition-colors antialiased">
               {brand.name}
             </h3>
-            <p
-              className="text-[9px] font-bold uppercase tracking-widest text-zinc-600 antialiased"
-              style={{ transform: "translateZ(15px)" }}
-            >
+            <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-600 antialiased">
               {brand.category}
             </p>
-            <p
-              className="text-[10px] text-zinc-400 leading-tight line-clamp-2 italic opacity-60 group-hover:opacity-100 transition-opacity antialiased"
-              style={{ transform: "translateZ(25px)" }}
-            >
+            <p className="text-[10px] text-zinc-400 leading-tight line-clamp-2 italic opacity-60 group-hover:opacity-100 transition-opacity antialiased">
               "{safeClaim}"
             </p>
           </div>
 
-          <div className="mt-2 pt-2 border-t border-white/10 flex items-end justify-between preserve-3d translate-z-20">
+          <div className="mt-2 pt-2 border-t border-white/10 flex items-end justify-between">
             <div className="relative w-8 h-8 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90 relative z-10">
                 <circle cx="16" cy="16" r={radius} stroke="#1a1a1c" strokeWidth="2.5" fill="transparent" />
