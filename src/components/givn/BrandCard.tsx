@@ -12,7 +12,7 @@ interface BrandCardProps {
     logo_url?: string | null;
     trust_score: number;
     status: "VERIFIED" | "PENDING";
-    claim?: string | null;
+    claim?: string | null; //
     proof_count?: number; 
   };
   onClick: () => void;
@@ -24,8 +24,8 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
   const [isHovering, setIsHovering] = useState(false);
 
   const safeProofCount = brand.proof_count || 0;
-  // Texte très court pour éviter le débordement
-  const safeClaim = brand.claim ? brand.claim.substring(0, 40) + (brand.claim.length > 40 ? "..." : "") : "Impact verified.";
+  // On s'assure d'avoir un texte si le claim est vide
+  const safeClaim = brand.claim || "No claim provided.";
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -60,7 +60,6 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       onClick={onClick}
-      // ✅ ASPECT SQUARE : Force un carré parfait
       className="perspective-card group relative aspect-square w-full cursor-pointer select-none"
     >
       <div
@@ -94,7 +93,6 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
               style={{ transform: 'translateZ(20px)' }}
             >
                 {brand.logo_url ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img src={brand.logo_url} alt={brand.name} className="w-full h-full object-contain p-1 opacity-90 group-hover:opacity-100" />
                 ) : (
                   <span className={`text-sm font-black ${scoreColor}`}>{brand.name.charAt(0)}</span>
@@ -105,17 +103,24 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
             </div>
           </div>
 
-          {/* Info Compacte */}
-          <div className="mb-auto space-y-0.5 preserve-3d translate-z-20 flex flex-col justify-center">
-            <h3 className="text-sm font-black text-white truncate leading-tight group-hover:text-emerald-50 transition-colors" style={{ transform: 'translateZ(15px)' }}>
-              {brand.name}
-            </h3>
-            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-600" style={{ transform: 'translateZ(10px)' }}>
-              {brand.category}
+          {/* Info & Claim */}
+          <div className="mb-auto space-y-2 preserve-3d translate-z-20">
+            <div>
+              <h3 className="text-sm font-black text-white truncate leading-tight group-hover:text-emerald-50 transition-colors" style={{ transform: 'translateZ(15px)' }}>
+                {brand.name}
+              </h3>
+              <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-600" style={{ transform: 'translateZ(10px)' }}>
+                {brand.category}
+              </p>
+            </div>
+            
+            {/* ✅ Affichage du Claim */}
+            <p className="text-[10px] text-zinc-400 leading-tight line-clamp-3 italic opacity-80 group-hover:opacity-100 group-hover:text-zinc-300 transition-all" style={{ transform: 'translateZ(12px)' }}>
+              "{safeClaim}"
             </p>
           </div>
 
-          {/* Footer Stats (Très compact) */}
+          {/* Footer Stats */}
           <div className="mt-2 pt-2 border-t border-white/5 flex items-end justify-between preserve-3d translate-z-20">
             <div className="flex items-center gap-2">
                <div className="relative w-8 h-8 flex items-center justify-center">
