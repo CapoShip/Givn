@@ -90,28 +90,35 @@ export async function updateBrandTier(id: string, status: string): Promise<Actio
 
 /**
  * Homepage: source de vérité = view `brand_trust_live`
- * Colonnes attendues (d'après tes captures):
- * brand_id, slug, name, website, logo_url, trust_score, proof_count, last_proof_at, latest_status
+ * ✅ CORRIGÉ : Récupère TOUTES les colonnes (*) et mappe description/claim/total
  */
 export async function getLivingBrands(): Promise<BrandTrustRow[]> {
   try {
     const supabase = await supabaseServer();
 
+    // ON PREND TOUT (*)
     const { data, error } = await supabase
       .from("brand_trust_live")
-      .select("brand_id, slug, name, website, logo_url, trust_score, proof_count, last_proof_at, latest_status")
+      .select("*")
       .order("trust_score", { ascending: false });
 
     if (error) throw new Error(error.message);
 
     const rows: BrandTrustRow[] = (data ?? []).map((r: any) => ({
-      id: String(r.brand_id),
+      id: String(r.brand_id || r.id),
       slug: String(r.slug),
       name: String(r.name),
       website: r.website ?? null,
       logo_url: r.logo_url ?? null,
-      trust_score: r.trust_score ?? null,
-      proof_count: r.proof_count ?? null,
+      
+      // ✅ NOUVEAUX MAPPINGS
+      description: r.description ?? null,
+      claim: r.claim ?? null,
+      category: r.category ?? "General",
+      total_donated: Number(r.total_donated ?? 0),
+
+      trust_score: Number(r.trust_score ?? 0),
+      proof_count: Number(r.proof_count ?? 0),
       last_proof_at: r.last_proof_at ?? null,
       latest_status: r.latest_status ?? null,
     }));

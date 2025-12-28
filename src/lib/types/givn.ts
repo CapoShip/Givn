@@ -14,6 +14,12 @@ export type BrandTrustRow = {
   website: string | null;
   logo_url: string | null;
 
+  // ✅ CHAMPS AJOUTÉS POUR LA V2
+  description: string | null;
+  claim: string | null;
+  category: string | null;
+  total_donated: number | null;
+
   trust_score: number | null;
   proof_count: number | null;
   last_proof_at: string | null;

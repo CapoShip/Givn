@@ -15,9 +15,6 @@ import { getLivingBrands } from "@/app/actions/brands";
 import type { BrandTrustRow } from "@/lib/types/givn";
 
 
-// ... le reste de ton fichier inchangé
-
-
 // --- DATA CONSTANTS (ADS) ---
 const AD_POOL_LEFT: Ad[] = [
   { title: "Proof Drop", subtitle: "Evidence uploaded → badge updates.", type: "tree" },
@@ -90,9 +87,7 @@ const ParticlesBackground = () => {
 };
 
 /**
- * Ton UI "legacy" (cards + leaderboard) attend:
- * category / claim / status VERIFIED/PENDING et month (sort).
- * On dérive ça proprement de la view living (BrandTrustRow renvoyée par getLivingBrands).
+ * Interface UI mise à jour pour inclure description et total_donated
  */
 type BrandUI = {
   id: string;
@@ -103,6 +98,9 @@ type BrandUI = {
 
   category: string;
   claim: string;
+  description?: string | null; // ✅ Ajouté
+  total_donated?: number | null; // ✅ Ajouté
+  
   month: number;
   status: "VERIFIED" | "PENDING";
 
@@ -111,8 +109,16 @@ type BrandUI = {
   last_proof_at: string | null;
 };
 
+// ✅ CORRIGÉ : Mapping intelligent qui utilise les vraies données
 function mapTrustToUI(b: BrandTrustRow): BrandUI {
   const isVerified = b.latest_status === "verified";
+
+  // Claim intelligent : Vrai claim DB > Fallback selon status
+  const fallbackClaim = isVerified
+      ? "Verified on-chain. Click to inspect proof trail."
+      : b.latest_status === "rejected"
+      ? "Rejected. Proof insufficient or invalid."
+      : "Draft or no active proof yet.";
 
   return {
     id: b.id,
@@ -121,16 +127,11 @@ function mapTrustToUI(b: BrandTrustRow): BrandUI {
     logo_url: b.logo_url,
     website: b.website,
 
-    category: "Public Database",
-    claim: isVerified
-      ? "Verified on-chain. Click to inspect proof trail."
-      : b.latest_status === "rejected"
-      ? "Rejected. Proof insufficient or invalid."
-      : b.latest_status === "under_review"
-      ? "Under review. Verification in progress."
-      : b.latest_status === "submitted"
-      ? "Submitted. Awaiting review."
-      : "Draft or no active proof yet.",
+    // ✅ Vraies données de la DB
+    category: b.category || "Public Database",
+    claim: b.claim || fallbackClaim,
+    description: b.description, 
+    total_donated: b.total_donated,
 
     month: b.trust_score ?? 0,
     status: isVerified ? "VERIFIED" : "PENDING",
