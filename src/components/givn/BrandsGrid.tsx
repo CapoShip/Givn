@@ -10,13 +10,12 @@ export default function BrandsGrid({ brands }: { brands: BrandTrustRow[] }) {
 
   return (
     <>
-      {/* CHANGEMENTS GRILLE :
-         - gap-4 (plus serré)
-         - sm:grid-cols-2 (2 par ligne sur mobile large/tablette)
-         - lg:grid-cols-3 (3 par ligne sur laptop)
-         - xl:grid-cols-4 (4 par ligne sur grand écran)
+      {/* CORRECTION DE LA GRILLE :
+        - 'grid-cols-2' : 2 cartes par ligne sur mobile/tablette (pour éviter la file indienne)
+        - 'lg:grid-cols-4' : 4 cartes par ligne sur ordinateur (votre demande)
+        - 'gap-4' : Espace réduit entre les carrés
       */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
         {brands.map((b) => (
           <BrandCard 
             key={b.id} 
