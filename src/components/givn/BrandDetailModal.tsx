@@ -86,7 +86,7 @@ export default function BrandDetailModal({ brand, onClose, onOpenProof }: BrandD
             </div>
           </div>
 
-          {/* Analytic HUD Grid */}
+          {/* HUD Grid Analytique */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <div className="bg-gradient-to-b from-zinc-900/40 to-black border border-white/5 rounded-3xl p-8 hover:border-emerald-500/30 transition-all group overflow-hidden">
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-6">Consensus</p>
@@ -143,9 +143,9 @@ export default function BrandDetailModal({ brand, onClose, onOpenProof }: BrandD
                 </div>
               ))}
             </div>
-            <button onClick={onOpenProof} className="w-full py-6 mt-4 text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600 hover:text-emerald-400 transition-all border-t border-white/5 flex items-center justify-center gap-3 group">
+            <button onClick={onOpenProof} className="w-full py-6 mt-4 text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600 hover:text-emerald-400 transition-all border-t border-white/5 flex items-center justify-center gap-3">
               <span>Decrypt Full Ledger</span>
-              <Activity size={14} className="group-hover:animate-pulse" />
+              <Activity size={14} className="animate-pulse" />
             </button>
           </div>
         </div>

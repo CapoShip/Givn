@@ -42,7 +42,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
       text: "text-yellow-400", ring: "#eab308", glow: "rgba(234, 179, 8, 0.45)", bg: "rgba(234, 179, 8, 0.2)"
     };
     return { 
-      text: "text-red-500", ring: "#ef4444", glow: "rgba(239, 68, 68, 0.45)", bg: "rgba(239, 68, 68, 0.2)"
+      text: "text-red-500", ring: "#ef4444", glow: "rgba(239, 68, 68, 0.45)", bg: "rgba(239, 68, 68, 0.3)"
     };
   };
 
@@ -69,7 +69,6 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
             : 'rotateX(0) rotateY(0) scale3d(1, 1, 1)',
         }}
       >
-        {/* Dynamic Halo Glow */}
         <div 
           className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           style={{
@@ -83,7 +82,6 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
 
         <div className="absolute inset-[1.5px] rounded-[15px] bg-gradient-to-br from-[#121212] via-[#090909] to-[#030303] z-[3] overflow-hidden flex flex-col p-4 preserve-3d">
           
-          {/* Header Layers */}
           <div className="flex justify-between items-start mb-2 preserve-3d translate-z-40">
             <div className="w-10 h-10 rounded-lg bg-[#0f0f0f] flex items-center justify-center border border-white/10 shadow-md group-hover:scale-110 transition-transform duration-500 overflow-hidden">
                 {brand.logo_url ? (
@@ -97,7 +95,6 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
             </div>
           </div>
 
-          {/* Info & Claim Layers */}
           <div className="mb-auto space-y-1.5 preserve-3d translate-z-30">
             <h3 className="text-sm font-black text-white truncate leading-tight group-hover:text-emerald-50 transition-colors" style={{ transform: 'translateZ(20px)' }}>
               {brand.name}
@@ -110,20 +107,11 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
             </p>
           </div>
 
-          {/* Footer Layers */}
           <div className="mt-2 pt-2 border-t border-white/10 flex items-end justify-between preserve-3d translate-z-20">
             <div className="relative w-8 h-8 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90 relative z-10">
                 <circle cx="16" cy="16" r={radius} stroke="#1a1a1c" strokeWidth="2.5" fill="transparent" />
-                <circle 
-                  cx="16" cy="16" r={radius} 
-                  stroke={ringColor} strokeWidth="2.5" 
-                  fill="transparent" 
-                  strokeDasharray={circumference} 
-                  strokeDashoffset={strokeDashoffset} 
-                  strokeLinecap="round" 
-                  style={{ filter: `drop-shadow(0 0 4px ${glowColor})` }} 
-                />
+                <circle cx="16" cy="16" r={radius} stroke={ringColor} strokeWidth="2.5" fill="transparent" strokeDasharray={circumference} strokeDashoffset={strokeDashoffset} strokeLinecap="round" style={{ filter: `drop-shadow(0 0 4px ${glowColor})` }} />
               </svg>
               <span className={`absolute text-[9px] font-black ${scoreColor} z-20`}>{brand.trust_score}</span>
             </div>

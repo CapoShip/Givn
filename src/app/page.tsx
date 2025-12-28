@@ -10,9 +10,10 @@ import Badge from "@/components/givn/Badge";
 import ProofModal from "@/components/givn/ProofModal";
 import SubmitBrandForm from "@/components/givn/SubmitBrandForm";
 
-// Living data (Server Action)
+// ✅ Living data (Server Action)
 import { getLivingBrands } from "@/app/actions/brands";
 import type { BrandTrustRow } from "@/lib/types/givn";
+
 
 // --- DATA CONSTANTS (ADS) ---
 const AD_POOL_LEFT: Ad[] = [
@@ -48,13 +49,13 @@ const Modal = ({
         className="absolute inset-0 bg-black/90 backdrop-blur-md transition-opacity modal-overlay"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-2xl bg-[#090909] border border-white/10 rounded-2xl shadow-2xl overflow-hidden modal-content">
-        <div className="p-8 md:p-12 relative">
+      <div className="relative w-full max-w-2xl bg-[#090909] border border-white/10 rounded-[40px] shadow-[0_0_100px_rgba(0,0,0,0.8)] overflow-hidden">
+        <div className="p-10 md:p-14 relative">
           <button
             onClick={onClose}
-            className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors bg-white/5 p-2 rounded-full hover:bg-white/10 z-50"
+            className="absolute top-8 right-8 text-zinc-600 hover:text-white transition-colors bg-white/5 p-3 rounded-full hover:bg-white/10 z-50 border border-white/5"
           >
-            <X size={20} />
+            <X size={24} />
           </button>
           {children}
         </div>
@@ -133,8 +134,6 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [verifiedOnly, setVerifiedOnly] = useState(false);
-  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
-  const [isAdModalOpen, setIsAdModalOpen] = useState(false);
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState<any>(null);
   const [proofBrand, setProofBrand] = useState<string | null>(null);
@@ -145,7 +144,7 @@ export default function Home() {
 
   const UNIFIED_CYCLE_DURATION = 10000;
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     let alive = true;
@@ -156,12 +155,9 @@ export default function Home() {
         if (!alive) return;
         setBrands((rows ?? []).map(mapTrustToUI));
       } catch (e) {
-        console.error(e);
-        if (!alive) return;
-        setBrands([]);
+        if (alive) setBrands([]);
       } finally {
-        if (!alive) return;
-        setLoadingBrands(false);
+        if (alive) setLoadingBrands(false);
       }
     })();
     return () => { alive = false; };
@@ -342,14 +338,6 @@ export default function Home() {
            <SubmitBrandForm onSuccess={() => setIsBrandModalOpen(false)} />
         </div>
       </Modal>
-
-      <Modal isOpen={isAdModalOpen} onClose={() => setIsAdModalOpen(false)}>
-         <div className="text-center p-4">
-            <h2 className="text-white font-bold mb-2">Advertise</h2>
-            <p className="text-zinc-400 text-sm">Coming soon for verified brands.</p>
-         </div>
-      </Modal>
-
     </div>
   );
 }
