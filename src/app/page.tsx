@@ -10,10 +10,9 @@ import Badge from "@/components/givn/Badge";
 import ProofModal from "@/components/givn/ProofModal";
 import SubmitBrandForm from "@/components/givn/SubmitBrandForm";
 
-// ✅ Living data (Server Action)
+// Living data (Server Action)
 import { getLivingBrands } from "@/app/actions/brands";
 import type { BrandTrustRow } from "@/lib/types/givn";
-
 
 // --- DATA CONSTANTS (ADS) ---
 const AD_POOL_LEFT: Ad[] = [
@@ -68,7 +67,7 @@ const Modal = ({
 const ParticlesBackground = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {[...Array(15)].map((_, i) => (
+      {[...Array(20)].map((_, i) => (
         <div
           key={i}
           className="absolute bg-emerald-500/20 rounded-full animate-float"
@@ -106,7 +105,7 @@ type BrandUI = {
 function mapTrustToUI(b: BrandTrustRow): BrandUI {
   const isVerified = b.latest_status === "verified";
   const fallbackClaim = isVerified
-      ? "Verified on-chain."
+      ? "Verified on-chain. Inspect the ledger."
       : b.latest_status === "rejected"
       ? "Rejected."
       : "Draft.";
@@ -181,9 +180,8 @@ export default function Home() {
     });
   }, [brands, activeCategory, searchQuery, verifiedOnly]);
 
-  const sortedBrands = [...filteredBrands].sort((a, b) => b.month - a.month);
+  const sortedBrands = [...filteredBrands].sort((a, b) => b.trust_score - a.trust_score);
   
-  // LOGIQUE SIMPLIFIÉE : Si "View full", on montre tout, sinon les 8 premiers (2 lignes de 4)
   const displayedBrandsList = viewFullList ? sortedBrands : sortedBrands.slice(0, 8);
 
   const scrollToSection = (id: string) => {
@@ -192,16 +190,14 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative">
-      <div className="fixed top-0 w-full z-40 pointer-events-none h-24 bg-gradient-to-b from-black/50 to-transparent lg:hidden" />
-
-      <main className="flex-1 pt-10 md:pt-24 w-full px-4 relative max-w-[1800px] mx-auto">
+    <div className="min-h-screen flex flex-col relative bg-black">
+      <main className="flex-1 pt-10 md:pt-24 w-full px-6 relative max-w-[1800px] mx-auto pb-40">
         {mounted && <ParticlesBackground />}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative w-full z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start relative w-full z-10">
           
           {/* GAUCHE : ADS */}
-          <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-0 h-fit space-y-8">
+          <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-32 pt-0 h-fit space-y-8">
             {AD_POOL_LEFT.map((_, i) => (
                 <LivingAdSlot key={i} pool={AD_POOL_LEFT} initialDelay={2000 - (i*400)} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={i} />
             ))}
@@ -211,141 +207,110 @@ export default function Home() {
           <div className="col-span-1 lg:col-span-8 flex flex-col items-center text-center pt-10 min-h-screen">
             
             {/* HERO */}
-            <div className="mb-12 md:mb-16 w-full relative">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tighter leading-[0.9] mb-6 animate-[pop-in_0.7s_ease-out] glow-text">
-                They say they donate.
-                <br />
-                <span className="text-zinc-600">Givn shows the proof.</span>
+            <div className="mb-20 md:mb-32 w-full relative max-w-4xl">
+              <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-8 animate-enter glow-text text-white">
+                THEY CLAIM. <br /> <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-700">WE VERIFY.</span>
               </h1>
-
-              <p className="text-zinc-400 max-w-lg mx-auto mb-10 text-sm md:text-base animate-[pop-in_0.9s_ease-out] leading-relaxed">
-                Brands can claim anything. Givn only shows what is verifiable. Transparent tracking for corporate philanthropy.
+              <p className="text-zinc-500 max-w-lg mx-auto mb-10 text-base md:text-lg animate-enter font-bold">
+                Institutional-grade proof of impact. Don't trust. <span className="text-emerald-500">Inspect.</span>
               </p>
 
-              <div className="w-full max-w-lg mx-auto flex gap-3 mb-6 animate-[pop-in_1.1s_ease-out]">
-                <div className="relative flex-1 group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-emerald-400 transition-colors">
-                    <Search size={16} />
-                  </div>
+              <div className="w-full max-w-2xl mx-auto flex gap-0 mb-6 animate-enter bg-zinc-950 p-1 border border-white/5 rounded-3xl shadow-2xl">
+                <div className="flex-1 flex items-center px-6">
+                  <Search size={18} className="text-zinc-700 mr-3" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search brands..."
-                    className="w-full bg-zinc-900/80 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:bg-zinc-900 shadow-xl"
+                    placeholder="SCAN ENTITY PROTOCOL..."
+                    className="w-full bg-transparent border-none text-white text-sm focus:outline-none placeholder:text-zinc-800 font-black tracking-widest h-12"
                   />
                 </div>
-
                 <button
                   onClick={() => setIsBrandModalOpen(true)}
-                  className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 rounded-xl px-4 flex items-center gap-2 transition-all"
+                  className="bg-white text-black px-8 rounded-2xl font-black text-[10px] hover:bg-emerald-400 transition-all uppercase tracking-widest"
                 >
-                  <Plus size={18} />
-                  <span className="font-bold uppercase text-xs hidden sm:inline">Add</span>
+                  Add
                 </button>
               </div>
-            </div>
-
-            {/* MOBILE AD */}
-            <div className="w-full lg:hidden mb-12 px-2">
-              <LivingAdSlot pool={AD_POOL_LEFT} initialDelay={1000} cycleDuration={14000} startIndex={0} />
             </div>
 
             {/* FILTRES */}
-            <div id="categories" className="flex flex-col items-center mb-12 w-full">
-              <div className="flex flex-wrap justify-center gap-2">
-                {["All", "Public Database"].map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setActiveCategory(cat)}
-                    className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all duration-300 ${
-                      activeCategory === cat
-                        ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/50"
-                        : "bg-transparent text-zinc-500 border-zinc-800 hover:border-zinc-600"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+            <div className="flex flex-wrap justify-center gap-2 mb-16">
+              {["All", "Environment", "Health", "Technology", "Public Database"].map((cat) => (
                 <button
-                  onClick={() => setVerifiedOnly(!verifiedOnly)}
-                  className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all flex items-center gap-2 ${
-                    verifiedOnly
-                      ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-400"
-                      : "bg-transparent border-zinc-800 text-zinc-600"
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${
+                    activeCategory === cat
+                      ? "bg-white text-black border-white scale-110 shadow-xl"
+                      : "text-zinc-600 border-zinc-800 hover:border-zinc-500 hover:text-white"
                   }`}
                 >
-                   {verifiedOnly ? <ShieldCheck size={12} /> : <Filter size={12} />}
-                   Verified
+                  {cat}
                 </button>
-              </div>
+              ))}
             </div>
 
-            {/* --- SECTION DATABASE (LA GRILLE CORRIGÉE) --- */}
-            <div id="database" className="mb-24 w-full text-left">
-              <div className="flex justify-between items-end mb-6 border-b border-white/5 pb-4">
-                <div>
-                  <h2 className="text-lg font-bold mb-1 text-white">Live Database</h2>
-                  <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Real-time verification</p>
-                </div>
+            {/* --- SECTION DATABASE --- */}
+            <div id="database" className="mb-40 w-full text-left">
+              <div className="flex justify-between items-end mb-8 border-b border-white/5 pb-4">
+                <h2 className="text-xl font-black text-white uppercase tracking-tighter">Immutable Database</h2>
                 <button
                   onClick={() => setViewFullList(!viewFullList)}
-                  className="text-xs text-zinc-500 hover:text-white transition-colors flex items-center gap-1"
+                  className="text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors"
                 >
-                  {viewFullList ? "Show less" : "View all"} <ArrowRight size={12} />
+                  {viewFullList ? "Minimize Ledger" : "Access Full Ledger"}
                 </button>
               </div>
 
-              {/* ✅ GRILLE STRICTE : 2 colonnes (mobile) -> 4 colonnes (desktop) */}
+              {/* GRILLE WOW : 2 colonnes Mobile -> 4 colonnes Desktop */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
                 {displayedBrandsList.map((brand, i) => (
                   <div
                     key={brand.id}
                     className="animate-enter"
-                    style={{ animationDelay: `${i * 50}ms` }}
+                    style={{ animationDelay: `${0.5 + i * 0.1}s` }}
                   >
                     <BrandCard brand={brand as any} onClick={() => setSelectedBrand(brand)} />
                   </div>
                 ))}
-
-                {!loadingBrands && displayedBrandsList.length === 0 && (
-                  <div className="col-span-full py-20 border border-dashed border-zinc-800 rounded-xl bg-white/5 text-center">
-                    <p className="text-zinc-500 text-sm">No matching brands found.</p>
-                  </div>
-                )}
               </div>
             </div>
 
             {/* LEADERBOARD (Version compacte) */}
-            <div id="leaderboard" className="mb-32 w-full text-left">
-               <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h2 className="text-lg font-bold mb-1 text-white">Impact Leaderboard</h2>
-                </div>
-              </div>
-              <div className="border border-white/10 rounded-xl overflow-hidden bg-[#0A0A0A]">
-                <table className="w-full text-left border-collapse">
-                  <tbody className="text-xs md:text-sm">
-                    {sortedBrands.slice(0, 5).map((brand, index) => (
-                      <tr
-                        key={brand.id}
-                        onClick={() => setSelectedBrand(brand)}
-                        className="border-b border-white/5 hover:bg-white/[0.03] cursor-pointer h-12"
-                      >
-                        <td className="p-4 text-zinc-500 font-mono w-12 text-center">{index + 1}</td>
-                        <td className="p-4 font-bold text-white">{brand.name}</td>
-                        <td className="p-4 text-right font-mono text-emerald-400">{brand.trust_score}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            <div id="leaderboard" className="mb-32 w-full text-left max-w-5xl mx-auto">
+               <div className="flex items-center gap-6 mb-12">
+                  <h2 className="text-xl font-black text-white uppercase tracking-tighter">Impact Consensus</h2>
+                  <div className="h-[1px] flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+               </div>
+              <div className="space-y-2">
+                {sortedBrands.slice(0, 5).map((brand, index) => (
+                  <div
+                    key={brand.id}
+                    onClick={() => setSelectedBrand(brand)}
+                    className="group flex items-center justify-between p-6 hover:bg-white/[0.03] rounded-3xl cursor-pointer transition-all border border-transparent hover:border-white/10"
+                  >
+                    <div className="flex items-center gap-10">
+                      <span className="font-black text-zinc-800 text-3xl tracking-tighter group-hover:text-zinc-500 transition-colors italic">0{index + 1}</span>
+                      <div>
+                        <span className="block font-black text-zinc-400 group-hover:text-white transition-colors text-lg">{brand.name}</span>
+                        <span className="block text-[9px] font-bold text-zinc-700 uppercase tracking-widest">{brand.category}</span>
+                      </div>
+                    </div>
+                    <div className="text-right w-24">
+                      <span className="block text-[9px] font-black text-zinc-700 uppercase tracking-widest mb-1">Score</span>
+                      <span className="font-black text-3xl text-white tracking-tighter">{brand.trust_score}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
           </div>
 
           {/* DROITE : ADS */}
-          <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-24 pt-0 h-fit space-y-6">
+          <div className="hidden lg:block lg:col-span-2 lg:sticky lg:top-32 pt-0 h-fit space-y-6">
              {AD_POOL_RIGHT.map((_, i) => (
                 <LivingAdSlot key={i} pool={AD_POOL_RIGHT} initialDelay={2000 - (i*400)} cycleDuration={UNIFIED_CYCLE_DURATION} startIndex={i} />
             ))}
@@ -355,11 +320,11 @@ export default function Home() {
       </main>
 
       {/* FOOTER */}
-      <footer className="border-t border-white/10 bg-black py-12 px-6 mt-12 text-center text-xs text-zinc-600">
+      <footer className="border-t border-white/5 bg-[#050505] py-24 px-10 text-center text-[10px] font-black uppercase tracking-[0.5em] text-zinc-800">
          <p>© 2025 Givn Inc. Verified on-chain.</p>
       </footer>
 
-      {/* --- MODALS --- */}
+      {/* MODALS */}
       <BrandDetailModal
         brand={selectedBrand}
         onClose={() => setSelectedBrand(null)}
@@ -369,7 +334,11 @@ export default function Home() {
       
       <Modal isOpen={isBrandModalOpen} onClose={() => setIsBrandModalOpen(false)}>
         <div className="text-center">
-           <h2 className="text-xl font-bold text-white mb-6">Submit Brand</h2>
+           <div className="w-20 h-20 bg-zinc-950 rounded-[30px] flex items-center justify-center mb-8 border border-white/5 mx-auto">
+              <Scan size={40} className="text-emerald-500 animate-pulse" />
+           </div>
+           <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-4">Protocol Onboarding</h2>
+           <p className="text-[10px] text-zinc-600 mb-12 uppercase tracking-[0.4em] font-black">Submit entity for cryptographic audit</p>
            <SubmitBrandForm onSuccess={() => setIsBrandModalOpen(false)} />
         </div>
       </Modal>

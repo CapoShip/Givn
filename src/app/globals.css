@@ -15,7 +15,7 @@ body {
   overflow-x: hidden;
 }
 
-/* --- Utilities (Inchangés) --- */
+/* --- Utilities --- */
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -83,7 +83,7 @@ body {
 @keyframes bubble-rise { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translateY(-60px) scale(1.2); opacity: 0; } } .bubble { animation: bubble-rise 4s linear infinite; } @keyframes fish-swim { 0% { transform: translateX(-20px) rotate(5deg); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { transform: translateX(120px) rotate(-5deg); opacity: 0; } } .fish-school { animation: fish-swim 8s linear infinite; } @keyframes bio-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; filter: drop-shadow(0 0 5px #2dd4bf); } } .bio-electric { animation: bio-pulse 3s ease-in-out infinite; } @keyframes cloud-drift { from { transform: translateX(-30px); } to { transform: translateX(130px); } } .cloud { animation: cloud-drift 20s linear infinite; } @keyframes bird-fly { 0% { transform: translate(-10px, 10px) scale(0.5); opacity: 0; } 10% { opacity: 1; } 100% { transform: translate(120px, -20px) scale(0.8); opacity: 0; } } .bird { animation: bird-fly 6s linear infinite; } @keyframes energy-stream { 0% { transform: scale(0.5) translate(0,0); opacity: 0.8; } 100% { transform: scale(0) translate(20px, -20px); opacity: 0; } } .energy-particle { animation: energy-stream 1s ease-out infinite; }
 
 /* =========================================
-   ANIMATIONS D'INTERFACE
+   ANIMATIONS D'INTERFACE & WOW EFFECT
    ========================================= */
 
 @keyframes pop-in {
@@ -116,20 +116,37 @@ body {
     100% { transform: translateX(150%) skewX(-20deg); }
 }
 
+@keyframes shine-sweep {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+.animate-shine {
+  animation: shine-sweep 3s ease-in-out infinite;
+}
+
 /* =========================================
-   UTILITAIRES 3D (NOUVEAU - Pour BrandCard)
+   UTILITAIRES 3D (HYPER-OBSIDIAN)
    ========================================= */
 
 .perspective-card {
-  perspective: 1500px;
+  perspective: 2000px;
 }
 
 .preserve-3d {
   transform-style: preserve-3d;
 }
 
-/* Z-Translation Utilities pour la profondeur */
-.translate-z-10 { transform: translateZ(15px); }
-.translate-z-20 { transform: translateZ(30px); }
-.translate-z-30 { transform: translateZ(45px); }
-.translate-z-40 { transform: translateZ(60px); }
+/* Z-Translation pour la profondeur tactile */
+.translate-z-10 { transform: translateZ(10px); }
+.translate-z-15 { transform: translateZ(15px); }
+.translate-z-20 { transform: translateZ(20px); }
+.translate-z-25 { transform: translateZ(25px); }
+.translate-z-30 { transform: translateZ(30px); }
+.translate-z-40 { transform: translateZ(40px); }
+
+/* Glassmorphism Refined */
+.glass-dark {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
