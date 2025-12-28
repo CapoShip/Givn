@@ -5,7 +5,6 @@ import type { BrandTrustRow } from "@/lib/types/givn";
 import { BrandCard } from "./BrandCard";
 import BrandDetailModal from "./BrandDetailModal";
 
-// On renomme le composant existant ou on l'écrase
 export default function BrandsGrid({ brands }: { brands: BrandTrustRow[] }) {
   const [selectedBrand, setSelectedBrand] = useState<BrandTrustRow | null>(null);
 
@@ -15,8 +14,22 @@ export default function BrandsGrid({ brands }: { brands: BrandTrustRow[] }) {
         {brands.map((b) => (
           <BrandCard 
             key={b.id} 
-            brand={b} 
-            onClick={() => setSelectedBrand(b)} // ✅ C'est ici que la magie opère
+            // 🛡️ MAPPING DE SÉCURITÉ (On adapte les données pour la carte)
+            brand={{
+              id: b.id,
+              name: b.name,
+              logo_url: b.logo_url,
+              
+              // 1. Si category est null, on met "General"
+              category: b.category || "General",
+              
+              // 2. Si trust_score est null, on met 0
+              trust_score: b.trust_score || 0,
+              
+              // 3. On traduit le status SQL (verified/draft) en status UI (VERIFIED/PENDING)
+              status: b.latest_status === "verified" ? "VERIFIED" : "PENDING"
+            }} 
+            onClick={() => setSelectedBrand(b)} 
           />
         ))}
       </div>
