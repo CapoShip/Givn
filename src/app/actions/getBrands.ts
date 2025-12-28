@@ -1,15 +1,13 @@
 "use server";
 
 import { supabaseServer } from "@/lib/supabase/server";
-// On utilise 'any' ici temporairement pour éviter les conflits de types stricts 
-// pendant qu'on aligne le backend et le frontend.
+// On garde 'any' pour l'instant pour éviter les erreurs de typage bloquantes
 import type { BrandTrustRow } from "@/lib/types/givn"; 
 
 export async function getBrands() {
   const supabase = await supabaseServer();
 
-  // 1. On sélectionne TOUT (*) depuis la vue
-  // C'est plus sûr pour ne rien oublier (description, claim, logo, etc.)
+  // 1. SELECT * : On prend TOUT. Plus d'oubli de colonne.
   const { data, error } = await supabase
     .from("brand_trust_live")
     .select("*")
@@ -20,27 +18,25 @@ export async function getBrands() {
     return [];
   }
 
-  // 2. MAPPING ROBUSTE (Le secret pour que tout s'affiche)
-  // On transforme les données brutes de la DB en format parfait pour ton UI
+  // 2. MAPPING CHIRURGICAL
+  // On convertit les noms de colonnes SQL (snake_case) vers ton UI (camelCase)
   return (data || []).map((brand: any) => ({
-    id: brand.id || brand.brand_id, // Gestion des deux noms possibles
+    id: brand.id || brand.brand_id, 
     slug: brand.slug,
     name: brand.name,
     website: brand.website || "",
     
-    // ✅ ICI : On récupère enfin les champs textuels
+    // ✅ LES CHAMPS QUI TE MANQUAIENT
     logo_url: brand.logo_url || "", 
     description: brand.description || "No description available.",
     claim: brand.claim || "No active claim",
     category: brand.category || "General",
 
-    // ✅ ICI : On mappe les chiffres (DB: snake_case -> UI: camelCase)
-    // On force la conversion en Number pour éviter les bugs BigInt
+    // ✅ CORRECTION DES CHIFFRES (total_donated vs proofs_total)
     proof_count: Number(brand.proof_count ?? 0),
-    total_donated: Number(brand.total_donated ?? 0),
+    total_donated: Number(brand.total_donated ?? 0), // C'est ici que 'All Time' se joue
     trust_score: Number(brand.trust_score ?? 0),
     
-    // Gestion des dates et status
     last_proof_at: brand.last_proof_at,
     latest_status: brand.latest_status || "draft",
   }));
