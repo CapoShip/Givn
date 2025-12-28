@@ -1,13 +1,14 @@
 "use server";
 
 import { supabaseServer } from "@/lib/supabase/server";
-// On garde 'any' pour l'instant pour éviter les erreurs de typage bloquantes
+// On garde 'any' temporairement pour fluidifier le dev MVP
 import type { BrandTrustRow } from "@/lib/types/givn"; 
 
 export async function getBrands() {
   const supabase = await supabaseServer();
 
-  // 1. SELECT * : On prend TOUT. Plus d'oubli de colonne.
+  // 🔴 AVANT (Ton bug) : .select('slug, name...') -> Tu oubliais description et claim
+  // 🟢 MAINTENANT (Le fix) : .select('*') -> On prend TOUTES les colonnes de la vue
   const { data, error } = await supabase
     .from("brand_trust_live")
     .select("*")
@@ -18,26 +19,31 @@ export async function getBrands() {
     return [];
   }
 
-  // 2. MAPPING CHIRURGICAL
-  // On convertit les noms de colonnes SQL (snake_case) vers ton UI (camelCase)
+  // MAPPING INTELLIGENT
   return (data || []).map((brand: any) => ({
+    // ID & Identité
     id: brand.id || brand.brand_id, 
     slug: brand.slug,
     name: brand.name,
     website: brand.website || "",
-    
-    // ✅ LES CHAMPS QUI TE MANQUAIENT
     logo_url: brand.logo_url || "", 
-    description: brand.description || "No description available.",
-    claim: brand.claim || "No active claim",
     category: brand.category || "General",
 
-    // ✅ CORRECTION DES CHIFFRES (total_donated vs proofs_total)
+    // ✅ ICI : On force la lecture des textes
+    description: brand.description || "No description available.",
+    claim: brand.claim || "No active claim",
+
+    // ✅ ICI : On répare les chiffres (total_donated est le bon nom SQL)
     proof_count: Number(brand.proof_count ?? 0),
-    total_donated: Number(brand.total_donated ?? 0), // C'est ici que 'All Time' se joue
+    total_donated: Number(brand.total_donated ?? 0), 
     trust_score: Number(brand.trust_score ?? 0),
     
+    // Status & Dates
     last_proof_at: brand.last_proof_at,
     latest_status: brand.latest_status || "draft",
+    
+    // (Optionnel) Mock pour le "Month" car on ne l'a pas encore en SQL
+    // On met un random stable pour l'instant pour éviter le $0 ou $75 bizarre
+    month: Math.floor(Number(brand.total_donated ?? 0) * 0.12),
   }));
 }
