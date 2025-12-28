@@ -14,7 +14,6 @@ import SubmitBrandForm from "@/components/givn/SubmitBrandForm";
 import { getLivingBrands } from "@/app/actions/brands";
 import type { BrandTrustRow } from "@/lib/types/givn";
 
-
 // --- DATA CONSTANTS (ADS) ---
 const AD_POOL_LEFT: Ad[] = [
   { title: "Proof Drop", subtitle: "Evidence uploaded → badge updates.", type: "tree" },
@@ -98,9 +97,9 @@ type BrandUI = {
 
   category: string;
   claim: string;
-  description?: string | null; // ✅ Ajouté
-  total_donated?: number | null; // ✅ Ajouté
-  
+  description?: string | null;
+  total_donated?: number | null;
+
   month: number;
   status: "VERIFIED" | "PENDING";
 
@@ -109,16 +108,14 @@ type BrandUI = {
   last_proof_at: string | null;
 };
 
-// ✅ CORRIGÉ : Mapping intelligent qui utilise les vraies données
 function mapTrustToUI(b: BrandTrustRow): BrandUI {
   const isVerified = b.latest_status === "verified";
 
-  // Claim intelligent : Vrai claim DB > Fallback selon status
   const fallbackClaim = isVerified
-      ? "Verified on-chain. Click to inspect proof trail."
-      : b.latest_status === "rejected"
-      ? "Rejected. Proof insufficient or invalid."
-      : "Draft or no active proof yet.";
+    ? "Verified on-chain. Click to inspect proof trail."
+    : b.latest_status === "rejected"
+    ? "Rejected. Proof insufficient or invalid."
+    : "Draft or no active proof yet.";
 
   return {
     id: b.id,
@@ -126,53 +123,41 @@ function mapTrustToUI(b: BrandTrustRow): BrandUI {
     slug: b.slug,
     logo_url: b.logo_url,
     website: b.website,
-
-    // ✅ Vraies données de la DB
     category: b.category || "Public Database",
     claim: b.claim || fallbackClaim,
-    description: b.description, 
+    description: b.description,
     total_donated: b.total_donated,
-
     month: b.trust_score ?? 0,
     status: isVerified ? "VERIFIED" : "PENDING",
-
     trust_score: b.trust_score ?? 0,
     proof_count: b.proof_count ?? 0,
     last_proof_at: b.last_proof_at,
   };
 }
 
-
 // --- PAGE PRINCIPALE ---
 export default function Home() {
-  // États de filtrage et recherche
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [verifiedOnly, setVerifiedOnly] = useState(false);
 
-  // États des modales
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   const [isAdModalOpen, setIsAdModalOpen] = useState(false);
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
 
-  // États de sélection
   const [selectedBrand, setSelectedBrand] = useState<any>(null);
   const [proofBrand, setProofBrand] = useState<string | null>(null);
 
-  // États UI
   const [viewFullList, setViewFullList] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // ✅ Living brands state
   const [brands, setBrands] = useState<BrandUI[]>([]);
   const [loadingBrands, setLoadingBrands] = useState(true);
 
-  // Vitesse d'animation unifiée
   const UNIFIED_CYCLE_DURATION = 10000;
 
   useEffect(() => setMounted(true), []);
 
-  // ✅ Load brands (Server Action)
   useEffect(() => {
     let alive = true;
 
@@ -197,7 +182,6 @@ export default function Home() {
     };
   }, []);
 
-  // Logique de filtrage combinée
   const filteredBrands = useMemo(() => {
     return brands.filter((brand) => {
       const matchesCategory = activeCategory === "All" || brand.category === activeCategory;
@@ -208,7 +192,6 @@ export default function Home() {
         brand.name.toLowerCase().includes(q) ||
         (brand.claim ?? "").toLowerCase().includes(q);
 
-      // ✅ VerifiedOnly = verified_count > 0 -> mapped to "VERIFIED"
       const matchesVerified = verifiedOnly ? brand.status === "VERIFIED" : true;
 
       return matchesCategory && matchesSearch && matchesVerified;
@@ -282,7 +265,6 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* ✅ loading state */}
               {loadingBrands && <div className="mt-3 text-xs text-zinc-500">Syncing living database…</div>}
             </div>
 
@@ -331,7 +313,7 @@ export default function Home() {
               <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={16000} startIndex={1} />
             </div>
 
-            {/* RECENTLY LISTED */}
+            {/* ✅✅✅ RECENTLY LISTED (CORRIGÉ : GRILLE 4 COLONNES) */}
             <div id="database" className="mb-24 scroll-mt-24 w-full text-left">
               <div className="flex justify-between items-end mb-8 border-b border-white/5 pb-4">
                 <div>
@@ -346,15 +328,12 @@ export default function Home() {
                 </button>
               </div>
 
-              <div
-                className={`grid gap-4 transition-all ${
-                  viewFullList ? "grid-cols-1 md:grid-cols-2" : "flex overflow-x-auto pb-8 hide-scrollbar snap-x -mx-4 px-4"
-                }`}
-              >
+              {/* ✅ Toujours grid : 4 par ligne sur desktop */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {displayedBrandsList.map((brand, i) => (
                   <div
                     key={brand.id}
-                    className={`animate-enter ${viewFullList ? "" : "min-w-[300px]"}`}
+                    className="animate-enter min-w-0"
                     style={{ animationDelay: `${i * 100}ms` }}
                   >
                     <BrandCard brand={brand as any} onClick={() => setSelectedBrand(brand)} />
@@ -407,12 +386,7 @@ export default function Home() {
                         <td className="p-4 text-zinc-400 hidden sm:table-cell">
                           <span className="bg-white/5 px-2 py-1 rounded text-xs border border-white/5">{brand.category}</span>
                         </td>
-
-                        {/* ✅ Trust score is a score, not money */}
-                        <td className="p-4 text-right font-mono text-white font-medium">
-                          {brand.trust_score}/100
-                        </td>
-
+                        <td className="p-4 text-right font-mono text-white font-medium">{brand.trust_score}/100</td>
                         <td className="p-4 flex justify-end items-center h-full">
                           <Badge status={brand.status} />
                         </td>
