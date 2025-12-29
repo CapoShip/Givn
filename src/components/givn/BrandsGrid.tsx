@@ -10,10 +10,10 @@ export default function BrandsGrid({ brands }: { brands: BrandTrustRow[] }) {
 
   return (
     <>
-      {/* CORRECTION DE LA GRILLE :
-        - 'grid-cols-2' : 2 cartes par ligne sur mobile/tablette (pour éviter la file indienne)
-        - 'lg:grid-cols-4' : 4 cartes par ligne sur ordinateur (votre demande)
-        - 'gap-4' : Espace réduit entre les carrés
+      {/* GRILLE RESPONSIVE :
+          - Mobile : 2 par ligne
+          - Tablette : 3 par ligne
+          - Ordi (lg) : 4 par ligne
       */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
         {brands.map((b) => (
@@ -34,13 +34,11 @@ export default function BrandsGrid({ brands }: { brands: BrandTrustRow[] }) {
         ))}
       </div>
 
-      {selectedBrand && (
-        <BrandDetailModal 
-          brand={selectedBrand} 
-          onClose={() => setSelectedBrand(null)}
-          onOpenProof={() => console.log("Open proof for", selectedBrand.id)}
-        />
-      )}
+      {/* ✅ CORRECTION : On a retiré onOpenProof car inutile maintenant */}
+      <BrandDetailModal 
+        brand={selectedBrand} 
+        onClose={() => setSelectedBrand(null)}
+      />
     </>
   );
 }

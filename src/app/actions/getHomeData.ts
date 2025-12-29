@@ -9,13 +9,11 @@ export async function getHomeData() {
   const { data: brands } = await supabase.from("brands").select("*");
 
   // 2. Récupérer toutes les preuves VÉRIFIÉES
-  // On récupère aussi le nom de la marque associée pour le fil d'actu
-  // (Note: Si la relation SQL n'est pas faite, on fera le lien en JS, c'est plus robuste pour l'instant)
   const { data: proofs } = await supabase
     .from("proofs")
     .select("*")
     .eq("status", "verified")
-    .order("verified_at", { ascending: false });
+    .order("verified_at", { ascending: false }); // Les plus récentes en premier
 
   if (!brands || !proofs) {
     return {
@@ -39,9 +37,12 @@ export async function getHomeData() {
 
     return {
       ...brand,
-      total_donated: brandTotal, // On écrase la valeur statique par la vraie
+      total_donated: brandTotal,
     };
-  }).sort((a, b) => b.total_donated - a.total_donated); // Tri décroissant
+  })
+  // 🔴 J'AI RETIRÉ LE FILTRE QUI CACHAIT LES MARQUES À 0$
+  // .filter(b => b.total_donated > 0) 
+  .sort((a, b) => b.total_donated - a.total_donated); // Tri décroissant (Riches en haut)
 
   // C. Activité Récente (Pour le ticker en haut)
   const recentActivity = proofs.slice(0, 5).map((proof) => {
@@ -51,7 +52,7 @@ export async function getHomeData() {
       brand: brandName,
       amount: proof.amount,
       currency: proof.currency,
-      time: new Date(proof.verified_at).toLocaleDateString(), // Tu pourras mettre "2h ago" plus tard
+      timestamp: proof.verified_at, 
     };
   });
 

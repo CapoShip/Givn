@@ -6,17 +6,11 @@ import { Search, Plus, ArrowRight, X, Scan, ShieldCheck, Filter } from "lucide-r
 import { BrandCard } from "@/components/givn/BrandCard";
 import LivingAdSlot, { Ad } from "@/components/givn/LivingAdSlot";
 import BrandDetailModal from "@/components/givn/BrandDetailModal";
-import Badge from "@/components/givn/Badge";
-import ProofModal from "@/components/givn/ProofModal";
 import SubmitBrandForm from "@/components/givn/SubmitBrandForm";
-
-// ✅ ON REMPLACE L'ANCIEN PULSE PAR CELUI CONNECTÉ
 import GlobalPulse from "@/components/givn/GlobalPulse"; 
 
-// ✅ IMPORT DES SERVER ACTIONS
-import { getLivingBrands } from "@/app/actions/brands";
-import { getHomeData } from "@/app/actions/getHomeData"; // Le moteur de calcul
-import type { BrandTrustRow } from "@/lib/types/givn";
+// Server Actions
+import { getHomeData } from "@/app/actions/getHomeData"; 
 
 // --- DATA CONSTANTS (ADS) ---
 const AD_POOL_LEFT: Ad[] = [
@@ -90,7 +84,7 @@ type BrandUI = {
   last_proof_at: string | null;
 };
 
-// Fonction de mapping (On priorise les données qui ont du "vrai argent")
+// --- MAPPING FUNCTION ---
 function mapTrustToUI(b: any): BrandUI {
   const isVerified = b.total_donated > 0 || b.latest_status === "verified";
   
@@ -101,9 +95,13 @@ function mapTrustToUI(b: any): BrandUI {
     logo_url: b.logo_url,
     website: b.website,
     category: b.category || "Public Database",
-    claim: isVerified ? "Verified on-chain." : "Pending verification.",
+    
+    // ✅ CORRECTION ICI : On prend le claim de la DB.
+    // Si pas de claim, on prend la description, sinon un texte par défaut neutre.
+    claim: b.claim || b.description || "Corporate Social Responsibility",
+    
     description: b.description,
-    total_donated: b.total_donated || 0, // Le vrai montant
+    total_donated: b.total_donated || 0,
     month: b.trust_score ?? 0,
     status: isVerified ? "VERIFIED" : "PENDING",
     trust_score: b.trust_score ?? 0,
@@ -117,13 +115,13 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [verifiedOnly, setVerifiedOnly] = useState(false);
-
+  
+  // Modals
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   const [isAdModalOpen, setIsAdModalOpen] = useState(false);
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
-
+  
   const [selectedBrand, setSelectedBrand] = useState<any>(null);
-  const [proofBrand, setProofBrand] = useState<string | null>(null);
 
   const [viewFullList, setViewFullList] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -131,28 +129,20 @@ export default function Home() {
   const [brands, setBrands] = useState<BrandUI[]>([]);
   const [loadingBrands, setLoadingBrands] = useState(true);
 
-  // ✅ NOUVEAU STATE POUR LE PULSE GLOBAL
+  // Stats Globales
   const [globalStats, setGlobalStats] = useState({ totalVolume: 0, recentActivity: [] as any[] });
 
   const UNIFIED_CYCLE_DURATION = 10000;
 
   useEffect(() => setMounted(true), []);
 
-  // ✅ CHARGEMENT DES DONNÉES RÉELLES (ADMIN + MARQUES)
   useEffect(() => {
     let alive = true;
-
     (async () => {
       try {
         setLoadingBrands(true);
-        
-        // 1. Charger les stats globales (Pour le gros chiffre en haut)
         const homeData = await getHomeData();
         
-        // 2. Charger la liste des marques (Pour le tableau)
-        // On utilise homeData.leaderboard car il contient déjà les totaux calculés !
-        const rows = homeData.leaderboard;
-
         if (!alive) return;
 
         setGlobalStats({
@@ -160,11 +150,10 @@ export default function Home() {
           recentActivity: homeData.recentActivity
         });
 
-        // On map les données pour ton UI
-        setBrands((rows ?? []).map(mapTrustToUI));
+        setBrands((homeData.leaderboard ?? []).map(mapTrustToUI));
 
       } catch (e) {
-        console.error(e);
+        console.error("Error fetching home data:", e);
         if (!alive) return;
         setBrands([]);
       } finally {
@@ -172,10 +161,7 @@ export default function Home() {
         setLoadingBrands(false);
       }
     })();
-
-    return () => {
-      alive = false;
-    };
+    return () => { alive = false; };
   }, []);
 
   const filteredBrands = useMemo(() => {
@@ -192,7 +178,6 @@ export default function Home() {
     });
   }, [brands, activeCategory, searchQuery, verifiedOnly]);
 
-  // Tri par ARGENT DONNÉ (Le plus riche en haut)
   const sortedBrands = [...filteredBrands].sort((a, b) => (b.total_donated || 0) - (a.total_donated || 0));
   const displayedBrandsList = viewFullList ? sortedBrands : sortedBrands.slice(0, 6);
 
@@ -232,7 +217,6 @@ export default function Home() {
                 Brands can claim anything. Givn only shows what is verifiable. Transparent tracking for corporate philanthropy.
               </p>
 
-              {/* 🔥 LE VRAI PULSE CONNECTÉ À LA DB (Remplacement) */}
               <div className="w-full mb-8 animate-[pop-in_1.0s_ease-out] rounded-2xl overflow-hidden border border-white/5">
                 <GlobalPulse 
                   totalVolume={globalStats.totalVolume} 
@@ -268,7 +252,7 @@ export default function Home() {
                 </button>
               </div>
 
-              {loadingBrands && <div className="mt-3 text-xs text-zinc-500">Syncing blockchain ledger...</div>}
+              {loadingBrands && <div className="mt-3 text-xs text-zinc-500 animate-pulse">Syncing blockchain ledger...</div>}
             </div>
 
             {/* MOBILE AD 1 */}
@@ -316,7 +300,7 @@ export default function Home() {
               <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={16000} startIndex={1} />
             </div>
 
-            {/* RECENTLY LISTED */}
+            {/* RECENTLY LISTED - DATABASE */}
             <div id="database" className="mb-24 scroll-mt-24 w-full text-left">
               <div className="flex justify-between items-end mb-8 border-b border-white/5 pb-4">
                 <div>
@@ -350,7 +334,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* LEADERBOARD (TABLE) */}
+            {/* LEADERBOARD */}
             <div id="leaderboard" className="mb-32 scroll-mt-24 w-full text-left">
               <div className="flex justify-between items-center mb-8">
                 <div>
@@ -483,16 +467,11 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* --- MODALS --- */}
+      {/* MODALS */}
       <BrandDetailModal
         brand={selectedBrand}
         onClose={() => setSelectedBrand(null)}
-        onOpenProof={() => {
-          setProofBrand(selectedBrand?.name ?? null);
-        }}
       />
-
-      <ProofModal isOpen={!!proofBrand} onClose={() => setProofBrand(null)} brandName={proofBrand || ""} />
 
       <Modal isOpen={isBrandModalOpen} onClose={() => setIsBrandModalOpen(false)}>
         <div className="flex flex-col items-center">

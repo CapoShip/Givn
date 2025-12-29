@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Activity } from "lucide-react";
+import { Activity, TrendingUp } from "lucide-react";
 import Badge from "./Badge";
 
 interface BrandCardProps {
@@ -14,6 +14,7 @@ interface BrandCardProps {
     status: "VERIFIED" | "PENDING";
     claim?: string | null;
     proof_count?: number;
+    total_donated?: number | null;
   };
   onClick: () => void;
 }
@@ -23,8 +24,19 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
 
-  const safeProofCount = brand.proof_count || 0;
-  const safeClaim = brand.claim || "Impact verified on-chain.";
+  const formatMoney = (amount: number) => {
+    return new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: 'USD', 
+        notation: 'compact',
+        maximumFractionDigits: 1 
+    }).format(amount);
+  };
+
+  // ✅ CORRECTION : On affiche le claim exact passé par la page parente.
+  // Si c'est vide, on met un espace insécable pour garder la mise en page.
+  const safeClaim = brand.claim || "\u00A0"; 
+  const displayAmount = brand.total_donated ? formatMoney(brand.total_donated) : "$0";
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -67,13 +79,10 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
   const strokeDashoffset =
     circumference - (brand.trust_score / 100) * circumference;
 
-  // ✅ TILT 3D (tout bouge ensemble)
-  // IMPORTANT: on calcule le centre réel de la card pour que le mouvement soit stable
   const rect = cardRef.current?.getBoundingClientRect();
   const cx = rect ? rect.width / 2 : 100;
   const cy = rect ? rect.height / 2 : 100;
 
-  // ✅ tilt plus doux = moins de rasterisation du texte
   const tiltX = isHovering ? (mousePos.y - cy) / 18 : 0;
   const tiltY = isHovering ? (mousePos.x - cx) / -18 : 0;
 
@@ -93,13 +102,12 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
       <div
         className="preserve-3d relative w-full h-full rounded-2xl bg-[#090909] transition-transform duration-200 ease-out shadow-2xl border border-white/5 group-hover:border-white/10 transform-gpu"
         style={{
-          // ✅ on évite scale3d (source majeure de flou)
           transform: isHovering
             ? `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`
             : "rotateX(0deg) rotateY(0deg)",
         }}
       >
-        {/* ✅ Glow radial SANS blur */}
+        {/* Glow */}
         <div
           className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
           style={{
@@ -114,12 +122,12 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
         <div
           className="absolute inset-[1.5px] rounded-[15px] bg-gradient-to-br from-[#121212] via-[#090909] to-[#030303] z-[3] overflow-hidden flex flex-col p-4 preserve-3d"
           style={{
-            // ✅ micro trick: stabilise le compositing sans changer le look
             transform: "translateZ(0.01px)",
             willChange: "transform",
             backfaceVisibility: "hidden",
           }}
         >
+          {/* HEADER */}
           <div className="flex justify-between items-start mb-2 preserve-3d translate-z-40">
             <div className="w-10 h-10 rounded-lg bg-[#0f0f0f] flex items-center justify-center border border-white/10 shadow-md group-hover:scale-110 transition-transform duration-500 overflow-hidden">
               {brand.logo_url ? (
@@ -141,6 +149,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
             </div>
           </div>
 
+          {/* CONTENT : NOM & CLAIM */}
           <div className="mb-auto space-y-1.5 preserve-3d translate-z-30">
             <h3
               className="text-sm font-black text-white truncate leading-tight group-hover:text-emerald-50 transition-colors"
@@ -154,6 +163,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
             >
               {brand.category}
             </p>
+            {/* ICI S'AFFICHE TON VRAI CLAIM DB */}
             <p
               className="text-[10px] text-zinc-400 leading-tight line-clamp-2 italic opacity-60 group-hover:opacity-100 transition-opacity"
               style={{ transform: "translateZ(25px)" }}
@@ -162,7 +172,10 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
             </p>
           </div>
 
+          {/* FOOTER : SCORE & ARGENT */}
           <div className="mt-2 pt-2 border-t border-white/10 flex items-end justify-between preserve-3d translate-z-20">
+            
+            {/* Score Ring */}
             <div className="relative w-8 h-8 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90 relative z-10">
                 <circle
@@ -193,17 +206,19 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
               </span>
             </div>
 
+            {/* Total Verified */}
             <div className="text-right">
               <div className="flex items-center justify-end gap-1 text-zinc-600 group-hover:text-emerald-400 transition-colors">
-                <span className="text-sm font-black font-mono">
-                  {safeProofCount}
+                <span className="text-sm font-black font-mono tracking-tight">
+                  {displayAmount}
                 </span>
-                <Activity size={10} className={safeProofCount > 0 ? "animate-pulse" : ""} />
+                <TrendingUp size={10} className={brand.total_donated && brand.total_donated > 0 ? "text-emerald-500" : ""} />
               </div>
               <span className="text-[7px] text-zinc-700 uppercase tracking-widest block font-black">
-                Blocks
+                Verified
               </span>
             </div>
+            
           </div>
         </div>
       </div>
