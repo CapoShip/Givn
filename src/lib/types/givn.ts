@@ -18,11 +18,12 @@ export type BrandTrustRow = {
 
 export type GlobalActivityEvent = {
   id: string;
-  type: 'proof_verified' | 'brand_joined'; // Extensible
+  type: 'proof_verified'; 
   brandName: string;
   brandSlug: string;
   brandLogo: string | null;
-  amount?: number;
-  currency?: string;
-  occurredAt: string; // ISO String
+  amount: number; // Pas de ? ici
+  currency: string;
+  occurredAt: string; 
 };
+

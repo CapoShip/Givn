@@ -9,6 +9,7 @@ import BrandDetailModal from "@/components/givn/BrandDetailModal";
 import Badge from "@/components/givn/Badge";
 import ProofModal from "@/components/givn/ProofModal";
 import SubmitBrandForm from "@/components/givn/SubmitBrandForm";
+import { BrandsRealtimePulse } from "@/components/givn/BrandsRealtimePulse"; // ✅ IMPORT DU PULSE
 
 // ✅ Living data (Server Action)
 import { getLivingBrands } from "@/app/actions/brands";
@@ -131,11 +132,8 @@ function mapTrustToUI(b: BrandTrustRow): BrandUI {
     status: isVerified ? "VERIFIED" : "PENDING",
     trust_score: b.trust_score ?? 0,
     proof_count: b.proof_count ?? 0,
-    
-    // 🔥 CORRECTION ICI : On force la conversion en string ISO sécurisée
-    last_proof_at: b.last_proof_at 
-      ? new Date(b.last_proof_at).toISOString() 
-      : null,
+    // ✅ FIX CRITIQUE : Conversion en string ISO pour éviter l'erreur de build
+    last_proof_at: b.last_proof_at ? new Date(b.last_proof_at).toISOString() : null,
   };
 }
 
@@ -237,9 +235,14 @@ export default function Home() {
                 <span className="text-zinc-600">Givn shows the proof.</span>
               </h1>
 
-              <p className="text-zinc-400 max-w-lg mx-auto mb-12 text-base md:text-lg animate-[pop-in_0.9s_ease-out] leading-relaxed">
+              <p className="text-zinc-400 max-w-lg mx-auto mb-8 text-base md:text-lg animate-[pop-in_0.9s_ease-out] leading-relaxed">
                 Brands can claim anything. Givn only shows what is verifiable. Transparent tracking for corporate philanthropy.
               </p>
+
+              {/* 🔥 PULSE TEMPS RÉEL INSÉRÉ ICI */}
+              <div className="w-full mb-8 animate-[pop-in_1.0s_ease-out]">
+                <BrandsRealtimePulse />
+              </div>
 
               <div className="w-full max-w-lg mx-auto flex gap-3 mb-6 animate-[pop-in_1.1s_ease-out]">
                 <div className="relative flex-1 group">
@@ -317,7 +320,7 @@ export default function Home() {
               <LivingAdSlot pool={AD_POOL_RIGHT} initialDelay={2000} cycleDuration={16000} startIndex={1} />
             </div>
 
-            {/* ✅✅✅ RECENTLY LISTED (CORRIGÉ : GRILLE 4 COLONNES) */}
+            {/* RECENTLY LISTED */}
             <div id="database" className="mb-24 scroll-mt-24 w-full text-left">
               <div className="flex justify-between items-end mb-8 border-b border-white/5 pb-4">
                 <div>
@@ -332,7 +335,6 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* ✅ Toujours grid : 4 par ligne sur desktop */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {displayedBrandsList.map((brand, i) => (
                   <div

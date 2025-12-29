@@ -6,9 +6,7 @@ import { GlobalActivityEvent } from "@/lib/types/givn";
 export async function getGlobalActivity(): Promise<GlobalActivityEvent[]> {
   const supabase = await supabaseServer();
 
-  // On récupère les 10 dernières preuves VÉRIFIÉES
-  // C'est le signal le plus fort de l'activité du système.
-  const { data: proofs, error } = await supabase
+  const { data, error } = await supabase
     .from("proofs")
     .select(`
       id,
@@ -23,18 +21,14 @@ export async function getGlobalActivity(): Promise<GlobalActivityEvent[]> {
     `)
     .eq("status", "verified")
     .order("verified_at", { ascending: false })
-    .limit(10);
+    .limit(5);
 
   if (error) {
-    console.error("⚡ Error fetching global activity:", error);
+    console.error("Error fetching global activity:", error);
     return [];
   }
 
-  // Transformation "Client-Ready" pour l'UI
-  // Note: Supabase retourne des tableaux imbriqués pour les relations, d'où le typage 'any' temporaire ici 
-  // seulement si le codegen Supabase n'est pas encore parfait, mais on structure le retour proprement.
-  
-  return proofs.map((proof: any) => ({
+  return data.map((proof: any) => ({
     id: proof.id,
     type: 'proof_verified',
     brandName: proof.brand?.name || "Unknown Brand",
@@ -42,6 +36,6 @@ export async function getGlobalActivity(): Promise<GlobalActivityEvent[]> {
     brandLogo: proof.brand?.logo_url || null,
     amount: Number(proof.amount),
     currency: proof.currency || "USD",
-    occurredAt: proof.verified_at
+    occurredAt: proof.verified_at // Déjà ISO string via Supabase JSON
   }));
 }
