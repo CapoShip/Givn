@@ -116,7 +116,6 @@ export function BrandsRealtimePulse() {
               <div className="flex items-center gap-6">
                 <div className="text-right">
                   <div className="font-mono font-bold text-emerald-400 text-sm shadow-emerald-glow">
-                    {/* 🔥 CORRECTION ICI : fallback (?? 0) pour rassurer TypeScript */}
                     +{new Intl.NumberFormat('en-US', { style: 'currency', currency: event.currency || 'USD' }).format(event.amount ?? 0)}
                   </div>
                   <div className="text-[10px] text-zinc-600 font-mono uppercase">
