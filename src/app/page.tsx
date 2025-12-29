@@ -9,10 +9,13 @@ import BrandDetailModal from "@/components/givn/BrandDetailModal";
 import Badge from "@/components/givn/Badge";
 import ProofModal from "@/components/givn/ProofModal";
 import SubmitBrandForm from "@/components/givn/SubmitBrandForm";
-import { BrandsRealtimePulse } from "@/components/givn/BrandsRealtimePulse"; // ✅ IMPORT DU PULSE
 
-// ✅ Living data (Server Action)
+// ✅ ON REMPLACE L'ANCIEN PULSE PAR CELUI CONNECTÉ
+import GlobalPulse from "@/components/givn/GlobalPulse"; 
+
+// ✅ IMPORT DES SERVER ACTIONS
 import { getLivingBrands } from "@/app/actions/brands";
+import { getHomeData } from "@/app/actions/getHomeData"; // Le moteur de calcul
 import type { BrandTrustRow } from "@/lib/types/givn";
 
 // --- DATA CONSTANTS (ADS) ---
@@ -33,28 +36,14 @@ const AD_POOL_RIGHT: Ad[] = [
 ];
 
 // --- UTILITIES ---
-const Modal = ({
-  isOpen,
-  onClose,
-  children,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}) => {
+const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => void; children: React.ReactNode; }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/90 backdrop-blur-md transition-opacity modal-overlay"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/90 backdrop-blur-md transition-opacity modal-overlay" onClick={onClose} />
       <div className="relative w-full max-w-2xl bg-[#090909] border border-white/10 rounded-2xl shadow-2xl overflow-hidden modal-content">
         <div className="p-8 md:p-12">
-          <button
-            onClick={onClose}
-            className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors bg-white/5 p-2 rounded-full hover:bg-white/10 z-50"
-          >
+          <button onClick={onClose} className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors bg-white/5 p-2 rounded-full hover:bg-white/10 z-50">
             <X size={20} />
           </button>
           {children}
@@ -64,75 +53,61 @@ const Modal = ({
   );
 };
 
-// --- COMPOSANT PARTICULES ---
-const ParticlesBackground = () => {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {[...Array(15)].map((_, i) => (
-        <div
-          key={i}
-          className="absolute bg-emerald-500/20 rounded-full animate-float"
-          style={{
-            width: Math.random() * 4 + 1 + "px",
-            height: Math.random() * 4 + 1 + "px",
-            top: Math.random() * 100 + "%",
-            left: Math.random() * 100 + "%",
-            animationDuration: Math.random() * 10 + 10 + "s",
-            animationDelay: Math.random() * 5 + "s",
-          }}
-        />
-      ))}
-    </div>
-  );
-};
+const ParticlesBackground = () => (
+  <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+    {[...Array(15)].map((_, i) => (
+      <div
+        key={i}
+        className="absolute bg-emerald-500/20 rounded-full animate-float"
+        style={{
+          width: Math.random() * 4 + 1 + "px",
+          height: Math.random() * 4 + 1 + "px",
+          top: Math.random() * 100 + "%",
+          left: Math.random() * 100 + "%",
+          animationDuration: Math.random() * 10 + 10 + "s",
+          animationDelay: Math.random() * 5 + "s",
+        }}
+      />
+    ))}
+  </div>
+);
 
-/**
- * Interface UI mise à jour pour inclure description et total_donated
- */
+// --- TYPES ---
 type BrandUI = {
   id: string;
   name: string;
   slug: string;
   logo_url: string | null;
   website: string | null;
-
   category: string;
   claim: string;
   description?: string | null;
   total_donated?: number | null;
-
   month: number;
   status: "VERIFIED" | "PENDING";
-
   trust_score: number;
   proof_count: number;
   last_proof_at: string | null;
 };
 
-function mapTrustToUI(b: BrandTrustRow): BrandUI {
-  const isVerified = b.latest_status === "verified";
-
-  const fallbackClaim = isVerified
-    ? "Verified on-chain. Click to inspect proof trail."
-    : b.latest_status === "rejected"
-    ? "Rejected. Proof insufficient or invalid."
-    : "Draft or no active proof yet.";
-
+// Fonction de mapping (On priorise les données qui ont du "vrai argent")
+function mapTrustToUI(b: any): BrandUI {
+  const isVerified = b.total_donated > 0 || b.latest_status === "verified";
+  
   return {
     id: b.id,
     name: b.name,
-    slug: b.slug,
+    slug: b.slug || b.id,
     logo_url: b.logo_url,
     website: b.website,
     category: b.category || "Public Database",
-    claim: b.claim || fallbackClaim,
+    claim: isVerified ? "Verified on-chain." : "Pending verification.",
     description: b.description,
-    total_donated: b.total_donated,
+    total_donated: b.total_donated || 0, // Le vrai montant
     month: b.trust_score ?? 0,
     status: isVerified ? "VERIFIED" : "PENDING",
     trust_score: b.trust_score ?? 0,
     proof_count: b.proof_count ?? 0,
-    // ✅ FIX CRITIQUE : Conversion en string ISO pour éviter l'erreur de build
     last_proof_at: b.last_proof_at ? new Date(b.last_proof_at).toISOString() : null,
   };
 }
@@ -156,19 +131,38 @@ export default function Home() {
   const [brands, setBrands] = useState<BrandUI[]>([]);
   const [loadingBrands, setLoadingBrands] = useState(true);
 
+  // ✅ NOUVEAU STATE POUR LE PULSE GLOBAL
+  const [globalStats, setGlobalStats] = useState({ totalVolume: 0, recentActivity: [] as any[] });
+
   const UNIFIED_CYCLE_DURATION = 10000;
 
   useEffect(() => setMounted(true), []);
 
+  // ✅ CHARGEMENT DES DONNÉES RÉELLES (ADMIN + MARQUES)
   useEffect(() => {
     let alive = true;
 
     (async () => {
       try {
         setLoadingBrands(true);
-        const rows = await getLivingBrands();
+        
+        // 1. Charger les stats globales (Pour le gros chiffre en haut)
+        const homeData = await getHomeData();
+        
+        // 2. Charger la liste des marques (Pour le tableau)
+        // On utilise homeData.leaderboard car il contient déjà les totaux calculés !
+        const rows = homeData.leaderboard;
+
         if (!alive) return;
+
+        setGlobalStats({
+          totalVolume: homeData.totalVolume,
+          recentActivity: homeData.recentActivity
+        });
+
+        // On map les données pour ton UI
         setBrands((rows ?? []).map(mapTrustToUI));
+
       } catch (e) {
         console.error(e);
         if (!alive) return;
@@ -187,20 +181,19 @@ export default function Home() {
   const filteredBrands = useMemo(() => {
     return brands.filter((brand) => {
       const matchesCategory = activeCategory === "All" || brand.category === activeCategory;
-
       const q = searchQuery.trim().toLowerCase();
       const matchesSearch =
         q.length === 0 ||
         brand.name.toLowerCase().includes(q) ||
         (brand.claim ?? "").toLowerCase().includes(q);
-
-      const matchesVerified = verifiedOnly ? brand.status === "VERIFIED" : true;
+      const matchesVerified = verifiedOnly ? (brand.total_donated || 0) > 0 : true;
 
       return matchesCategory && matchesSearch && matchesVerified;
     });
   }, [brands, activeCategory, searchQuery, verifiedOnly]);
 
-  const sortedBrands = [...filteredBrands].sort((a, b) => b.month - a.month);
+  // Tri par ARGENT DONNÉ (Le plus riche en haut)
+  const sortedBrands = [...filteredBrands].sort((a, b) => (b.total_donated || 0) - (a.total_donated || 0));
   const displayedBrandsList = viewFullList ? sortedBrands : sortedBrands.slice(0, 6);
 
   const scrollToSection = (id: string) => {
@@ -209,7 +202,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="min-h-screen flex flex-col relative bg-[#020403] text-white">
       <div className="fixed top-0 w-full z-40 pointer-events-none h-24 bg-gradient-to-b from-black/50 to-transparent lg:hidden" />
 
       <main className="flex-1 pt-10 md:pt-24 w-full px-4 relative">
@@ -239,9 +232,12 @@ export default function Home() {
                 Brands can claim anything. Givn only shows what is verifiable. Transparent tracking for corporate philanthropy.
               </p>
 
-              {/* 🔥 PULSE TEMPS RÉEL INSÉRÉ ICI */}
-              <div className="w-full mb-8 animate-[pop-in_1.0s_ease-out]">
-                <BrandsRealtimePulse />
+              {/* 🔥 LE VRAI PULSE CONNECTÉ À LA DB (Remplacement) */}
+              <div className="w-full mb-8 animate-[pop-in_1.0s_ease-out] rounded-2xl overflow-hidden border border-white/5">
+                <GlobalPulse 
+                  totalVolume={globalStats.totalVolume} 
+                  recentActivity={globalStats.recentActivity} 
+                />
               </div>
 
               <div className="w-full max-w-lg mx-auto flex gap-3 mb-6 animate-[pop-in_1.1s_ease-out]">
@@ -272,7 +268,7 @@ export default function Home() {
                 </button>
               </div>
 
-              {loadingBrands && <div className="mt-3 text-xs text-zinc-500">Syncing living database…</div>}
+              {loadingBrands && <div className="mt-3 text-xs text-zinc-500">Syncing blockchain ledger...</div>}
             </div>
 
             {/* MOBILE AD 1 */}
@@ -324,8 +320,8 @@ export default function Home() {
             <div id="database" className="mb-24 scroll-mt-24 w-full text-left">
               <div className="flex justify-between items-end mb-8 border-b border-white/5 pb-4">
                 <div>
-                  <h2 className="text-xl font-bold mb-1">Recently listed</h2>
-                  <p className="text-xs text-zinc-500">Live from public proofs</p>
+                  <h2 className="text-xl font-bold mb-1">Live Database</h2>
+                  <p className="text-xs text-zinc-500">Real-time data from public proofs</p>
                 </div>
                 <button
                   onClick={() => setViewFullList(!viewFullList)}
@@ -354,12 +350,12 @@ export default function Home() {
               </div>
             </div>
 
-            {/* LEADERBOARD */}
+            {/* LEADERBOARD (TABLE) */}
             <div id="leaderboard" className="mb-32 scroll-mt-24 w-full text-left">
               <div className="flex justify-between items-center mb-8">
                 <div>
                   <h2 className="text-xl font-bold mb-1">Impact leaderboard</h2>
-                  <p className="text-xs text-zinc-500">Ranked by living trust score (proof-derived)</p>
+                  <p className="text-xs text-zinc-500">Ranked by total verified volume</p>
                 </div>
               </div>
 
@@ -370,8 +366,8 @@ export default function Home() {
                       <th className="p-4 font-semibold w-16 text-center">#</th>
                       <th className="p-4 font-semibold">Brand</th>
                       <th className="p-4 font-semibold hidden sm:table-cell">Category</th>
-                      <th className="p-4 font-semibold text-right">Trust</th>
-                      <th className="p-4 font-semibold text-right">Status</th>
+                      <th className="p-4 font-semibold text-right">Trust Score</th>
+                      <th className="p-4 font-semibold text-right">Verified Total</th>
                     </tr>
                   </thead>
                   <tbody className="text-sm">
@@ -393,8 +389,10 @@ export default function Home() {
                           <span className="bg-white/5 px-2 py-1 rounded text-xs border border-white/5">{brand.category}</span>
                         </td>
                         <td className="p-4 text-right font-mono text-white font-medium">{brand.trust_score}/100</td>
-                        <td className="p-4 flex justify-end items-center h-full">
-                          <Badge status={brand.status} />
+                        <td className="p-4 flex justify-end items-center h-full font-mono text-emerald-400 font-bold">
+                          {brand.total_donated && brand.total_donated > 0 
+                             ? `$${brand.total_donated.toLocaleString()}` 
+                             : "-"}
                         </td>
                       </tr>
                     ))}

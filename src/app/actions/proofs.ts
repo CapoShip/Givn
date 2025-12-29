@@ -4,14 +4,10 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { currentUser } from "@clerk/nextjs/server";
 
-// ✅ ON GARDE LE TYPE (C'est autorisé)
 export type ProofState = {
   message: string;
   success: boolean;
 };
-
-// ⛔️ J'AI SUPPRIMÉ 'export const initialProofState' D'ICI.
-// C'était ça la cause du crash.
 
 const ADMIN_EMAIL = "shippingdrop76@gmail.com"; 
 
@@ -38,6 +34,8 @@ export async function uploadProof(
     const amountStr = formData.get("amount") as string;
     const currency = formData.get("currency") as string;
     const file = formData.get("file") as File;
+    // ✅ NOUVEAU : On récupère le titre/description
+    const title = formData.get("title") as string; 
 
     if (!brandId || !amountStr || !file || file.size === 0) {
       return { message: "Données incomplètes.", success: false };
@@ -65,6 +63,8 @@ export async function uploadProof(
       proof_url: urlData.publicUrl,
       status: "verified",
       verified_at: new Date().toISOString(),
+      // ✅ NOUVEAU : On insère le titre en base
+      title: title || "Donation Proof", 
     });
 
     if (dbError) {
@@ -75,7 +75,7 @@ export async function uploadProof(
     revalidatePath("/");
     revalidatePath("/admin");
 
-    return { message: "Succès !", success: true };
+    return { message: "Success! Proof added.", success: true };
 
   } catch (error) {
     console.error("Fatal:", error);
