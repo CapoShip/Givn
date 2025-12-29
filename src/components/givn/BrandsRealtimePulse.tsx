@@ -7,11 +7,29 @@ import type { GlobalActivityEvent } from "@/lib/types/givn";
 import { CheckCircle2, Activity, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
+// --- SOUS-COMPOSANT QUI BAT LA MESURE ⏱️ ---
+function LiveTimestamp({ date }: { date: string }) {
+  // On initialise avec le temps actuel
+  const [display, setDisplay] = useState(timeAgo(date));
+
+  useEffect(() => {
+    // On force la mise à jour chaque seconde
+    const timer = setInterval(() => {
+      setDisplay(timeAgo(date));
+    }, 1000);
+
+    // Nettoyage propre quand le composant disparaît
+    return () => clearInterval(timer);
+  }, [date]);
+
+  return <span>{display}</span>;
+}
+
 export function BrandsRealtimePulse() {
   const [activities, setActivities] = useState<GlobalActivityEvent[]>([]);
   const [isLive, setIsLive] = useState(false);
 
-  // 1. Chargement initial (Server Action)
+  // 1. Chargement initial
   useEffect(() => {
     getGlobalActivity().then((data) => {
       setActivities(data);
@@ -19,7 +37,7 @@ export function BrandsRealtimePulse() {
     });
   }, []);
 
-  // 2. Abonnement Realtime (Supabase)
+  // 2. Abonnement Realtime
   useEffect(() => {
     const supabase = supabaseBrowser();
     
@@ -77,7 +95,7 @@ export function BrandsRealtimePulse() {
         </div>
       </div>
 
-      {/* Liste des Events (Glassmorphism) */}
+      {/* Liste des Events */}
       <div className="flex flex-col gap-2">
         {activities.map((event, index) => (
           <div
@@ -107,7 +125,10 @@ export function BrandsRealtimePulse() {
                   <div className="text-xs text-zinc-500 flex items-center gap-1">
                     <span>Verified donation</span>
                     <span className="text-zinc-700">•</span>
-                    <span className="text-zinc-400">{timeAgo(event.occurredAt)}</span>
+                    {/* 🔥 ICI LE CHANGEMENT : On utilise le composant dynamique */}
+                    <span className="text-emerald-400/80 font-mono text-[10px] uppercase tracking-wider">
+                      <LiveTimestamp date={event.occurredAt} />
+                    </span>
                   </div>
                 </div>
               </div>
@@ -140,11 +161,15 @@ export function BrandsRealtimePulse() {
   );
 }
 
+// Utilitaire de temps amélioré (Secondes précises)
 function timeAgo(dateString: string) {
   const date = new Date(dateString);
   const now = new Date();
   const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
+  if (seconds < 5) return "just now";
+  if (seconds < 60) return `${seconds}s ago`;
+  
   let interval = seconds / 31536000;
   if (interval > 1) return Math.floor(interval) + "y ago";
   interval = seconds / 2592000;
@@ -155,5 +180,6 @@ function timeAgo(dateString: string) {
   if (interval > 1) return Math.floor(interval) + "h ago";
   interval = seconds / 60;
   if (interval > 1) return Math.floor(interval) + "m ago";
+  
   return Math.floor(seconds) + "s ago";
 }
