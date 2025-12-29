@@ -2,11 +2,9 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { UploadCloud, DollarSign, Check, Loader2, FileText, Building } from "lucide-react";
-import { uploadProof, initialProofState } from "@/app/actions/proofs";
+// ✅ IMPORT UNIQUEMENT LA FONCTION (Pas d'objets)
+import { uploadProof } from "@/app/actions/proofs";
 
-// ✅ FIX : On définit une interface minimale. 
-// Le composant n'a besoin que de l'ID et du Nom. 
-// Ça le rend compatible avec N'IMPORTE QUELLE source de données (Admin, Public, API...).
 type BrandSimple = {
   id: string;
   name: string;
@@ -17,7 +15,14 @@ type Props = {
   onSuccess?: () => void;
 };
 
+// ✅ L'ÉTAT INITIAL DOIT ÊTRE DÉFINI ICI (Côté Client)
+const initialProofState = {
+  message: "",
+  success: false,
+};
+
 export default function SubmitProofForm({ brands, onSuccess }: Props) {
+  // Hook pour gérer l'envoi du formulaire
   const [state, formAction, isPending] = useActionState(uploadProof, initialProofState);
   const [fileName, setFileName] = useState<string | null>(null);
 
@@ -32,6 +37,7 @@ export default function SubmitProofForm({ brands, onSuccess }: Props) {
     }
   }, [state.success, onSuccess]);
 
+  // ÉCRAN DE SUCCÈS
   if (state.success) {
     return (
       <div className="flex flex-col items-center justify-center py-12 animate-in fade-in zoom-in">
@@ -48,6 +54,7 @@ export default function SubmitProofForm({ brands, onSuccess }: Props) {
     );
   }
 
+  // FORMULAIRE
   return (
     <form action={formAction} className="space-y-6">
       <div className="space-y-4">
