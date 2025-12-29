@@ -1,15 +1,31 @@
+// src/app/actions/getBrands.ts
 "use server";
 
 import { supabaseServer } from "@/lib/supabase/server";
-// On garde 'any' pour l'instant pour débloquer la situation immédiatement
-import type { BrandTrustRow } from "@/lib/types/givn"; 
+import type { BrandTrustRow } from "@/lib/types/givn";
 
-export async function getBrands() {
+export type BrandCardData = {
+  id: string;
+  slug: string;
+  name: string;
+  website: string;
+  logo_url: string;
+  category: string;
+  description: string;
+  claim: string;
+  proof_count: number;
+  total_donated: number;
+  trust_score: number;
+  last_proof_at: string | null;
+  latest_status: string;
+  formatted_total: string; // Prêt pour l'affichage
+};
+
+export async function getBrands(): Promise<BrandCardData[]> {
   const supabase = await supabaseServer();
 
-  // 1. LA CLÉ DU SUCCÈS : .select("*")
-  // On arrête de lister les colonnes manuellement. On prend TOUT.
-  // C'est ça qui va enfin laisser passer 'description' et 'claim'.
+  // On utilise le generic <BrandTrustRow> si tu as généré les types Supabase, 
+  // sinon on caste le résultat de data.
   const { data, error } = await supabase
     .from("brand_trust_live")
     .select("*")
@@ -20,30 +36,34 @@ export async function getBrands() {
     return [];
   }
 
-  // 2. LE MAPPING CORRIGÉ
-  return (data || []).map((brand: any) => ({
-    id: brand.id || brand.brand_id, 
-    slug: brand.slug,
-    name: brand.name,
-    website: brand.website || "",
-    logo_url: brand.logo_url || "", 
-    category: brand.category || "General",
+  // Casting explicite pour rassurer TypeScript sur ce qui sort de la View
+  const rows = data as unknown as BrandTrustRow[];
 
-    // ✅ RÉCUPÉRATION FORCÉE DES TEXTES
-    // Si la base renvoie null, on met un texte par défaut PROPRE.
-    description: brand.description || "No description available.",
-    claim: brand.claim || "No active claim",
-
-    // ✅ CORRECTION DES MONTANTS
-    // On lit 'total_donated' (SQL) et on le met dans 'total_donated' (UI)
-    proof_count: Number(brand.proof_count ?? 0),
-    total_donated: Number(brand.total_donated ?? 0), 
-    trust_score: Number(brand.trust_score ?? 0),
+  return rows.map((brand) => {
+    // Gestion défensive des valeurs numériques
+    const donated = Number(brand.total_donated ?? 0);
     
-    last_proof_at: brand.last_proof_at,
-    latest_status: brand.latest_status || "draft",
-    
-    // Astuce UX : On génère un "Month" fictif basé sur le total pour que ça ne soit pas vide
-    month: Math.floor(Number(brand.total_donated ?? 0) * 0.12),
-  }));
+    return {
+      id: brand.id,
+      slug: brand.slug,
+      name: brand.name,
+      website: brand.website || "",
+      logo_url: brand.logo_url || "",
+      category: brand.category || "General",
+      description: brand.description || "Transparence en attente de description.",
+      claim: brand.claim || "Engagement en cours de vérification.",
+      proof_count: Number(brand.proof_count ?? 0),
+      total_donated: donated,
+      trust_score: Number(brand.trust_score ?? 0),
+      last_proof_at: brand.last_proof_at ? new Date(brand.last_proof_at).toISOString() : null,
+      latest_status: brand.latest_status || "draft",
+      
+      // Formatting côté serveur pour éviter les glitchs d'hydratation UI
+      formatted_total: new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }).format(donated),
+    };
+  });
 }

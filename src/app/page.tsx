@@ -131,7 +131,11 @@ function mapTrustToUI(b: BrandTrustRow): BrandUI {
     status: isVerified ? "VERIFIED" : "PENDING",
     trust_score: b.trust_score ?? 0,
     proof_count: b.proof_count ?? 0,
-    last_proof_at: b.last_proof_at,
+    
+    // 🔥 CORRECTION ICI : On force la conversion en string ISO sécurisée
+    last_proof_at: b.last_proof_at 
+      ? new Date(b.last_proof_at).toISOString() 
+      : null,
   };
 }
 

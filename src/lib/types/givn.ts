@@ -1,29 +1,28 @@
 // src/lib/types/givn.ts
 
-export type ProofStatus =
-  | "draft"
-  | "submitted"
-  | "under_review"
-  | "verified"
-  | "rejected";
-
 export type BrandTrustRow = {
-  id: string; // = brand_id de la view
+  id: string; // ou brand_id selon la vue
   slug: string;
   name: string;
   website: string | null;
   logo_url: string | null;
-
-  // ✅ CHAMPS AJOUTÉS POUR LA V2
-  description: string | null;
-  claim: string | null;
   category: string | null;
-  total_donated: number | null;
+  claim: string | null;
+  description: string | null;
+  proof_count: number;
+  total_donated: number; // Postgres renvoie souvent string ou number selon le driver
+  last_proof_at: string | Date | null;
+  trust_score: number;
+  latest_status: 'draft' | 'submitted' | 'under_review' | 'verified' | 'rejected' | null;
+};
 
-  trust_score: number | null;
-  proof_count: number | null;
-  last_proof_at: string | null;
-
-  // vient de la view: latest_status (enum proof_status)
-  latest_status: ProofStatus | null;
+export type GlobalActivityEvent = {
+  id: string;
+  type: 'proof_verified' | 'brand_joined'; // Extensible
+  brandName: string;
+  brandSlug: string;
+  brandLogo: string | null;
+  amount?: number;
+  currency?: string;
+  occurredAt: string; // ISO String
 };
